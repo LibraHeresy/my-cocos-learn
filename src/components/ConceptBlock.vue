@@ -1,12 +1,21 @@
 <script setup lang="ts">
-defineProps<{
+import { computed } from 'vue'
+
+const props = defineProps<{
   title: string
   icon?: string
 }>()
+
+const slugId = computed(() =>
+  props.title
+    .toLowerCase()
+    .replace(/[^a-z0-9一-鿿]+/g, '-')
+    .replace(/^-+|-+$/g, ''),
+)
 </script>
 
 <template>
-  <section class="concept-block">
+  <section :id="slugId" class="concept-block">
     <h2 class="block-title">
       <span v-if="icon" class="block-icon">{{ icon }}</span>
       {{ title }}
@@ -26,6 +35,7 @@ defineProps<{
   margin-bottom: 1.5rem;
   box-shadow: var(--shadow-sm);
   transition: box-shadow 0.25s;
+  scroll-margin-top: 4.5rem;
 }
 
 .concept-block:hover {

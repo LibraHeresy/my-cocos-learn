@@ -67,19 +67,17 @@ const phases = [
     <header class="hero">
       <p class="hero-eyebrow">Vue 前端工程师 · Cocos Creator 学习路线</p>
       <h1>从零到<span class="highlight">像素飞机大战</span></h1>
-      <p class="subtitle">一份为前端工程师量身定制的 Cocos 学习指南。每个阶段包含概念讲解、Vue ↔ Cocos 对照和代码示例。</p>
+      <p class="subtitle">
+        一份为前端工程师量身定制的 Cocos 学习指南。每个阶段包含概念讲解、Vue ↔ Cocos
+        对照和代码示例。
+      </p>
     </header>
 
     <!-- 阶段卡片 -->
     <section class="phases-section">
       <h2 class="section-title">学习路径</h2>
       <div class="phases-grid">
-        <RouterLink
-          v-for="p in phases"
-          :key="p.id"
-          :to="`/phase/${p.id}`"
-          class="phase-card"
-        >
+        <RouterLink v-for="p in phases" :key="p.id" :to="`/cocos/phase/${p.id}`" class="phase-card">
           <div class="card-top">
             <span class="card-icon">{{ p.icon }}</span>
             <span class="card-duration">{{ p.duration }}</span>
@@ -106,16 +104,46 @@ const phases = [
             </tr>
           </thead>
           <tbody>
-            <tr><td>Vue 组件 <code>.vue</code></td><td>Component 脚本（挂在 Node 上）</td></tr>
-            <tr><td>DOM 树</td><td>场景节点树 (Node Tree)</td></tr>
-            <tr><td><code>v-if</code> / <code>v-show</code></td><td><code>node.active</code></td></tr>
-            <tr><td><code>ref</code> / <code>reactive</code></td><td><code>@property</code> 装饰器</td></tr>
-            <tr><td><code>@click</code> / <code>v-on</code></td><td><code>node.on()</code> 事件系统</td></tr>
-            <tr><td><code>watch</code> / <code>computed</code></td><td><code>update(dt)</code> 每帧检查</td></tr>
-            <tr><td>CSS transition</td><td><code>cc.tween</code></td></tr>
-            <tr><td>Vue Router</td><td><code>director.loadScene()</code></td></tr>
-            <tr><td>组件 props</td><td><code>@property</code> 属性面板绑定</td></tr>
-            <tr><td><code>mounted</code> / <code>unmounted</code></td><td><code>onLoad</code> / <code>onDestroy</code></td></tr>
+            <tr>
+              <td>Vue 组件 <code>.vue</code></td>
+              <td>Component 脚本（挂在 Node 上）</td>
+            </tr>
+            <tr>
+              <td>DOM 树</td>
+              <td>场景节点树 (Node Tree)</td>
+            </tr>
+            <tr>
+              <td><code>v-if</code> / <code>v-show</code></td>
+              <td><code>node.active</code></td>
+            </tr>
+            <tr>
+              <td><code>ref</code> / <code>reactive</code></td>
+              <td><code>@property</code> 装饰器</td>
+            </tr>
+            <tr>
+              <td><code>@click</code> / <code>v-on</code></td>
+              <td><code>node.on()</code> 事件系统</td>
+            </tr>
+            <tr>
+              <td><code>watch</code> / <code>computed</code></td>
+              <td><code>update(dt)</code> 每帧检查</td>
+            </tr>
+            <tr>
+              <td>CSS transition</td>
+              <td><code>cc.tween</code></td>
+            </tr>
+            <tr>
+              <td>Vue Router</td>
+              <td><code>director.loadScene()</code></td>
+            </tr>
+            <tr>
+              <td>组件 props</td>
+              <td><code>@property</code> 属性面板绑定</td>
+            </tr>
+            <tr>
+              <td><code>mounted</code> / <code>unmounted</code></td>
+              <td><code>onLoad</code> / <code>onDestroy</code></td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -127,7 +155,9 @@ const phases = [
         <span class="footer-icon">⏱️</span>
         <div>
           <p>总共约 <strong>3-4 周</strong>，每天投入 2-4 小时。</p>
-          <p class="footer-path">核心路径：<em>帧驱动 → 节点体系 → 资源渲染 → 输入控制 → 碰撞检测 → 架构模式 → 实战</em></p>
+          <p class="footer-path">
+            核心路径：<em>帧驱动 → 节点体系 → 资源渲染 → 输入控制 → 碰撞检测 → 架构模式 → 实战</em>
+          </p>
         </div>
       </div>
     </footer>
@@ -213,7 +243,10 @@ const phases = [
   border: 1px solid var(--color-border-light);
   border-radius: var(--radius-lg);
   padding: 1.3rem;
-  transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s;
+  transition:
+    border-color 0.25s,
+    box-shadow 0.25s,
+    transform 0.2s;
   color: var(--color-text);
   cursor: pointer;
 }

@@ -10,10 +10,9 @@ defineProps<{
 
 <template>
   <div class="phase-layout">
-    <!-- 进度指示器 -->
     <div class="progress-bar" aria-label="学习进度">
       <div
-        v-for="i in 7"
+        v-for="i in 4"
         :key="i"
         class="progress-dot"
         :class="{ active: i <= phase, current: i === phase }"
@@ -21,8 +20,8 @@ defineProps<{
     </div>
 
     <header class="phase-header">
-      <RouterLink to="/" class="back-link">
-        <span class="back-arrow">&larr;</span> 返回课程总览
+      <RouterLink to="/audio" class="back-link">
+        <span class="back-arrow">&larr;</span> 返回音效课程
       </RouterLink>
       <div class="header-meta">
         <span class="phase-badge">第 {{ phase }} 阶段</span>
@@ -39,7 +38,7 @@ defineProps<{
     </div>
 
     <nav class="phase-nav">
-      <RouterLink v-if="phase > 1" :to="`/cocos/phase/${phase - 1}`" class="nav-btn prev">
+      <RouterLink v-if="phase > 1" :to="`/audio/phase/${phase - 1}`" class="nav-btn prev">
         <span class="nav-arrow">&larr;</span>
         <span class="nav-label">
           <small>上一阶段</small>
@@ -48,7 +47,7 @@ defineProps<{
       </RouterLink>
       <span v-else class="nav-btn placeholder" />
 
-      <RouterLink v-if="phase < 7" :to="`/cocos/phase/${phase + 1}`" class="nav-btn next">
+      <RouterLink v-if="phase < 4" :to="`/audio/phase/${phase + 1}`" class="nav-btn next">
         <span class="nav-label">
           <small>下一阶段</small>
           <strong>第 {{ phase + 1 }} 阶段</strong>
@@ -67,7 +66,6 @@ defineProps<{
   padding: 2rem 1.5rem 3rem;
 }
 
-/* ---- 进度条 ---- */
 .progress-bar {
   display: flex;
   justify-content: center;
@@ -93,7 +91,6 @@ defineProps<{
   transform: scaleX(1.3);
 }
 
-/* ---- Header ---- */
 .phase-header {
   margin-bottom: 2.5rem;
 }
@@ -149,12 +146,10 @@ defineProps<{
   margin: 0;
 }
 
-/* ---- Body ---- */
 .phase-body {
   margin-bottom: 3rem;
 }
 
-/* ---- 底部导航 ---- */
 .phase-nav {
   display: flex;
   justify-content: space-between;
