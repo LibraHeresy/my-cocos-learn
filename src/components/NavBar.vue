@@ -113,4 +113,27 @@ const activeCourse = computed(() => {
 .tab-label {
   white-space: nowrap;
 }
+
+@media (max-width: 640px) {
+  .navbar-inner {
+    padding: 0 0.75rem;
+  }
+
+  .nav-brand {
+    font-size: 0.85rem;
+  }
+
+  .nav-tab {
+    padding: 0.35rem 0.5rem;
+    gap: 0;
+  }
+
+  .tab-label {
+    display: none;
+  }
+
+  .tab-icon {
+    font-size: 1.05rem;
+  }
+}
 </style>

@@ -369,4 +369,31 @@ const phases = [
 .footer-path {
   font-size: 0.82rem;
 }
+
+@media (max-width: 640px) {
+  .home {
+    padding: 1.5rem 1rem 2rem;
+  }
+
+  .hero {
+    margin-bottom: 2rem;
+  }
+
+  .hero h1 {
+    font-size: 1.6rem;
+  }
+
+  .subtitle {
+    font-size: 0.9rem;
+  }
+
+  .phases-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-card {
+    flex-direction: column;
+    text-align: center;
+  }
+}
 </style>

@@ -48,7 +48,7 @@ defineProps<{
       </RouterLink>
       <span v-else class="nav-btn placeholder" />
 
-      <RouterLink v-if="phase < 7" :to="`/cocos/phase/${phase + 1}`" class="nav-btn next">
+      <RouterLink v-if="phase < 8" :to="`/cocos/phase/${phase + 1}`" class="nav-btn next">
         <span class="nav-label">
           <small>下一阶段</small>
           <strong>第 {{ phase + 1 }} 阶段</strong>
@@ -210,5 +210,31 @@ defineProps<{
 
 .nav-btn.placeholder {
   visibility: hidden;
+}
+
+@media (max-width: 640px) {
+  .phase-layout {
+    padding: 1.25rem 1rem 2rem;
+  }
+
+  .phase-header h1 {
+    font-size: 1.4rem;
+  }
+
+  .phase-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .phase-nav {
+    flex-direction: column;
+  }
+
+  .nav-btn {
+    justify-content: center;
+  }
+
+  .progress-bar {
+    margin-bottom: 1.25rem;
+  }
 }
 </style>

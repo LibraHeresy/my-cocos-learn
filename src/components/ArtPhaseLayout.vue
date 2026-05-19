@@ -207,4 +207,30 @@ defineProps<{
 .nav-btn.placeholder {
   visibility: hidden;
 }
+
+@media (max-width: 640px) {
+  .phase-layout {
+    padding: 1.25rem 1rem 2rem;
+  }
+
+  .phase-header h1 {
+    font-size: 1.4rem;
+  }
+
+  .phase-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .phase-nav {
+    flex-direction: column;
+  }
+
+  .nav-btn {
+    justify-content: center;
+  }
+
+  .progress-bar {
+    margin-bottom: 1.25rem;
+  }
+}
 </style>

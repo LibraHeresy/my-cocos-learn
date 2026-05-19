@@ -75,4 +75,14 @@ const slugId = computed(() =>
 .block-content :deep(table) {
   margin-top: 0.5rem;
 }
+
+@media (max-width: 640px) {
+  .concept-block {
+    padding: 1rem 1.1rem;
+  }
+
+  .block-title {
+    font-size: 1.05rem;
+  }
+}
 </style>

@@ -288,4 +288,30 @@ const phases = [
   color: var(--color-primary);
   margin-top: 0.15rem;
 }
+
+@media (max-width: 640px) {
+  .home {
+    padding: 1.5rem 1rem 2rem;
+  }
+
+  .hero {
+    margin-bottom: 2rem;
+  }
+
+  .hero h1 {
+    font-size: 1.6rem;
+  }
+
+  .subtitle {
+    font-size: 0.9rem;
+  }
+
+  .phases-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tool-grid {
+    grid-template-columns: 1fr;
+  }
+}
 </style>
