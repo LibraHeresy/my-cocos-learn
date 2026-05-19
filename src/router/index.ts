@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 
 const cocosPhases: RouteRecordRaw[] = [
@@ -91,7 +91,7 @@ const audioPhases: RouteRecordRaw[] = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes: [
     { path: '/', name: 'home', component: () => import('@/views/cocos/Home.vue') },
     { path: '/cocos', redirect: '/' },

@@ -15,7 +15,6 @@ function extractTitle(el: Element): string {
   const h2 = el.querySelector('h2')
   if (!h2) return ''
   // Remove icon span text, keep the rest
-  const icon = h2.querySelector('.block-icon')
   const clone = h2.cloneNode(true) as HTMLElement
   const iconClone = clone.querySelector('.block-icon')
   if (iconClone) iconClone.remove()
