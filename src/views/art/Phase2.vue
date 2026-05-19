@@ -62,13 +62,13 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
       <p>在锯齿拐角处，用一个<strong>介于轮廓色和背景色之间的中间色</strong>填充：</p>
 
       <pre><code>❌ 无 AA：         ✅ 有 AA：
-  ██  ██             ██  ██
-  ██    ██           ██ ▓▓ ██
-  ██      ██         ██      ██
-  ██    ██           ██ ▒▒ ██
-  ██  ██             ██  ██
+  <span style="color:#554422">██</span>  <span style="color:#554422">██</span>             <span style="color:#554422">██</span>  <span style="color:#554422">██</span>
+  <span style="color:#554422">██</span>    <span style="color:#554422">██</span>           <span style="color:#554422">██</span> <span style="color:#aa8855">▓▓</span> <span style="color:#554422">██</span>
+  <span style="color:#554422">██</span>      <span style="color:#554422">██</span>         <span style="color:#554422">██</span>      <span style="color:#554422">██</span>
+  <span style="color:#554422">██</span>    <span style="color:#554422">██</span>           <span style="color:#554422">██</span> <span style="color:#ddbb99">▒▒</span> <span style="color:#554422">██</span>
+  <span style="color:#554422">██</span>  <span style="color:#554422">██</span>             <span style="color:#554422">██</span>  <span style="color:#554422">██</span>
 
-  ▓▓ = 中间色（轮廓色和背景色的混合）</code></pre>
+  <span style="color:#aa8855">▓▓</span> / <span style="color:#ddbb99">▒▒</span> = 中间色（轮廓色和背景色的混合）</code></pre>
 
       <h3>AA 的使用原则</h3>
       <ul>
@@ -224,7 +224,7 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
       </ol>
 
       <pre><code>红色 Ramp 示例（适合飞机/敌机主体）：
-████  ████  ████  ████
+<span style="color:#551111">████</span>  <span style="color:#aa2222">████</span>  <span style="color:#dd5555">████</span>  <span style="color:#ff9999">████</span>
 暗部   基础   亮部   高光
 #551111 #aa2222 #dd5555 #ff9999
 　　　　　　　　　　　　　(偏橙)</code></pre>
@@ -244,10 +244,10 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
 
   ┌──────────┐
   │ 高光色    │  ← 顶面和左面：最亮
-  │  ▓▓▓▓▓▓  │
-  │  ▓▓▓▓▓▓  │  ← 前面：基础色
-  │    ▓▓▓▓▓▓│
-  │    ▓▓▓▓▓▓│  ← 右面和底面：暗部色
+  │  <span style="color:#ff9999">▓▓▓▓▓▓</span>  │
+  │  <span style="color:#dd5555">▓▓▓▓▓▓</span>  │  ← 前面：基础色
+  │    <span style="color:#aa2222">▓▓▓▓▓▓</span>│
+  │    <span style="color:#aa2222">▓▓▓▓▓▓</span>│  ← 右面和底面：暗部色
   └──────────┘</code></pre>
 
       <h3>上色步骤</h3>
@@ -265,16 +265,16 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
         枕形阴影是指<strong>从轮廓边缘向内逐层加深</strong>的上色方式。不管你画的是圆形、方形还是飞机，最终都会得到一个"枕头"般的不自然膨胀感：
       </p>
       <pre><code>❌ 枕形阴影：从轮廓向内逐层加深
-  ▓▓▓▓▓▓▓▓
-  ▓▓████▓▓
-  ▓▓████▓▓
-  ▓▓▓▓▓▓▓▓
+  <span style="color:#664444">▓▓▓▓▓▓▓▓</span>
+  <span style="color:#664444">▓▓</span><span style="color:#cc4444">████</span><span style="color:#664444">▓▓</span>
+  <span style="color:#664444">▓▓</span><span style="color:#cc4444">████</span><span style="color:#664444">▓▓</span>
+  <span style="color:#664444">▓▓▓▓▓▓▓▓</span>
 
 ✅ 正确做法：确定光源方向，一面亮一面暗
-  ☀️→  ████▓▓▓▓
-       ████▓▓▓▓
-       ████▓▓▓▓
-       ████▓▓▓▓</code></pre>
+  ☀️→  <span style="color:#ff9999">████</span><span style="color:#aa2222">▓▓▓▓</span>
+       <span style="color:#ff9999">████</span><span style="color:#aa2222">▓▓▓▓</span>
+       <span style="color:#ff9999">████</span><span style="color:#aa2222">▓▓▓▓</span>
+       <span style="color:#ff9999">████</span><span style="color:#aa2222">▓▓▓▓</span></code></pre>
       <p>
         <strong>纠正方法：</strong
         >画任何物体之前，先问自己"光从哪边来？"然后坚决地让受光面亮、背光面暗。不要怕对比度大——像素画不怕高对比。
@@ -283,16 +283,16 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
       <h3>2. 条纹伪影（Banding）—— 不自然的等高线</h3>
       <p>Banding 是指多个色阶沿轮廓<strong>平行排列</strong>时产生的"等高线地图"般的伪 3D 效果：</p>
       <pre><code>❌ Banding：色阶沿轮廓平行，像等高线
-   ██
-  ████
-  ██▓▓██
- ██▓▓▒▒▓▓
+   <span style="color:#cc4444">██</span>
+  <span style="color:#cc4444">████</span>
+  <span style="color:#cc4444">██</span><span style="color:#aa6644">▓▓</span><span style="color:#cc4444">██</span>
+ <span style="color:#cc4444">██</span><span style="color:#aa6644">▓▓</span><span style="color:#998866">▒▒</span><span style="color:#aa6644">▓▓</span>
 
 ✅ 打破排列：让色阶之间的过渡错开
-   ██
-  ██▓▓
- ██▓▓▒▒
-  ▓▓▒▒</code></pre>
+   <span style="color:#cc4444">██</span>
+  <span style="color:#cc4444">██</span><span style="color:#aa6644">▓▓</span>
+ <span style="color:#cc4444">██</span><span style="color:#aa6644">▓▓</span><span style="color:#998866">▒▒</span>
+  <span style="color:#aa6644">▓▓</span><span style="color:#998866">▒▒</span></code></pre>
       <p>
         <strong>纠正方法：</strong
         >让相邻色阶的边界<strong>不对齐</strong>——暗部色块可以"侵入"亮部区域，让边缘错落而不是整齐排列。
@@ -304,9 +304,9 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
         100% 缩放下会变成噪点，让画面看起来脏乱。
       </p>
       <pre><code>❌ 孤立像素：        ✅ 干净集群：
-  ████  ██            ████████
-  ██    ██            ████████
-  ██  ██              ████████</code></pre>
+  <span style="color:#cc4444">████</span>  <span style="color:#aa2222">██</span>            <span style="color:#cc4444">████████</span>
+  <span style="color:#cc4444">██</span>    <span style="color:#aa2222">██</span>            <span style="color:#cc4444">████████</span>
+  <span style="color:#cc4444">██</span>  <span style="color:#aa2222">██</span>              <span style="color:#cc4444">████████</span></code></pre>
       <p>
         <strong>有个例外：</strong
         >纹理效果（金属表面的反光点、石头纹理、星空）中，孤立像素是有意为之且有效的。
@@ -319,17 +319,17 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
       </p>
 
       <pre><code>纯基础色         50% 抖动        纯暗部色
-████████        ████▓▓▓▓        ▓▓▓▓▓▓▓▓
-████████        ██▓▓▓▓██        ▓▓▓▓▓▓▓▓
-████████   →    ████▓▓▓▓   →    ▓▓▓▓▓▓▓▓
-████████        ██▓▓▓▓██        ▓▓▓▓▓▓▓▓
+<span style="color:#dd5555">████████</span>        <span style="color:#dd5555">████</span><span style="color:#881111">▓▓▓▓</span>        <span style="color:#881111">▓▓▓▓▓▓▓▓</span>
+<span style="color:#dd5555">████████</span>        <span style="color:#dd5555">██</span><span style="color:#881111">▓▓▓▓</span><span style="color:#dd5555">██</span>        <span style="color:#881111">▓▓▓▓▓▓▓▓</span>
+<span style="color:#dd5555">████████</span>   →    <span style="color:#dd5555">████</span><span style="color:#881111">▓▓▓▓</span>   →    <span style="color:#881111">▓▓▓▓▓▓▓▓</span>
+<span style="color:#dd5555">████████</span>        <span style="color:#dd5555">██</span><span style="color:#881111">▓▓▓▓</span><span style="color:#dd5555">██</span>        <span style="color:#881111">▓▓▓▓▓▓▓▓</span>
 
 常见抖动图案：
 棋盘格：  斜条纹：   随机点：
-█ █ █ █   █ █ █ █   █   █
- █ █ █ █   █ █ █   █   █ █
-█ █ █ █     █ █ █     █ █
- █ █ █ █     █ █ █   █</code></pre>
+<span style="color:#dd5555">█</span> <span style="color:#881111">█</span> <span style="color:#dd5555">█</span> <span style="color:#881111">█</span>   <span style="color:#dd5555">█</span> <span style="color:#dd5555">█</span> <span style="color:#dd5555">█</span> <span style="color:#881111">█</span>   <span style="color:#dd5555">█</span>   <span style="color:#881111">█</span>
+ <span style="color:#881111">█</span> <span style="color:#dd5555">█</span> <span style="color:#881111">█</span> <span style="color:#dd5555">█</span>   <span style="color:#dd5555">█</span> <span style="color:#dd5555">█</span> <span style="color:#881111">█</span>   <span style="color:#dd5555">█</span>   <span style="color:#dd5555">█</span> <span style="color:#881111">█</span>
+<span style="color:#dd5555">█</span> <span style="color:#881111">█</span> <span style="color:#dd5555">█</span> <span style="color:#881111">█</span>     <span style="color:#dd5555">█</span> <span style="color:#dd5555">█</span> <span style="color:#881111">█</span>     <span style="color:#dd5555">█</span> <span style="color:#881111">█</span>
+ <span style="color:#881111">█</span> <span style="color:#dd5555">█</span> <span style="color:#881111">█</span> <span style="color:#dd5555">█</span>     <span style="color:#dd5555">█</span> <span style="color:#881111">█</span> <span style="color:#dd5555">█</span>   <span style="color:#881111">█</span></code></pre>
 
       <p>
         抖动在<strong>背景过渡</strong>（天空从深蓝到浅蓝）和<strong>大块平面</strong>（金属表面纹理）中最常用。小型角色通常不需要抖动——4

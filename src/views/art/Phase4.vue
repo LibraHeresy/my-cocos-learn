@@ -184,10 +184,10 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
       </ol>
 
       <pre><code>爆炸动画色彩时间线：
-帧1-4:   ████████  (白→黄→橙)
-帧5-8:   ████████▓▓▓▓  (橙→红→深红)
-帧9-12:  ▓▓▓▓▓▓▓▓▒▒▒▒  (深红→灰)
-帧13-16: ▒▒▒▒░░░░      (灰→透明)</code></pre>
+帧1-4:   <span style="color:#ffffff;background:#444444;padding:0 0.1em">██</span><span style="color:#ffee44">████</span><span style="color:#ff8800">████</span>  (白→黄→橙)
+帧5-8:   <span style="color:#ff8800">████</span><span style="color:#ee2200">████</span><span style="color:#881100">▓▓▓▓</span>  (橙→红→深红)
+帧9-12:  <span style="color:#881100">▓▓▓▓</span><span style="color:#664444">▓▓▓▓</span><span style="color:#888888">▒▒▒▒</span>  (深红→灰)
+帧13-16: <span style="color:#888888">▒▒▒▒</span><span style="color:#bbbbbb">░░░░</span>      (灰→透明)</code></pre>
     </ConceptBlock>
 
     <ConceptBlock icon="🔥" title="制作引擎火焰动画（4 帧）">
@@ -202,9 +202,9 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
 
       <pre><code>引擎火焰 4 帧结构：
 帧1:  帧2:  帧3:  帧4:
-  █     ██    █     █
- ███   ███   ██   ███
-████  ████  ████  ████   ← 底部固定
+  <span style="color:#ffffff">█</span>     <span style="color:#ffffff">██</span>    <span style="color:#ffffff">█</span>     <span style="color:#ffffff">█</span>
+ <span style="color:#ffee44">███</span>   <span style="color:#ffee44">███</span>   <span style="color:#ffee44">██</span>   <span style="color:#ffee44">███</span>
+<span style="color:#ff8800">████</span>  <span style="color:#ff8800">████</span>  <span style="color:#ff8800">████</span>  <span style="color:#ff8800">████</span>   ← 底部固定（白→黄→橙→红渐变）
 ────  ────  ────  ────   (引擎喷口)</code></pre>
     </ConceptBlock>
 
