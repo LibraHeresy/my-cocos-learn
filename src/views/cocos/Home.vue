@@ -58,6 +58,14 @@ const phases = [
     summary: '从零开始，独立完成一款完整可玩的像素飞机大战游戏。',
     concepts: ['玩家飞机', '子弹系统', '敌机AI', '道具', 'UI', '音效'],
   },
+  {
+    id: 8,
+    icon: '📱',
+    title: '微信小游戏适配与发布',
+    duration: '2-3 天',
+    summary: '适配音频、分包加载、接入分享/排行榜/广告，完成审核上线全流程。',
+    concepts: ['Bundle 分包', 'InnerAudioContext', '激励视频', 'onShow/onHide'],
+  },
 ]
 </script>
 
@@ -154,9 +162,9 @@ const phases = [
       <div class="footer-card">
         <span class="footer-icon">⏱️</span>
         <div>
-          <p>总共约 <strong>3-4 周</strong>，每天投入 2-4 小时。</p>
+          <p>总共约 <strong>4-5 周</strong>，每天投入 2-4 小时。</p>
           <p class="footer-path">
-            核心路径：<em>帧驱动 → 节点体系 → 资源渲染 → 输入控制 → 碰撞检测 → 架构模式 → 实战</em>
+            核心路径：<em>帧驱动 → 节点体系 → 资源渲染 → 输入控制 → 碰撞检测 → 架构模式 → 实战 → 小游戏发布</em>
           </p>
         </div>
       </div>

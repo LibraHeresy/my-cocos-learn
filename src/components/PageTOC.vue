@@ -97,7 +97,7 @@ function scrollTo(id: string) {
 <style scoped>
 .page-toc {
   position: fixed;
-  top: 13rem;
+  top: 10rem;
   left: calc(50% + var(--max-width) / 2 + var(--toc-gap));
   width: var(--toc-width);
   max-height: calc(100vh - 4rem);

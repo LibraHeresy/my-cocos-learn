@@ -8,6 +8,8 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
         <li>理解 Scene / Node / Component 三者的关系和各自职责</li>
+        <li>用 Widget 和 Layout 组件搭建响应式 UI（不写一行定位代码）</li>
+        <li>用 ScrollView 实现排行榜、设置面板等可滚动内容</li>
         <li>用 <code>@property</code> 暴露参数到编辑器面板，运行时实时调整</li>
         <li>创建 Prefab（预制体），理解它和 Vue 组件的异同</li>
         <li>在代码中动态创建和销毁节点</li>
@@ -242,6 +244,125 @@ export class Player extends Component {
       </div>
     </ConceptBlock>
 
+    <!-- ============ Widget + Layout ============ -->
+    <ConceptBlock icon="📐" title="Widget 与 Layout —— 响应式布局（CSS 直觉直接平移）">
+      <p>
+        前端工程师最熟悉的两个概念——<strong>position 定位</strong>和
+        <strong>Flexbox 排列</strong>——在 Cocos 中有几乎一一对应的组件：
+      </p>
+
+      <h3>Widget 组件 —— 类比 CSS position + flex 对齐</h3>
+      <p>
+        Widget 让节点<strong>自动对齐到父容器的边缘或居中</strong>，不需要写代码手动算坐标。给节点挂上
+        Widget 组件后，勾选对应的对齐方向即可：
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Widget 配置</th>
+            <th>效果</th>
+            <th>CSS 类比</th>
+            <th>典型场景</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Top + Stretch（左右对齐）</td>
+            <td>顶部贴边，宽度自适应</td>
+            <td><code>position: fixed; top: 0; left: 0; right: 0</code></td>
+            <td>顶部 HUD（分数栏）</td>
+          </tr>
+          <tr>
+            <td>Bottom + Center</td>
+            <td>底部居中</td>
+            <td><code>position: fixed; bottom: 0; left: 50%; transform: translateX(-50%)</code></td>
+            <td>底部按钮</td>
+          </tr>
+          <tr>
+            <td>Top + Left</td>
+            <td>左上角固定</td>
+            <td><code>position: fixed; top: 0; left: 0</code></td>
+            <td>生命值图标</td>
+          </tr>
+          <tr>
+            <td>Center（水平+垂直）</td>
+            <td>始终居中</td>
+            <td><code>display: grid; place-items: center</code></td>
+            <td>弹窗/对话框</td>
+          </tr>
+          <tr>
+            <td>Safe Area</td>
+            <td>避开刘海屏和底部横条</td>
+            <td><code>env(safe-area-inset-top)</code></td>
+            <td>全面屏手机适配</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <pre><code>// Widget 也可以在代码中动态设置
+const widget = this.node.addComponent(Widget)
+widget.left = 20
+widget.bottom = 20
+widget.right = 20        // 底部通栏：左右各留 20px
+widget.isAbsoluteBottom = true  // 绝对对齐底部</code></pre>
+
+      <h3>Layout 组件 —— 类比 CSS Flexbox</h3>
+      <p>
+        Widget 管的是<strong>自己怎么对齐父容器</strong>，Layout
+        管的是<strong>子节点怎么排列</strong>。挂上 Layout 组件后，子节点自动水平/垂直排列，支持间距和内边距：
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Layout 属性</th>
+            <th>CSS 类比</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Type: HORIZONTAL / VERTICAL</td>
+            <td><code>flex-direction: row / column</code></td>
+          </tr>
+          <tr>
+            <td>Spacing X / Spacing Y</td>
+            <td><code>gap: Npx</code></td>
+          </tr>
+          <tr>
+            <td>Padding Left/Top/Right/Bottom</td>
+            <td><code>padding</code></td>
+          </tr>
+          <tr>
+            <td>Horizontal/Vertical Direction</td>
+            <td><code>justify-content</code>（左到右/右到左/居中）</td>
+          </tr>
+          <tr>
+            <td>Resize Mode: CONTAINER</td>
+            <td>容器尺寸随子元素自动调整</td>
+          </tr>
+          <tr>
+            <td>Resize Mode: CHILDREN</td>
+            <td>子元素尺寸随容器自动调整</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <pre><code>// 典型场景：分数数字自动并排
+// ScorePanel 节点挂 Layout（Horizontal, Spacing=4）
+// → 把数字 Sprite 作为子节点丢进去 → 自动从左到右排列好
+
+// 道具栏自动竖排
+// ItemPanel 节点挂 Layout（Vertical, Spacing=8）
+// → 道具图标子节点自动从下到上排列</code></pre>
+
+      <div class="warn-box">
+        <strong>Widget vs Layout 的区别：</strong>Widget 管<strong>自己</strong>（我贴父容器的哪条边），Layout
+        管<strong>子节点</strong>（子节点在容器内怎么排列）。一个节点上可以同时挂 Widget 和
+        Layout——先把自己钉在屏幕底部（Widget），再让子节点水平排列（Layout）。
+      </div>
+    </ConceptBlock>
+
     <!-- ============ Label ============ -->
     <ConceptBlock icon="🔤" title="Label（文字）—— 游戏中最基础的 UI 组件">
       <p>
@@ -380,6 +501,80 @@ export class MenuUI extends Component {
         <code>Click Events</code> 可以在编辑器中配置（拖节点+选方法），也可以在代码中通过
         <code>node.on()</code>
         绑定。编辑器方式适合简单的"点按钮→加载场景"，代码方式适合需要传参或条件判断的场景。两者<strong>不要同时用</strong>——会触发两次。
+      </div>
+    </ConceptBlock>
+
+    <!-- ============ ScrollView ============ -->
+    <ConceptBlock icon="📜" title="ScrollView —— 类比 CSS overflow: scroll">
+      <p>
+        排行榜、设置面板、图鉴列表——这些超出屏幕的内容需要滚动。ScrollView 组件就是 Cocos
+        的滚动容器：
+      </p>
+
+      <h3>创建步骤</h3>
+      <ol>
+        <li>层级管理器 → 创建 → UI → <strong>ScrollView</strong></li>
+        <li>自动生成结构：ScrollView 节点 → content 节点（内容容器）</li>
+        <li>把需要滚动的内容放在 <strong>content</strong> 节点下</li>
+        <li>在 ScrollView 的组件上设置滚动方向和边界</li>
+      </ol>
+
+      <h3>核心属性</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>属性</th>
+            <th>说明</th>
+            <th>CSS 类比</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Horizontal / Vertical</td>
+            <td>是否允许水平 / 垂直滚动</td>
+            <td><code>overflow-x / overflow-y</code></td>
+          </tr>
+          <tr>
+            <td>Inertia</td>
+            <td>惯性滚动（手指离开后继续滑动）</td>
+            <td><code>-webkit-overflow-scrolling: touch</code></td>
+          </tr>
+          <tr>
+            <td>Elastic</td>
+            <td>橡皮筋回弹效果</td>
+            <td><code>overscroll-behavior</code></td>
+          </tr>
+          <tr>
+            <td>Bounce Duration</td>
+            <td>回弹持续时间</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>Scroll To (API)</td>
+            <td>代码控制滚动到指定位置</td>
+            <td><code>element.scrollTo()</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>代码操作</h3>
+      <pre><code>import { ScrollView } from 'cc'
+
+const scrollView = this.node.getComponent(ScrollView)
+scrollView.scrollToTop()      // 滚到顶部
+scrollView.scrollToBottom()   // 滚到底部
+scrollView.scrollToPercentX(0.5)  // 滚到水平 50% 位置</code></pre>
+
+      <h3>Mask 组件 —— 顺便理解裁剪</h3>
+      <p>
+        ScrollView 自动挂载了 <strong>Mask 组件</strong>——它让超出容器的内容被裁剪掉。类比 CSS
+        <code>overflow: hidden</code> + <code>border-radius</code>。Mask
+        也可以单独使用——圆形头像、进度条、不规则形状裁剪。
+      </p>
+
+      <div class="tip-box">
+        <strong>性能注意：</strong>Mask 会触发额外的渲染步骤（Stencil Buffer）。一个场景中 Mask
+        数量不要太多（建议 &lt; 5 个）。简单的裁剪场景优先考虑用代码控制 content 区域而不是堆 Mask。
       </div>
     </ConceptBlock>
 
@@ -602,8 +797,11 @@ export class Enemy extends Component {
         <li>Scene、Node、Component 三者是什么关系？用自己的话给同事解释一遍。</li>
         <li>锚点（Anchor Point）是干什么的？修改锚点会影响什么？（旋转中心、位置参考点）</li>
         <li>UITransform 的 width/height 和 node.scale 的区别是什么？</li>
+        <li>Widget 和 Layout 的区别是什么？各自类比 CSS 的什么概念？</li>
+        <li>Widget 的 Safe Area 是干什么的？前端对应什么 CSS 属性？</li>
         <li>Label 组件怎么在代码中修改文字内容和颜色？</li>
         <li>Button 组件如何在代码中绑定点击回调？编辑器配置和代码绑定的区别是什么？</li>
+        <li>ScrollView 怎么创建？content 节点的作用是什么？</li>
         <li><code>@property</code> 有哪几种常见用法？怎么让一个属性在面板上显示为滑块？</li>
         <li>
           <code>onLoad</code> 和 <code>start</code> 的区别是什么？什么操作该放在 start 而不是

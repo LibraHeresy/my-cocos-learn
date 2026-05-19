@@ -8,10 +8,12 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
         <li>规范组织 <code>assets/</code> 目录结构</li>
-        <li>导入图片资源，创建 SpriteFrame 和 Atlas 图集</li>
+        <li>导入图片资源，创建 SpriteFrame、Scale9Sprite 和 Atlas 图集</li>
+        <li>用 Profiler 面板监控 FPS/DrawCall/渲染耗时</li>
         <li>用 Animation Editor 制作帧动画（爆炸、行走等）</li>
         <li>用 <code>cc.tween</code> 写 UI 动效（弹窗、按钮反馈）</li>
         <li>理解资源动态加载 <code>resources.load()</code> 的异步流程</li>
+        <li>搭建 Loading 场景预加载资源</li>
       </ul>
     </ConceptBlock>
 
@@ -179,6 +181,65 @@ export class DynamicSprite extends Component {
 }</code></pre>
     </ConceptBlock>
 
+    <!-- ============ Scale9Sprite ============ -->
+    <ConceptBlock icon="🪟" title="Scale9Sprite（九宫格）—— 类比 CSS border-image">
+      <p>
+        UI 面板、按钮背景、弹窗边框——它们需要<strong>拉伸但四角不变形</strong>。这和 CSS 的
+        <code>border-image</code> 完全一样：
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>概念</th>
+            <th>Cocos</th>
+            <th>CSS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>组件</td>
+            <td>Scale9Sprite</td>
+            <td><code>border-image</code></td>
+          </tr>
+          <tr>
+            <td>四角</td>
+            <td>保持原始像素不变形</td>
+            <td>四角区域不拉伸</td>
+          </tr>
+          <tr>
+            <td>中间</td>
+            <td>水平/垂直重复拉伸填充</td>
+            <td><code>repeat / stretch</code></td>
+          </tr>
+          <tr>
+            <td>切边</td>
+            <td>Border 属性（左/右/上/下）</td>
+            <td><code>border-image-slice</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>使用步骤</h3>
+      <ol>
+        <li>在 Aseprite 中画 UI 面板素材——确保四角是固定装饰</li>
+        <li>导入到 Cocos，选中图片 → 属性检查器 → Type 选 <strong>Scale9Sprite</strong></li>
+        <li>设置 Border 切边值（左/右/上/下各切多少像素）</li>
+        <li>节点挂 Scale9Sprite 组件 → 拖入 SpriteFrame → 调整节点宽高即可看到效果</li>
+      </ol>
+
+      <pre><code>// 代码中使用
+const nineSlice = this.node.addComponent(Scale9Sprite)
+nineSlice.spriteFrame = myFrame
+// 调整 UITransform 的 width/height → 自动九宫格缩放</code></pre>
+
+      <div class="tip-box">
+        <strong>前端直觉：</strong>做过组件库的按钮/弹窗封装，一定用过
+        <code>border-image</code> 或类似的切图方案。Scale9Sprite 就是那个概念，只是目标不是 CSS
+        而是 GPU 纹理采样。Aseprite 画素材时，四角装饰要放在切边范围内，中间区域保持纯色/简单纹理。
+      </div>
+    </ConceptBlock>
+
     <!-- ============ Graphics ============ -->
     <ConceptBlock icon="✏️" title="Graphics 组件 —— 用代码画形状">
       <p>
@@ -302,6 +363,66 @@ lateUpdate() {
         <strong>像素飞机大战最佳实践：</strong>把所有飞机、子弹、道具、爆炸帧分别放在各自的 Atlas
         中。像素素材通常很小，一个 1024×1024 的 Atlas 可以塞很多帧。像素风格记得把 Filter Mode 设为
         <strong>Point</strong>，否则会模糊。
+      </div>
+    </ConceptBlock>
+
+    <!-- ============ Profiler ============ -->
+    <ConceptBlock icon="📊" title="性能度量：Profiler 面板 —— 类比 React DevTools Profiler">
+      <p>
+        Cocos 左下角有一个 <strong>Profiler</strong> 按钮（齿轮图标旁）。点击后显示三行核心指标：
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>指标</th>
+            <th>含义</th>
+            <th>前端类比</th>
+            <th>健康值</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>FPS</strong></td>
+            <td>每秒帧数</td>
+            <td>Chrome Performance 面板的 FPS</td>
+            <td>60（稳定）</td>
+          </tr>
+          <tr>
+            <td><strong>DrawCall</strong></td>
+            <td>GPU 绘制提交次数</td>
+            <td>React re-render 次数——越少越好</td>
+            <td>&lt; 30（Web）/ &lt; 50（原生）</td>
+          </tr>
+          <tr>
+            <td><strong>Render</strong></td>
+            <td>每帧渲染耗时（ms）</td>
+            <td>Performance 中的 Scripting + Rendering 时间</td>
+            <td>&lt; 10ms（留 6ms 给逻辑）</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>DrawCall —— 游戏性能的"re-render 次数"</h3>
+      <p>
+        每次 GPU 切换纹理/材质，就产生一次 DrawCall。Atlas 图集的目的就是
+        <strong>减少 DrawCall</strong>——把多个 Sprite 合到一张纹理上，GPU 一次提交全部画完：
+      </p>
+      <pre><code>无 Atlas（10 个独立图片）：
+Sprite → DrawCall 1
+Sprite → DrawCall 2
+...
+Sprite → DrawCall 10    → 共 10 次 GPU 提交
+
+有 Atlas（10 个 Sprite 用同一张图集）：
+Sprite → ┐
+Sprite → ┤
+...      ├→ DrawCall 1（批量合并）→ 仅 1 次 GPU 提交
+Sprite → ┘</code></pre>
+
+      <div class="warn-box">
+        <strong>小游戏特别注意：</strong>低端 Android 手机的 DrawCall 预算约 50-80，远低于桌面浏览器（200+）。你的飞机大战场景应该控制在 <strong>30 DrawCall 以下</strong>。打开 Profiler
+        看着它开发——每加一个 Atlas 之外的独立素材就多一次 DrawCall。
       </div>
     </ConceptBlock>
 
@@ -433,6 +554,75 @@ const frames = await new Promise&lt;SpriteFrame[]&gt;((resolve, reject) => {
       </div>
     </ConceptBlock>
 
+    <!-- ============ Loading 场景 ============ -->
+    <ConceptBlock icon="⏳" title="Loading 场景骨架 —— 预加载 + 进度条">
+      <p>
+        游戏启动或切换场景时，如果有超过 2-3 秒的资源加载，需要显示 Loading
+        界面——否则玩家会以为游戏卡死了。给一个最小可用骨架：
+      </p>
+
+      <h3>场景结构</h3>
+      <pre><code>Loading.scene 节点树：
+Canvas
+├── Background（深色纯色背景）
+├── LoadingBar（ProgressBar 组件 + Sprite 填充条）
+├── TipLabel（"正在加载游戏资源..."）
+└── LoadingCtrl（脚本——控制加载流程）</code></pre>
+
+      <h3>LoadingCtrl.ts</h3>
+      <pre><code>import { Component, _decorator, director, ProgressBar, resources } from 'cc'
+const { ccclass, property } = _decorator
+
+@ccclass('LoadingCtrl')
+export class LoadingCtrl extends Component {
+
+  @property({ type: ProgressBar })
+  progressBar: ProgressBar = null
+
+  // 需要预加载的资源列表
+  private _assets: Array&lt;{ path: string; type: any }&gt; = [
+    { path: 'textures/explosion', type: null },
+    // ... 更多资源
+  ]
+
+  start() {
+    this.loadAssets()
+  }
+
+  private loadAssets() {
+    let loaded = 0
+    const total = this._assets.length
+
+    if (total === 0) {
+      this.onComplete()
+      return
+    }
+
+    for (const asset of this._assets) {
+      resources.loadDir(asset.path, asset.type || undefined, (err) => {
+        if (err) { console.error('加载失败:', asset.path, err) }
+        loaded++
+        this.progressBar.progress = loaded / total
+
+        if (loaded >= total) {
+          this.scheduleOnce(() => this.onComplete(), 0.2)
+        }
+      })
+    }
+  }
+
+  private onComplete() {
+    director.loadScene('MenuScene')
+  }
+}</code></pre>
+
+      <div class="tip-box">
+        <strong>小游戏注意：</strong>小游戏启动时微信自己有 Loading 画面，但如果你有额外的 Bundle
+        分包或 CDN 资源要加载，仍需要做自己的 Loading 界面。用
+        <code>assetManager.loadBundle()</code> 加载分包时可以拿到百分比，更新进度条。
+      </div>
+    </ConceptBlock>
+
     <!-- ============ 动手练习 ============ -->
     <ConceptBlock icon="🔨" title="动手练习：爆炸特效 + UI 弹窗">
       <p>结合本章知识做两个小练习：</p>
@@ -487,6 +677,10 @@ export class ScorePopup extends Component {
         <li>给节点挂 <code>UIOpacity</code> 组件后，如何用 tween 做淡入效果？</li>
         <li>在 <code>onDestroy</code> 中需要如何处理正在运行的 tween？</li>
         <li>像素风素材的 Filter Mode 应该设为什么？为什么？</li>
+        <li>Scale9Sprite 类比 CSS 的什么属性？切边（Border）的作用是什么？</li>
+        <li>DrawCall 是什么？它和 Atlas 图集的关系是什么？怎么查看 DrawCall？</li>
+        <li>小游戏中 DrawCall 建议控制在多少以下？为什么？</li>
+        <li>Loading 场景的本质是什么？如何用 ProgressBar 更新加载进度？</li>
       </ul>
     </ConceptBlock>
   </PhaseLayout>

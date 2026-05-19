@@ -7,7 +7,7 @@ const router = useRouter()
 const route = useRoute()
 
 const PHASE_COUNTS: Record<string, number> = {
-  cocos: 7,
+  cocos: 8,
   art: 4,
   audio: 4,
 }

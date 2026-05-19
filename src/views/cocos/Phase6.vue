@@ -284,6 +284,13 @@ update(dt: number) {
 }</code></pre>
     </ConceptBlock>
 
+    <div class="warn-box">
+      <strong>小游戏生命周期提示：</strong>微信小游戏有 <code>wx.onShow</code> / <code>wx.onHide</code>
+      生命周期——用户切到聊天界面时游戏挂起。你应该在 GameManager 中监听这两个事件：
+      <code>onHide</code> 时暂停游戏 + 暂停 BGM + 保存临时进度；
+      <code>onShow</code> 时恢复。这和 Web 端的 <code>Page Visibility API</code>（<code>document.hidden</code>）完全一样。Phase 8 有完整代码。
+    </div>
+
     <!-- ============ State Machine ============ -->
     <ConceptBlock icon="🤖" title="状态机 —— 管理敌机 AI 行为">
       <p>敌机不是随机乱动的，它们有明确的行为模式。状态机让这些行为切换清晰可控：</p>
@@ -554,6 +561,12 @@ gameOver() {
         <strong>注意：</strong>在 Web 平台 <code>sys.localStorage</code> 底层就是
         <code>window.localStorage</code>。在原生平台（iOS/Android）它是 Cocos
         引擎实现的文件存储。API 一致，不需要关心平台差异。
+      </div>
+
+      <div class="warn-box">
+        <strong>小游戏注意：</strong>微信小游戏中 <code>sys.localStorage</code> 底层是
+        <code>wx.setStorageSync</code>，上限 <strong>10MB</strong>（比浏览器的 5MB 宽松）。如果你要存大量数据（如排行榜缓存），建议用
+        <code>wx.getFileSystemManager()</code> 写本地文件，或直接用微信云开发数据库。
       </div>
     </ConceptBlock>
 

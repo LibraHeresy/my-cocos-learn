@@ -146,6 +146,27 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
         这种中性灰。像素画中不要用纯灰！带一点色相的灰色（暖灰/冷灰）会让画面更有"温度"。
       </div>
 
+      <h3>灰度预览：检查明暗对比度</h3>
+      <p>
+        像素画中，<strong>明暗对比度比色相更重要</strong>。如果你的画面在灰度下仍然清晰可辨，那配色就对了：
+      </p>
+      <ol>
+        <li>Aseprite 菜单 → <strong>View → Color Mode → Grayscale</strong></li>
+        <li>画面变为灰度——检查你的亮面和暗面是否仍然有明显的灰度差</li>
+        <li>如果灰度下主体和背景糊在一起：亮色不够亮或暗色不够暗</li>
+        <li>再次 View → Color Mode → Normal 切换回彩色</li>
+      </ol>
+      <pre><code>对比度自检：
+✅ 灰度下：飞机轮廓清晰、亮面/暗面区分明显
+❌ 灰度下：飞机和背景混在一起——增加明度差
+
+快捷键：View → Color Mode → Grayscale（无默认快捷键，建议在 Edit
+→ Keyboard Shortcuts 中绑定为 Ctrl+Shift+G）</code></pre>
+
+      <div class="tip-box">
+        <strong>为什么这个技巧重要：</strong>玩家的屏幕亮度、色温各异，手机还有"护眼模式"（偏黄）和"夜间模式"（降低对比度）。灰度预览模拟了最差显示条件——如果灰度下能看清，那在所有屏幕上都能看清。
+      </div>
+
       <h3>经典像素色盘赏析</h3>
       <p>
         像素画历史上沉淀了几套"教科书级"的色盘。初学者最好的学习方式就是<strong>先用经典色盘，再自己定制</strong>：

@@ -21,6 +21,10 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
         <strong>不够</strong>——处理持续移动时会有问题。
       </p>
 
+      <div class="warn-box">
+        <strong>小游戏注意：</strong>微信小游戏<strong>没有键盘事件</strong>。本节键盘方案仅用于 Web/桌面预览。在小游戏中，移动必须靠触摸或虚拟摇杆。好在本章末尾的 InputManager 封装已经屏蔽了键盘/触摸的差异——你只需要确保 InputManager 中小游戏路径走触摸逻辑即可，Player 代码不用改。
+      </div>
+
       <h3>错误做法：</h3>
       <pre><code>// ❌ 只在 keyDown 回调中移动
 systemEvent.on(EventKeyboard.KEY_DOWN, (e) => {

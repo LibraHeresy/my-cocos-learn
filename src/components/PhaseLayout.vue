@@ -13,7 +13,7 @@ defineProps<{
     <!-- 进度指示器 -->
     <div class="progress-bar" aria-label="学习进度">
       <div
-        v-for="i in 7"
+        v-for="i in 8"
         :key="i"
         class="progress-dot"
         :class="{ active: i <= phase, current: i === phase }"

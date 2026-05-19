@@ -37,6 +37,11 @@ const cocosPhases: RouteRecordRaw[] = [
     name: 'cocos-phase7',
     component: () => import('@/views/cocos/Phase7.vue'),
   },
+  {
+    path: '/cocos/phase/8',
+    name: 'cocos-phase8',
+    component: () => import('@/views/cocos/Phase8.vue'),
+  },
 ]
 
 const artPhases: RouteRecordRaw[] = [

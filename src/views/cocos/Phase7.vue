@@ -345,6 +345,7 @@ export class GameItem extends Component implements ICollidable {
         <li>创建 Menu.scene：标题 + "开始游戏" 按钮</li>
         <li>创建 Result.scene：显示最终分数 + "重新开始" 按钮</li>
         <li>创建 AudioManager：管理音效和背景音乐</li>
+        <li>音调随机化：爆炸/射击音效每次播放时微调 pitch，避免重复感（见下方）</li>
         <li>添加爆炸帧动画（Animation 组件）</li>
         <li>添加受击闪烁（tween 控制 Sprite 的 color）</li>
         <li>添加屏幕震动（tween 控制 Camera 的 position）</li>
@@ -380,6 +381,34 @@ static play(intensity: number = 10, duration: number = 0.3) {
     .to(duration / 3, { position: originalPos })
     .start()
 }</code></pre>
+
+      <h3>音调随机化（Pitch Randomization）</h3>
+      <p>
+        同一个音效反复播放会有"机械感"——人耳对重复声音非常敏感。解决方法是每次播放时微调音调：
+      </p>
+      <pre><code>// AudioManager.ts 中
+playOneShotWithPitch(path: string) {
+  const clip = this._clipCache.get(path)
+  if (!clip) return
+
+  // 随机偏移 ±0.1（Cocos AudioSource 不支持直接设 pitch，需创建临时 source）
+  const tempSource = this.node.addComponent(AudioSource)
+  tempSource.clip = clip
+  tempSource.volume = this._audioSource.volume
+
+  // 小游戏用 InnerAudioContext 可以直接设 playbackRate
+  // web 端 AudioSource 暂不支持 pitch——替代方案是准备 3-4 个微调版本
+  tempSource.play()
+
+  this.scheduleOnce(() => tempSource.destroy(), clip.duration + 0.1)
+}</code></pre>
+
+      <div class="tip-box">
+        <strong>降低重复感的三个方法：</strong><br/>
+        1. 准备 3-4 个同类型音效的微变版本（shoot_01 ~ shoot_04），随机选一个播放（最优）<br/>
+        2. 每次播放随机微调音量（±5%）——效果有限<br/>
+        3. 小游戏用 <code>InnerAudioContext.playbackRate</code> 直接改 pitch（0.9~1.1），Web 端需多版本素材
+      </div>
 
       <div class="tip-box">
         <strong>Day 5 验收标准：</strong>完整的游戏流程：菜单 → 游戏 → 结算 →
@@ -592,6 +621,60 @@ export class ResultUI extends Component {
         <li>Output Directory 留空（output 根目录就是 index.html）</li>
         <li>Deploy → 得到一个 URL → 手机上打开就能玩</li>
       </ol>
+
+      <h3>微信小游戏构建配置详解</h3>
+      <p>选 WeChat Mini Game 平台后，构建面板有几个关键配置：</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>配置项</th>
+            <th>说明</th>
+            <th>建议值</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>AppID</strong></td>
+            <td>微信小游戏 ID（测试用 <code>wx6ac3fda0e142f4d2</code> 即微信小游戏示例 ID）</td>
+            <td>正式发布前换成自己的</td>
+          </tr>
+          <tr>
+            <td><strong>Orientation</strong></td>
+            <td>屏幕方向</td>
+            <td>竖屏射击 → portrait；横屏 → landscape</td>
+          </tr>
+          <tr>
+            <td><strong>Subpackage</strong></td>
+            <td>分包配置（主包 ≤ 4MB）</td>
+            <td>见下方 Bundle 策略</td>
+          </tr>
+          <tr>
+            <td><strong>ES6 → ES5</strong></td>
+            <td>是否转译 JS。某些低端安卓只支持 ES5</td>
+            <td>勾上——兼容性优先</td>
+          </tr>
+          <tr>
+            <td><strong>MD5 Cache</strong></td>
+            <td>文件名加 hash，解决缓存更新问题</td>
+            <td>勾上——等同 Webpack contenthash</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>小游戏构建输出目录</h3>
+      <pre><code>build/wechatgame/
+├── game.js           # 入口
+├── game.json         # 游戏配置（屏幕方向、分包等）
+├── project.config.json  # 微信开发者工具配置
+├── assets/           # 主包资源（≤ 4MB）
+└── subpackages/      # 分包资源（Phase 8 详解）</code></pre>
+
+      <div class="warn-box">
+        <strong>主包 4MB 红线：</strong>微信小游戏主包（含引擎 + 入口场景 + 代码）不能超过
+        4MB。超出后真机预览直接白屏。解决办法：资源放分包，用 <code>assetManager.loadBundle</code>
+        按需加载。Phase 8 有完整分包策略。
+      </div>
 
       <div class="tip-box">
         <strong>前端工程师的最大优势：</strong>你比其他 Cocos 学习者更懂 Web

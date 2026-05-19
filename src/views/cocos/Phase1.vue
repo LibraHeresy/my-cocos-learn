@@ -484,7 +484,7 @@ export class BounceBall extends Component {
 
       <div class="warn-box">
         <strong>重要：</strong><code>.gitignore</code> 中<strong>不要</strong>忽略
-        <code>.meta</code> 文件。这和前端项目中 <code>node_modules</code> 应该忽略完全不同——.meta
+        <code>.meta</code> 文件。这和前端项目中 <code>node_modules</code> 应该忽略完全不同——<code>.meta</code>
         是源码的一部分。
       </div>
     </ConceptBlock>
@@ -543,6 +543,10 @@ export class BounceBall extends Component {
       <div class="tip-box">
         <strong>推荐工作流：</strong>开发逻辑（脚本）用浏览器预览 +
         DevTools；调试布局/动画/材质用编辑器预览。两者的预览结果是完全一致的——引擎相同，只是运行容器不同。
+      </div>
+
+      <div class="warn-box">
+        <strong>小游戏适配提示：</strong>后期发布到微信小游戏时，微信开发者工具就是你新的"DevTools"——同样支持 Sources 断点、Console 日志、Network 面板。你现在的调试习惯可以完全平移过去。
       </div>
     </ConceptBlock>
 

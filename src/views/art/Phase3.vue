@@ -136,6 +136,28 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
         <strong>偷懒方案：</strong>Cocos 中可以用代码随机生成星星（Graphics
         组件画小圆点），完全不需要手动画星空。但如果要像素风，手动画的星星比引擎生成的有味道。
       </div>
+
+      <h3>Aseprite Tiled Mode：实时预览无缝平铺</h3>
+      <p>
+        Aseprite 内置了 Tiled Mode（平铺模式），让你<strong>一边画一边看平铺效果</strong>——画无缝背景的利器：
+      </p>
+      <ol>
+        <li>菜单 → <strong>View → Tiled Mode → Both</strong>（或只选 X/Y 方向）</li>
+        <li>画布自动在四周重复展开——你画的内容实时平铺</li>
+        <li>在画布边缘画星星时，能立刻看到它和对面边缘的星星是否对齐</li>
+        <li>画完关闭：View → Tiled Mode → Off</li>
+      </ol>
+      <pre><code>Tiled Mode 选项：
+Off     —— 正常模式（默认）
+X-Axis  —— 只水平平铺（做横向滚动背景）
+Y-Axis  —— 只垂直平铺（做纵向滚动背景——飞机大战用这个）
+Both    —— 两轴平铺（做静态重复背景）</code></pre>
+
+      <div class="tip-box">
+        <strong>Tiled Mode 的妙用：</strong
+        >不仅背景能无缝——地面砖块、墙面纹理、UI 面板边框都能用它画。任何需要无缝重复的素材，先开
+        Tiled Mode 再画，省去后期拼接的试错时间。
+      </div>
     </ConceptBlock>
 
     <ConceptBlock icon="🖥️" title="HUD 与 UI 元素">
