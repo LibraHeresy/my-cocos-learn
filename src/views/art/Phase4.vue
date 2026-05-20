@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ArtPhaseLayout from '@/components/ArtPhaseLayout.vue'
 import ConceptBlock from '@/components/ConceptBlock.vue'
+import PixelCanvas from '@/components/PixelCanvas.vue'
 </script>
 
 <template>
@@ -105,12 +106,45 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
       <p>
         物体运动时形状会变形——压扁（碰到东西时）和拉长（加速时）。像素画中做不到柔和的变形，但可以通过<strong>像素移位</strong>模拟：
       </p>
-      <pre><code>正常帧    挤压帧    拉伸帧
-  ██        ████        ██
-  ██        ████        ██
-  ██        ████        ██
-  ██                   ██
-                      ██</code></pre>
+      <div class="px-compare">
+        <div>
+          <p class="px-label">正常帧</p>
+          <PixelCanvas
+            :grid="[
+              ['#554422', '#554422'],
+              ['#554422', '#554422'],
+              ['#554422', '#554422'],
+              ['#554422', '#554422'],
+            ]"
+            :scale="18"
+          />
+        </div>
+        <div>
+          <p class="px-label">挤压帧</p>
+          <PixelCanvas
+            :grid="[
+              ['#554422', '#554422', '#554422', '#554422'],
+              ['#554422', '#554422', '#554422', '#554422'],
+              ['#554422', '#554422', '#554422', '#554422'],
+            ]"
+            :scale="18"
+          />
+        </div>
+        <div>
+          <p class="px-label">拉伸帧</p>
+          <PixelCanvas
+            :grid="[
+              ['#554422', '#554422'],
+              ['#554422', '#554422'],
+              ['#554422', '#554422'],
+              ['#554422', '#554422'],
+              ['#554422', '#554422'],
+              ['#554422', '#554422'],
+            ]"
+            :scale="18"
+          />
+        </div>
+      </div>
       <p>爆炸动画中：爆心先"挤压"1 帧 → 然后"拉伸"爆发 3-4 帧。</p>
 
       <h3>2. 预备动作（Anticipation）</h3>
@@ -183,11 +217,19 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
         <li>按 Enter 预览动画，调整不满意的帧</li>
       </ol>
 
-      <pre><code>爆炸动画色彩时间线：
-帧1-4:   <span style="color:#ffffff;background:#444444;padding:0 0.1em">██</span><span style="color:#ffee44">████</span><span style="color:#ff8800">████</span>  (白→黄→橙)
-帧5-8:   <span style="color:#ff8800">████</span><span style="color:#ee2200">████</span><span style="color:#881100">▓▓▓▓</span>  (橙→红→深红)
-帧9-12:  <span style="color:#881100">▓▓▓▓</span><span style="color:#664444">▓▓▓▓</span><span style="color:#888888">▒▒▒▒</span>  (深红→灰)
-帧13-16: <span style="color:#888888">▒▒▒▒</span><span style="color:#bbbbbb">░░░░</span>      (灰→透明)</code></pre>
+      <p>爆炸动画色彩时间线：</p>
+      <PixelCanvas
+        :grid="[
+          ['#ffffff', '#ffffff', '#ffee44', '#ffee44', '#ff8800', '#ff8800'],
+          ['#ff8800', '#ff8800', '#ff8800', '#ff8800', '#ee2200', '#ee2200', '#881100', '#881100'],
+          ['#881100', '#881100', '#664444', '#664444', '#888888', '#888888'],
+          ['#888888', '#888888', '#bbbbbb', '#bbbbbb'],
+        ]"
+        :scale="22"
+      />
+      <p class="px-desc">
+        帧1-4：白 → 黄 → 橙 ｜ 帧5-8：橙 → 红 → 深红 ｜ 帧9-12：深红 → 灰 ｜ 帧13-16：灰 → 透明
+      </p>
     </ConceptBlock>
 
     <ConceptBlock icon="🔥" title="制作引擎火焰动画（4 帧）">
@@ -200,12 +242,166 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
         <li>每帧底部（引擎喷口端）保持一致，顶部（火焰尖端）上下摆动</li>
       </ol>
 
-      <pre><code>引擎火焰 4 帧结构：
-帧1:  帧2:  帧3:  帧4:
-  <span style="color:#ffffff">█</span>     <span style="color:#ffffff">██</span>    <span style="color:#ffffff">█</span>     <span style="color:#ffffff">█</span>
- <span style="color:#ffee44">███</span>   <span style="color:#ffee44">███</span>   <span style="color:#ffee44">██</span>   <span style="color:#ffee44">███</span>
-<span style="color:#ff8800">████</span>  <span style="color:#ff8800">████</span>  <span style="color:#ff8800">████</span>  <span style="color:#ff8800">████</span>   ← 底部固定（白→黄→橙→红渐变）
-────  ────  ────  ────   (引擎喷口)</code></pre>
+      <div class="px-compare px-compare-end">
+        <div>
+          <p class="px-label">帧1（长）</p>
+          <PixelCanvas
+            :grid="[
+              ['', '', '', '#ffffff', '#ffffff', '', '', ''],
+              ['', '', '#ffffff', '#ffee44', '#ffee44', '#ffffff', '', ''],
+              ['', '#ffffff', '#ffee44', '#ffee44', '#ffee44', '#ffee44', '#ffffff', ''],
+              ['', '#ffffff', '#ffee44', '#ff8800', '#ff8800', '#ffee44', '#ffffff', ''],
+              [
+                '#ffffff',
+                '#ffee44',
+                '#ff8800',
+                '#ff8800',
+                '#ff8800',
+                '#ff8800',
+                '#ffee44',
+                '#ffffff',
+              ],
+              [
+                '#ffffff',
+                '#ffee44',
+                '#ff8800',
+                '#dd2200',
+                '#dd2200',
+                '#ff8800',
+                '#ffee44',
+                '#ffffff',
+              ],
+              [
+                '#ffee44',
+                '#ff8800',
+                '#dd2200',
+                '#dd2200',
+                '#dd2200',
+                '#dd2200',
+                '#ff8800',
+                '#ffee44',
+              ],
+              [
+                '#666666',
+                '#666666',
+                '#666666',
+                '#666666',
+                '#666666',
+                '#666666',
+                '#666666',
+                '#666666',
+              ],
+            ]"
+            :scale="13"
+          />
+        </div>
+        <div>
+          <p class="px-label">帧2（短）</p>
+          <PixelCanvas
+            :grid="[
+              ['', '', '', '#ffffff', '#ffffff', '', '', ''],
+              ['', '', '#ffffff', '#ffee44', '#ffee44', '#ffffff', '', ''],
+              ['', '#ffffff', '#ffee44', '#ff8800', '#ff8800', '#ffee44', '#ffffff', ''],
+              [
+                '#ffffff',
+                '#ffee44',
+                '#ff8800',
+                '#dd2200',
+                '#dd2200',
+                '#ff8800',
+                '#ffee44',
+                '#ffffff',
+              ],
+              [
+                '#666666',
+                '#666666',
+                '#666666',
+                '#666666',
+                '#666666',
+                '#666666',
+                '#666666',
+                '#666666',
+              ],
+            ]"
+            :scale="13"
+          />
+        </div>
+        <div>
+          <p class="px-label">帧3（中）</p>
+          <PixelCanvas
+            :grid="[
+              ['', '', '#ffffff', '#ffffff', '', '', '', ''],
+              ['', '#ffffff', '#ffee44', '#ffee44', '#ffffff', '', '', ''],
+              ['', '#ffffff', '#ffee44', '#ff8800', '#ff8800', '#ffee44', '#ffffff', ''],
+              [
+                '#ffffff',
+                '#ffee44',
+                '#ff8800',
+                '#ff8800',
+                '#ff8800',
+                '#ff8800',
+                '#ffee44',
+                '#ffffff',
+              ],
+              [
+                '#ffffff',
+                '#ffee44',
+                '#ff8800',
+                '#dd2200',
+                '#dd2200',
+                '#ff8800',
+                '#ffee44',
+                '#ffffff',
+              ],
+              [
+                '#666666',
+                '#666666',
+                '#666666',
+                '#666666',
+                '#666666',
+                '#666666',
+                '#666666',
+                '#666666',
+              ],
+            ]"
+            :scale="13"
+          />
+        </div>
+        <div>
+          <p class="px-label">帧4（短）</p>
+          <PixelCanvas
+            :grid="[
+              ['', '', '#ffffff', '#ffffff', '', '', '', ''],
+              ['', '#ffffff', '#ffee44', '#ffee44', '#ffffff', '', '', ''],
+              ['#ffffff', '#ffee44', '#ff8800', '#ff8800', '#ffee44', '#ffffff', '', ''],
+              [
+                '#ffffff',
+                '#ffee44',
+                '#ff8800',
+                '#dd2200',
+                '#dd2200',
+                '#ff8800',
+                '#ffee44',
+                '#ffffff',
+              ],
+              [
+                '#666666',
+                '#666666',
+                '#666666',
+                '#666666',
+                '#666666',
+                '#666666',
+                '#666666',
+                '#666666',
+              ],
+            ]"
+            :scale="13"
+          />
+        </div>
+      </div>
+      <p class="px-desc">
+        白（核心）→ 黄 → 橙 → 红（边缘） ｜ 底部深灰为引擎喷口 ｜ 帧1-4 长→短→中→短循环
+      </p>
     </ConceptBlock>
 
     <ConceptBlock icon="🛩️" title="玩家飞机动画集">

@@ -75,8 +75,8 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
       </table>
 
       <div class="warn-box">
-        <strong>核心认知：</strong>Chrome DevTools 里正常运行 ≠ 微信里能跑。很多浏览器 API 在小游戏环境直接
-        <code>undefined</code>。每改完一个功能，必须在真机上跑一次。
+        <strong>核心认知：</strong>Chrome DevTools 里正常运行 ≠ 微信里能跑。很多浏览器 API
+        在小游戏环境直接 <code>undefined</code>。每改完一个功能，必须在真机上跑一次。
       </div>
     </ConceptBlock>
 
@@ -114,33 +114,44 @@ wx.onHide(() => {
         <tbody>
           <tr>
             <td><code>wx.onShow</code></td>
-            <td><code>document.addEventListener('visibilitychange', () => document.hidden === false)</code></td>
+            <td>
+              <code
+                >document.addEventListener('visibilitychange', () => document.hidden ===
+                false)</code
+              >
+            </td>
             <td>恢复游戏、恢复 BGM、检查临时存档</td>
           </tr>
           <tr>
             <td><code>wx.onHide</code></td>
-            <td><code>document.addEventListener('visibilitychange', () => document.hidden === true)</code></td>
+            <td>
+              <code
+                >document.addEventListener('visibilitychange', () => document.hidden === true)</code
+              >
+            </td>
             <td>暂停游戏、暂停 BGM、保存临时进度</td>
           </tr>
         </tbody>
       </table>
 
       <div class="warn-box">
-        <strong>注意：</strong>Cocos 的 <code>director.pause()</code> 和 <code>director.resume()</code>
+        <strong>注意：</strong>Cocos 的 <code>director.pause()</code> 和
+        <code>director.resume()</code>
         会暂停/恢复所有节点的 update。但如果你的定时器用的是
-        <code>setTimeout</code> 而不是 <code>scheduleOnce</code>，切后台时它仍然在滴答——回来后可能触发意外行为。
+        <code>setTimeout</code> 而不是
+        <code>scheduleOnce</code>，切后台时它仍然在滴答——回来后可能触发意外行为。
       </div>
     </ConceptBlock>
 
     <ConceptBlock icon="🔊" title="音频适配 —— 和 Web 版差异最大的模块">
       <p>
-        音频是小游戏适配的<strong>P0 级别重灾区</strong>。Phase 4 的 AudioManager
-        在 Web 端完美运行，到了小游戏可能完全无声。
+        音频是小游戏适配的<strong>P0 级别重灾区</strong>。音频课程阶段 4 的 AudioManager 在 Web
+        端完美运行，到了小游戏可能完全无声。
       </p>
 
       <h3>① 格式：全部用 MP3</h3>
       <p>
-        OGG 在部分 Android 小游戏中完全无声（引擎调用链不支持）。构建前把 Phase 2/3
+        OGG 在部分 Android 小游戏中完全无声（引擎调用链不支持）。构建前把音频课程阶段 2/3
         制作的所有音效和 BGM 统一转 MP3。
       </p>
 
@@ -194,8 +205,8 @@ class WechatBGMPlayer {
 
       <h3>③ SFX 的 InnerAudioContext 池</h3>
       <p>
-        小游戏中同时存在的 InnerAudioContext <strong>上限约 10 个</strong>。射击 + 爆炸 + 道具 +
-        UI 音效很容易超出——需要做<strong>音频 Context 池</strong>（和 Phase 6 对象池一个思路）：
+        小游戏中同时存在的 InnerAudioContext <strong>上限约 10 个</strong>。射击 + 爆炸 + 道具 + UI
+        音效很容易超出——需要做<strong>音频 Context 池</strong>（和 Phase 6 对象池一个思路）：
       </p>
       <pre><code>// SFXPool.ts —— 预创建 8 个 Context，用完回收
 class SFXPool {
@@ -218,7 +229,9 @@ class SFXPool {
 }</code></pre>
 
       <div class="tip-box">
-        <strong>池子耗尽怎么办：</strong>超过上限时，低优先级的音效（拾取、UI 点击）直接丢弃，保射击和爆炸。可以用优先级队列实现，也可以用最简单的"循环覆盖"——最新音效覆盖最老的 Context。
+        <strong>池子耗尽怎么办：</strong>超过上限时，低优先级的音效（拾取、UI
+        点击）直接丢弃，保射击和爆炸。可以用优先级队列实现，也可以用最简单的"循环覆盖"——最新音效覆盖最老的
+        Context。
       </div>
 
       <h3>④ 自动播放限制</h3>
@@ -269,7 +282,8 @@ assetManager.loadBundle('game', (err, bundle) => {
 })</code></pre>
 
       <div class="tip-box">
-        <strong>验证方法：</strong>构建后在微信开发者工具 → 代码质量 → 拆包分析，查看每个包的体积。主包超过 4MB 时，先从音频 Bundle 拆起——音频总是最大的。
+        <strong>验证方法：</strong>构建后在微信开发者工具 → 代码质量 →
+        拆包分析，查看每个包的体积。主包超过 4MB 时，先从音频 Bundle 拆起——音频总是最大的。
       </div>
     </ConceptBlock>
 
@@ -383,8 +397,8 @@ onDeath() {
       </table>
 
       <div class="warn-box">
-        <strong>红线：</strong>不要每死一次就弹一次广告——那是逼用户卸载。2 次复活机会 +
-        60 秒间隔是最低底线。另外必须提供"不看广告直接结算"的按钮——不能强制看广告。
+        <strong>红线：</strong>不要每死一次就弹一次广告——那是逼用户卸载。2 次复活机会 + 60
+        秒间隔是最低底线。另外必须提供"不看广告直接结算"的按钮——不能强制看广告。
       </div>
     </ConceptBlock>
 
@@ -471,14 +485,16 @@ onDeath() {
         <li>HTTPS 域名白名单已配置（生产环境）</li>
         <li>激励视频广告位已申请 + 填充率测试通过</li>
         <li>分享文案和图片配置正确</li>
-        <li>游戏内有"退出"功能（微信审核强制要求——Cocos 中调用 <code>wx.exitMiniProgram()</code>）</li>
+        <li>
+          游戏内有"退出"功能（微信审核强制要求——Cocos 中调用 <code>wx.exitMiniProgram()</code>）
+        </li>
         <li>隐私协议弹窗已接入（2024+ 微信审核要求）</li>
         <li>无强制登录/授权逻辑（审核红线——进游戏不能先弹授权）</li>
         <li>包名 → 版本号 → 小游戏分类 → 内容介绍在微信后台填写完整</li>
       </ol>
     </ConceptBlock>
 
-    <ConceptBlock icon="🎯" title="自检清单">
+    <ConceptBlock icon="✅" title="自检清单">
       <ul>
         <li>小游戏 JS 环境和浏览器有哪些核心差异？（至少说出 4 个）</li>
         <li>为什么小游戏音频要用 MP3 而不是 OGG？</li>

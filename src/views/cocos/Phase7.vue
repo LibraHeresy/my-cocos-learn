@@ -4,8 +4,8 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
 </script>
 
 <template>
-  <PhaseLayout :phase="7" title="像素飞机大战实战" duration="5-7 天">
-    <ConceptBlock icon="🎯" title="学完本节你能完成">
+  <PhaseLayout :phase="7" title="像素飞机大战实战" duration="5 天">
+    <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
         <li>一款完整可玩的像素飞机大战，包含：玩家操控、多种敌机、碰撞、道具、UI、音效</li>
         <li>一个可复用的游戏框架（对象池 + 事件总线 + 状态机），以后做其他 2D 游戏直接拿来用</li>
@@ -76,9 +76,10 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
       </ol>
 
       <h3>Player 脚本骨架</h3>
-      <pre><code>import { Component, _decorator, view, Prefab, instantiate } from 'cc'
-import { InputManager } from '../manager/InputManager'
+      <pre><code>import { Component, _decorator, view, Prefab } from 'cc'
+import { InputManager, InputState } from '../manager/InputManager'
 import { GameManager, GameState } from '../manager/GameManager'
+import { ObjectPool } from '../utils/ObjectPool'
 const { ccclass, property } = _decorator
 
 @ccclass('Player')
@@ -86,8 +87,6 @@ export class Player extends Component {
 
   @property speed: number = 300
   @property fireRate: number = 0.15
-  @property({ type: Prefab })
-  bulletPrefab: Prefab = null
 
   @property lives: number = 3
   @property power: number = 1   // 火力等级（1-5）
@@ -97,7 +96,8 @@ export class Player extends Component {
   private _bulletPool: ObjectPool = null
 
   onLoad() {
-    this._bulletPool = new ObjectPool(this.bulletPrefab, 30)
+    // ObjectPool 组件挂在 BulletPool 子节点上，预制体在编辑器里配置
+    this._bulletPool = this.node.getChildByName('BulletPool').getComponent(ObjectPool)
   }
 
   update(dt: number) {
@@ -164,8 +164,8 @@ export class Player extends Component {
       <h3>Bullet 脚本</h3>
       <pre><code>@ccclass('Bullet')
 export class Bullet extends Component implements ICollidable {
-  group: string
-  speed: number
+  group!: string              // 由创建方在 instantiate 后设置
+  speed: number = 0
   damage: number
 
   update(dt: number) {
@@ -360,9 +360,10 @@ takeDamage() {
 
   // 闪烁效果：Sprite 颜色在白色和正常色间快速切换
   const sprite = this.node.getComponent(Sprite)
+  const origColor = sprite.color.clone()
   tween(sprite)
     .to(0.1, { color: Color.WHITE })
-    .to(0.1, { color: Color.WHITE.fromHEX('#FFFFFF') })
+    .to(0.1, { color: origColor })
     .union()
     .repeat(5)
     .call(() => this._invincible = false)
@@ -383,9 +384,7 @@ static play(intensity: number = 10, duration: number = 0.3) {
 }</code></pre>
 
       <h3>音调随机化（Pitch Randomization）</h3>
-      <p>
-        同一个音效反复播放会有"机械感"——人耳对重复声音非常敏感。解决方法是每次播放时微调音调：
-      </p>
+      <p>同一个音效反复播放会有"机械感"——人耳对重复声音非常敏感。解决方法是每次播放时微调音调：</p>
       <pre><code>// AudioManager.ts 中
 playOneShotWithPitch(path: string) {
   const clip = this._clipCache.get(path)
@@ -404,10 +403,11 @@ playOneShotWithPitch(path: string) {
 }</code></pre>
 
       <div class="tip-box">
-        <strong>降低重复感的三个方法：</strong><br/>
-        1. 准备 3-4 个同类型音效的微变版本（shoot_01 ~ shoot_04），随机选一个播放（最优）<br/>
-        2. 每次播放随机微调音量（±5%）——效果有限<br/>
-        3. 小游戏用 <code>InnerAudioContext.playbackRate</code> 直接改 pitch（0.9~1.1），Web 端需多版本素材
+        <strong>降低重复感的三个方法：</strong><br />
+        1. 准备 3-4 个同类型音效的微变版本（shoot_01 ~ shoot_04），随机选一个播放（最优）<br />
+        2. 每次播放随机微调音量（±5%）——效果有限<br />
+        3. 小游戏用 <code>InnerAudioContext.playbackRate</code> 直接改 pitch（0.9~1.1），Web
+        端需多版本素材
       </div>
 
       <div class="tip-box">
@@ -481,6 +481,141 @@ playOneShotWithPitch(path: string) {
           </tr>
         </tbody>
       </table>
+
+      <h3>Chrome DevTools 性能分析实战</h3>
+      <p>当游戏出现卡顿，靠猜是猜不出来的——需要用 Chrome Performance 面板精确定位瓶颈：</p>
+
+      <h4>1. 录制性能数据</h4>
+      <ol>
+        <li>Chrome → F12 → <strong>Performance</strong> 标签</li>
+        <li>点击录制按钮（●）或 Ctrl+E → 在游戏窗口操作 5-10 秒 → 停止</li>
+        <li>
+          重点看 <strong>Main</strong> 线程的火焰图——每一段彩色横条代表一次函数调用，宽度 = 耗时
+        </li>
+      </ol>
+
+      <h4>2. 关键指标速查</h4>
+      <table>
+        <thead>
+          <tr>
+            <th>指标</th>
+            <th>含义</th>
+            <th>警戒线</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>FPS</strong></td>
+            <td>每秒渲染帧数</td>
+            <td>&lt; 30 肉眼可感知卡顿</td>
+          </tr>
+          <tr>
+            <td><strong>Frame Time</strong></td>
+            <td>单帧耗时（含脚本 + 渲染 + 绘制）</td>
+            <td>&gt; 16.6ms 即掉帧（60fps 基准）</td>
+          </tr>
+          <tr>
+            <td><strong>Scripting</strong></td>
+            <td>JS 执行耗时（黄色）</td>
+            <td>&gt; 10ms/帧 → 优化 update 逻辑</td>
+          </tr>
+          <tr>
+            <td><strong>Rendering</strong></td>
+            <td>CSS/Canvas 渲染耗时（紫色）</td>
+            <td>&gt; 5ms/帧 → 减少 Draw Call / 降低分辨率</td>
+          </tr>
+          <tr>
+            <td><strong>Painting</strong></td>
+            <td>像素绘制耗时（绿色）</td>
+            <td>&gt; 3ms/帧 → 检查是否有大面积重绘</td>
+          </tr>
+          <tr>
+            <td><strong>Minor GC</strong></td>
+            <td>新生代垃圾回收（黄色虚线标记）</td>
+            <td>每帧都出现 → 在 update 中 new 了对象</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h4>3. Cocos 专属排查标记</h4>
+      <ul>
+        <li>
+          <strong>update 耗时：</strong>火焰图中搜 "update"——单帧累计超过 10ms
+          就要拆分逻辑（比如把碰撞检测移到固定时间步长）
+        </li>
+        <li>
+          <strong>GC 抖动：</strong>看到黄色虚线 "Minor GC" 高频出现 → 检查 update 中是否有
+          <code>new Vec2()</code> / <code>new Vec3()</code> /
+          字符串拼接——这些应该用对象池或临时变量复用
+        </li>
+        <li>
+          <strong>渲染瓶颈：</strong>GPU 行很长但 Main 线程空闲 → Draw Call 过多。Cocos 编辑器底部有
+          Draw Call 计数器，超过 100 要检查合批
+        </li>
+        <li>
+          <strong>资源加载卡顿：</strong>Main 线程出现 <code>resources.load</code> 长任务（> 50ms）→
+          改为场景加载时预加载，不要等要用的时候才加载
+        </li>
+        <li>
+          <strong>节点数量爆炸：</strong>在 Console 中执行
+          <code>cc.director.getScene()!.children.length</code>——如果运行时持续增长说明对象没有回收
+        </li>
+      </ul>
+
+      <h4>4. 内存泄漏排查</h4>
+      <ol>
+        <li>切换到 <strong>Memory</strong> 标签 → 选 "Heap snapshot"</li>
+        <li>游戏开始前拍一张快照（Snapshot 1）</li>
+        <li>玩完一整局后拍第二张（Snapshot 2）</li>
+        <li>回到菜单后再拍第三张（Snapshot 3）</li>
+        <li>
+          对比 Snapshot 1 和 Snapshot 3：JS heap 应该基本一致。如果 Snapshot 3 明显更大 → 有泄漏
+        </li>
+        <li>
+          在 Comparison 视图中按 "Delta"
+          排序——找增长最多的对象类型（通常是闭包、Node、EventCallback）
+        </li>
+      </ol>
+
+      <h4>5. 典型性能问题修复对照</h4>
+      <table>
+        <thead>
+          <tr>
+            <th>火焰图特征</th>
+            <th>根因</th>
+            <th>修复</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>每帧有一个 5ms+ 的黄色块，标记为 Anonymous</td>
+            <td>update 中遍历了过长数组</td>
+            <td>用空间换时间：维护活跃对象列表，而非每帧遍历全场景</td>
+          </tr>
+          <tr>
+            <td>每 2-3 秒出现一个 20ms+ 的黄色虚线块</td>
+            <td>GC 回收大量临时对象</td>
+            <td>update 中复用 Vec2/Vec3 实例，子弹/敌机用对象池</td>
+          </tr>
+          <tr>
+            <td>GPU 行 > Main 行，且绿色 Painting 很宽</td>
+            <td>大量半透明 Sprite 重叠</td>
+            <td>减少透明像素面积、避免多层 Sprite 叠在一起</td>
+          </tr>
+          <tr>
+            <td>首帧加载时一个 500ms+ 的大块</td>
+            <td>resources.load 同步阻塞</td>
+            <td>场景 onLoad 中并行预加载，显示 Loading 界面</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="tip-box">
+        <strong>一个实用的调试开关：</strong>在 GameManager 中加一行
+        <code>cc.profiler.showStats()</code>——游戏运行时会显示 FPS / Draw Call / 节点数 /
+        帧时间的小面板（类似 Vue DevTools 的性能面板）。开发时开着它，发现异常数值再开 Chrome
+        Performance 深入分析。
+      </div>
     </ConceptBlock>
 
     <!-- ============ Menu/Result 场景 ============ -->
@@ -762,7 +897,7 @@ export class ResultUI extends Component {
       </div>
     </ConceptBlock>
 
-    <ConceptBlock icon="✅" title="最终自检清单">
+    <ConceptBlock icon="✅" title="自检清单">
       <p>当你完成飞机大战后，应该能自信地回答：</p>
       <ul>
         <li>从零创建一个 Cocos 项目需要哪些步骤？编辑器六大面板各自干什么？</li>
@@ -774,7 +909,7 @@ export class ResultUI extends Component {
         <li>为什么 CollisionManager 要集中管理而不是分散在各组件中？</li>
         <li>游戏的完整流程：菜单→游戏→结算→重开，每一环怎么切换？</li>
       </ul>
-      <p style="margin-top: 0.5rem">
+      <p>
         如果你能不看代码回答上述问题——恭喜，<strong>你已经是一名合格的 Cocos 开发者了。</strong>
       </p>
     </ConceptBlock>

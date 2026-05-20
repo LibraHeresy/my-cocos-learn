@@ -253,7 +253,8 @@ export class Player extends Component {
 
       <h3>Widget 组件 —— 类比 CSS position + flex 对齐</h3>
       <p>
-        Widget 让节点<strong>自动对齐到父容器的边缘或居中</strong>，不需要写代码手动算坐标。给节点挂上
+        Widget
+        让节点<strong>自动对齐到父容器的边缘或居中</strong>，不需要写代码手动算坐标。给节点挂上
         Widget 组件后，勾选对应的对齐方向即可：
       </p>
 
@@ -310,7 +311,8 @@ widget.isAbsoluteBottom = true  // 绝对对齐底部</code></pre>
       <h3>Layout 组件 —— 类比 CSS Flexbox</h3>
       <p>
         Widget 管的是<strong>自己怎么对齐父容器</strong>，Layout
-        管的是<strong>子节点怎么排列</strong>。挂上 Layout 组件后，子节点自动水平/垂直排列，支持间距和内边距：
+        管的是<strong>子节点怎么排列</strong>。挂上 Layout
+        组件后，子节点自动水平/垂直排列，支持间距和内边距：
       </p>
 
       <table>
@@ -357,7 +359,8 @@ widget.isAbsoluteBottom = true  // 绝对对齐底部</code></pre>
 // → 道具图标子节点自动从下到上排列</code></pre>
 
       <div class="warn-box">
-        <strong>Widget vs Layout 的区别：</strong>Widget 管<strong>自己</strong>（我贴父容器的哪条边），Layout
+        <strong>Widget vs Layout 的区别：</strong>Widget
+        管<strong>自己</strong>（我贴父容器的哪条边），Layout
         管<strong>子节点</strong>（子节点在容器内怎么排列）。一个节点上可以同时挂 Widget 和
         Layout——先把自己钉在屏幕底部（Widget），再让子节点水平排列（Layout）。
       </div>

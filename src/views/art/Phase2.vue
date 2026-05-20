@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ArtPhaseLayout from '@/components/ArtPhaseLayout.vue'
 import ConceptBlock from '@/components/ConceptBlock.vue'
+import PixelCanvas from '@/components/PixelCanvas.vue'
 </script>
 
 <template>
@@ -22,17 +23,32 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
       </p>
 
       <h3>锯齿 vs 平滑线条</h3>
-      <pre><code>❌ 锯齿线：像素堆叠不均匀
-██
-  ██
-    ██
-      ██
-
-✅ 平滑线：每段像素数量渐变（2→2→1→1 原则）
-██
-  ██
-   █
-    ██</code></pre>
+      <div class="px-compare">
+        <div>
+          <p class="px-label">❌ 锯齿线：像素堆叠不均匀</p>
+          <PixelCanvas
+            :grid="[
+              ['#554422', '#554422', '', '', '', '', '', ''],
+              ['', '', '#554422', '#554422', '', '', '', ''],
+              ['', '', '', '', '#554422', '#554422', '', ''],
+              ['', '', '', '', '', '', '#554422', '#554422'],
+            ]"
+            :scale="18"
+          />
+        </div>
+        <div>
+          <p class="px-label">✅ 平滑线：2→2→1→2 原则</p>
+          <PixelCanvas
+            :grid="[
+              ['#554422', '#554422', '', '', '', '', '', ''],
+              ['', '', '#554422', '#554422', '', '', '', ''],
+              ['', '', '', '', '#554422', '', '', ''],
+              ['', '', '', '', '', '#554422', '#554422', ''],
+            ]"
+            :scale="18"
+          />
+        </div>
+      </div>
 
       <h3>像素线条的核心规则</h3>
       <ul>
@@ -61,14 +77,72 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
       <h3>AA 的核心操作</h3>
       <p>在锯齿拐角处，用一个<strong>介于轮廓色和背景色之间的中间色</strong>填充：</p>
 
-      <pre><code>❌ 无 AA：         ✅ 有 AA：
-  <span style="color:#554422">██</span>  <span style="color:#554422">██</span>             <span style="color:#554422">██</span>  <span style="color:#554422">██</span>
-  <span style="color:#554422">██</span>    <span style="color:#554422">██</span>           <span style="color:#554422">██</span> <span style="color:#aa8855">▓▓</span> <span style="color:#554422">██</span>
-  <span style="color:#554422">██</span>      <span style="color:#554422">██</span>         <span style="color:#554422">██</span>      <span style="color:#554422">██</span>
-  <span style="color:#554422">██</span>    <span style="color:#554422">██</span>           <span style="color:#554422">██</span> <span style="color:#ddbb99">▒▒</span> <span style="color:#554422">██</span>
-  <span style="color:#554422">██</span>  <span style="color:#554422">██</span>             <span style="color:#554422">██</span>  <span style="color:#554422">██</span>
-
-  <span style="color:#aa8855">▓▓</span> / <span style="color:#ddbb99">▒▒</span> = 中间色（轮廓色和背景色的混合）</code></pre>
+      <div class="px-compare">
+        <div>
+          <p class="px-label">❌ 无 AA</p>
+          <PixelCanvas
+            :grid="[
+              ['', '', '#554422', '#554422', '', '', '', '', '#554422', '#554422', '', ''],
+              ['', '', '#554422', '#554422', '', '', '', '', '', '', '#554422', '#554422'],
+              [
+                '',
+                '',
+                '#554422',
+                '#554422',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '#554422',
+                '#554422',
+              ],
+              ['', '', '#554422', '#554422', '', '', '', '', '', '', '#554422', '#554422'],
+              ['', '', '#554422', '#554422', '', '', '', '', '#554422', '#554422', '', ''],
+            ]"
+            :scale="16"
+          />
+        </div>
+        <div>
+          <p class="px-label">✅ 有 AA</p>
+          <PixelCanvas
+            :grid="[
+              ['', '', '#554422', '#554422', '', '', '', '', '#554422', '#554422', '', ''],
+              ['', '', '#554422', '#554422', '', '#aa8855', '', '', '', '', '#554422', '#554422'],
+              [
+                '',
+                '',
+                '#554422',
+                '#554422',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '#554422',
+                '#554422',
+              ],
+              ['', '', '#554422', '#554422', '', '#ddbb99', '', '', '', '', '#554422', '#554422'],
+              ['', '', '#554422', '#554422', '', '', '', '', '#554422', '#554422', '', ''],
+            ]"
+            :scale="16"
+          />
+        </div>
+      </div>
+      <p class="px-desc">
+        <span style="background: #aa8855; color: #fff; padding: 0 4px; border-radius: 3px">▓</span>
+        /
+        <span style="background: #ddbb99; color: #fff; padding: 0 4px; border-radius: 3px">▒</span>
+        = 中间色（轮廓色和背景色的混合）
+      </p>
 
       <h3>AA 的使用原则</h3>
       <ul>
@@ -164,7 +238,8 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
 → Keyboard Shortcuts 中绑定为 Ctrl+Shift+G）</code></pre>
 
       <div class="tip-box">
-        <strong>为什么这个技巧重要：</strong>玩家的屏幕亮度、色温各异，手机还有"护眼模式"（偏黄）和"夜间模式"（降低对比度）。灰度预览模拟了最差显示条件——如果灰度下能看清，那在所有屏幕上都能看清。
+        <strong>为什么这个技巧重要：</strong
+        >玩家的屏幕亮度、色温各异，手机还有"护眼模式"（偏黄）和"夜间模式"（降低对比度）。灰度预览模拟了最差显示条件——如果灰度下能看清，那在所有屏幕上都能看清。
       </div>
 
       <h3>经典像素色盘赏析</h3>
@@ -223,11 +298,10 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
         <li>保存为 <code>my_game_palette.gpl</code></li>
       </ol>
 
-      <pre><code>红色 Ramp 示例（适合飞机/敌机主体）：
-<span style="color:#551111">████</span>  <span style="color:#aa2222">████</span>  <span style="color:#dd5555">████</span>  <span style="color:#ff9999">████</span>
-暗部   基础   亮部   高光
-#551111 #aa2222 #dd5555 #ff9999
-　　　　　　　　　　　　　(偏橙)</code></pre>
+      <p>红色 Ramp 示例（适合飞机/敌机主体）：</p>
+      <PixelCanvas :grid="[['#551111', '#aa2222', '#dd5555', '#ff9999']]" :scale="30" />
+      <p class="px-desc">暗部 · 基础 · 亮部 · 高光</p>
+      <p class="px-hex">#551111 · #aa2222 · #dd5555 · #ff9999 <em>（偏橙）</em></p>
 
       <div class="tip-box">
         <strong>16 色哲学：</strong>PICO-8 只有 16 种颜色，却诞生了无数经典游戏。16
@@ -240,15 +314,91 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
       <p>像素画没有 3D 渲染，立体感完全靠<strong>颜色分层</strong>来模拟：</p>
 
       <h3>基本光照模型（假设光从左上角来）</h3>
-      <pre><code>     ☀️ 光源（左上）
-
-  ┌──────────┐
-  │ 高光色    │  ← 顶面和左面：最亮
-  │  <span style="color:#ff9999">▓▓▓▓▓▓</span>  │
-  │  <span style="color:#dd5555">▓▓▓▓▓▓</span>  │  ← 前面：基础色
-  │    <span style="color:#aa2222">▓▓▓▓▓▓</span>│
-  │    <span style="color:#aa2222">▓▓▓▓▓▓</span>│  ← 右面和底面：暗部色
-  └──────────┘</code></pre>
+      <div class="px-compare">
+        <div>
+          <p class="px-label">☀️ 光源（左上）</p>
+          <PixelCanvas
+            :grid="[
+              [
+                '#ff9999',
+                '#ff9999',
+                '#ff9999',
+                '#ff9999',
+                '#ff9999',
+                '#ff9999',
+                '#ff9999',
+                '#ff9999',
+                '#ff9999',
+                '#ff9999',
+              ],
+              [
+                '#ff9999',
+                '#ff9999',
+                '#ff9999',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+              ],
+              [
+                '#ff9999',
+                '#ff9999',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+              ],
+              [
+                '#ff9999',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#aa2222',
+                '#aa2222',
+                '#aa2222',
+                '#aa2222',
+              ],
+              [
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#aa2222',
+                '#aa2222',
+                '#aa2222',
+                '#aa2222',
+                '#aa2222',
+                '#aa2222',
+                '#aa2222',
+              ],
+              [
+                '#aa2222',
+                '#aa2222',
+                '#aa2222',
+                '#aa2222',
+                '#aa2222',
+                '#aa2222',
+                '#aa2222',
+                '#aa2222',
+                '#aa2222',
+                '#aa2222',
+              ],
+            ]"
+            :scale="18"
+          />
+        </div>
+      </div>
+      <p class="px-desc">
+        顶面/左面：高光色 #ff9999 ｜ 前面：基础色 #dd5555 ｜ 右面/底面：暗部色 #aa2222
+      </p>
 
       <h3>上色步骤</h3>
       <ol>
@@ -264,17 +414,104 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
       <p>
         枕形阴影是指<strong>从轮廓边缘向内逐层加深</strong>的上色方式。不管你画的是圆形、方形还是飞机，最终都会得到一个"枕头"般的不自然膨胀感：
       </p>
-      <pre><code>❌ 枕形阴影：从轮廓向内逐层加深
-  <span style="color:#664444">▓▓▓▓▓▓▓▓</span>
-  <span style="color:#664444">▓▓</span><span style="color:#cc4444">████</span><span style="color:#664444">▓▓</span>
-  <span style="color:#664444">▓▓</span><span style="color:#cc4444">████</span><span style="color:#664444">▓▓</span>
-  <span style="color:#664444">▓▓▓▓▓▓▓▓</span>
-
-✅ 正确做法：确定光源方向，一面亮一面暗
-  ☀️→  <span style="color:#ff9999">████</span><span style="color:#aa2222">▓▓▓▓</span>
-       <span style="color:#ff9999">████</span><span style="color:#aa2222">▓▓▓▓</span>
-       <span style="color:#ff9999">████</span><span style="color:#aa2222">▓▓▓▓</span>
-       <span style="color:#ff9999">████</span><span style="color:#aa2222">▓▓▓▓</span></code></pre>
+      <div class="px-compare">
+        <div>
+          <p class="px-label">❌ 枕形阴影：从轮廓向内逐层加深</p>
+          <PixelCanvas
+            :grid="[
+              [
+                '#664444',
+                '#664444',
+                '#664444',
+                '#664444',
+                '#664444',
+                '#664444',
+                '#664444',
+                '#664444',
+              ],
+              [
+                '#664444',
+                '#664444',
+                '#cc4444',
+                '#cc4444',
+                '#cc4444',
+                '#cc4444',
+                '#664444',
+                '#664444',
+              ],
+              [
+                '#664444',
+                '#664444',
+                '#cc4444',
+                '#cc4444',
+                '#cc4444',
+                '#cc4444',
+                '#664444',
+                '#664444',
+              ],
+              [
+                '#664444',
+                '#664444',
+                '#664444',
+                '#664444',
+                '#664444',
+                '#664444',
+                '#664444',
+                '#664444',
+              ],
+            ]"
+            :scale="18"
+          />
+        </div>
+        <div>
+          <p class="px-label">✅ 正确：光从左边来，左亮右暗</p>
+          <PixelCanvas
+            :grid="[
+              [
+                '#ff9999',
+                '#ff9999',
+                '#ff9999',
+                '#ff9999',
+                '#aa2222',
+                '#aa2222',
+                '#aa2222',
+                '#aa2222',
+              ],
+              [
+                '#ff9999',
+                '#ff9999',
+                '#ff9999',
+                '#ff9999',
+                '#aa2222',
+                '#aa2222',
+                '#aa2222',
+                '#aa2222',
+              ],
+              [
+                '#ff9999',
+                '#ff9999',
+                '#ff9999',
+                '#ff9999',
+                '#aa2222',
+                '#aa2222',
+                '#aa2222',
+                '#aa2222',
+              ],
+              [
+                '#ff9999',
+                '#ff9999',
+                '#ff9999',
+                '#ff9999',
+                '#aa2222',
+                '#aa2222',
+                '#aa2222',
+                '#aa2222',
+              ],
+            ]"
+            :scale="18"
+          />
+        </div>
+      </div>
       <p>
         <strong>纠正方法：</strong
         >画任何物体之前，先问自己"光从哪边来？"然后坚决地让受光面亮、背光面暗。不要怕对比度大——像素画不怕高对比。
@@ -282,17 +519,68 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
 
       <h3>2. 条纹伪影（Banding）—— 不自然的等高线</h3>
       <p>Banding 是指多个色阶沿轮廓<strong>平行排列</strong>时产生的"等高线地图"般的伪 3D 效果：</p>
-      <pre><code>❌ Banding：色阶沿轮廓平行，像等高线
-   <span style="color:#cc4444">██</span>
-  <span style="color:#cc4444">████</span>
-  <span style="color:#cc4444">██</span><span style="color:#aa6644">▓▓</span><span style="color:#cc4444">██</span>
- <span style="color:#cc4444">██</span><span style="color:#aa6644">▓▓</span><span style="color:#998866">▒▒</span><span style="color:#aa6644">▓▓</span>
-
-✅ 打破排列：让色阶之间的过渡错开
-   <span style="color:#cc4444">██</span>
-  <span style="color:#cc4444">██</span><span style="color:#aa6644">▓▓</span>
- <span style="color:#cc4444">██</span><span style="color:#aa6644">▓▓</span><span style="color:#998866">▒▒</span>
-  <span style="color:#aa6644">▓▓</span><span style="color:#998866">▒▒</span></code></pre>
+      <div class="px-compare">
+        <div>
+          <p class="px-label">❌ Banding：色阶沿轮廓平行，像等高线</p>
+          <PixelCanvas
+            :grid="[
+              ['', '', '#cc4444', '#cc4444', '', '', '', '', '', '', ''],
+              ['', '#cc4444', '#cc4444', '#cc4444', '#cc4444', '', '', '', '', '', ''],
+              [
+                '#cc4444',
+                '#cc4444',
+                '#aa6644',
+                '#aa6644',
+                '#cc4444',
+                '#cc4444',
+                '',
+                '',
+                '',
+                '',
+                '',
+              ],
+              [
+                '#cc4444',
+                '#cc4444',
+                '#aa6644',
+                '#998866',
+                '#998866',
+                '#aa6644',
+                '#aa6644',
+                '',
+                '',
+                '',
+                '',
+              ],
+            ]"
+            :scale="18"
+          />
+        </div>
+        <div>
+          <p class="px-label">✅ 打破排列：色阶边界错开</p>
+          <PixelCanvas
+            :grid="[
+              ['', '', '#cc4444', '#cc4444', '', '', '', '', '', '', ''],
+              ['', '#cc4444', '#cc4444', '#aa6644', '#aa6644', '', '', '', '', '', ''],
+              [
+                '#cc4444',
+                '#cc4444',
+                '#aa6644',
+                '#aa6644',
+                '#998866',
+                '#998866',
+                '',
+                '',
+                '',
+                '',
+                '',
+              ],
+              ['', '#aa6644', '#aa6644', '#998866', '#998866', '', '', '', '', '', ''],
+            ]"
+            :scale="18"
+          />
+        </div>
+      </div>
       <p>
         <strong>纠正方法：</strong
         >让相邻色阶的边界<strong>不对齐</strong>——暗部色块可以"侵入"亮部区域，让边缘错落而不是整齐排列。
@@ -303,10 +591,63 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
         好的像素画用<strong>连续的色块集群</strong>来表现形状。散落的孤立像素（比如亮色区中飘着一个暗色单像素）在
         100% 缩放下会变成噪点，让画面看起来脏乱。
       </p>
-      <pre><code>❌ 孤立像素：        ✅ 干净集群：
-  <span style="color:#cc4444">████</span>  <span style="color:#aa2222">██</span>            <span style="color:#cc4444">████████</span>
-  <span style="color:#cc4444">██</span>    <span style="color:#aa2222">██</span>            <span style="color:#cc4444">████████</span>
-  <span style="color:#cc4444">██</span>  <span style="color:#aa2222">██</span>              <span style="color:#cc4444">████████</span></code></pre>
+      <div class="px-compare">
+        <div>
+          <p class="px-label">❌ 孤立像素：散落噪点</p>
+          <PixelCanvas
+            :grid="[
+              ['#cc4444', '#cc4444', '#cc4444', '#cc4444', '', '', '#aa2222', '#aa2222', '', ''],
+              ['#cc4444', '#cc4444', '', '', '', '', '', '#aa2222', '#aa2222', ''],
+              ['#cc4444', '#cc4444', '', '', '', '#aa2222', '#aa2222', '', '', ''],
+            ]"
+            :scale="21"
+          />
+        </div>
+        <div>
+          <p class="px-label">✅ 干净集群：连续色块</p>
+          <PixelCanvas
+            :grid="[
+              [
+                '#cc4444',
+                '#cc4444',
+                '#cc4444',
+                '#cc4444',
+                '#cc4444',
+                '#cc4444',
+                '#cc4444',
+                '#cc4444',
+                '',
+                '',
+              ],
+              [
+                '#cc4444',
+                '#cc4444',
+                '#cc4444',
+                '#cc4444',
+                '#cc4444',
+                '#cc4444',
+                '#cc4444',
+                '#cc4444',
+                '',
+                '',
+              ],
+              [
+                '#cc4444',
+                '#cc4444',
+                '#cc4444',
+                '#cc4444',
+                '#cc4444',
+                '#cc4444',
+                '#cc4444',
+                '#cc4444',
+                '',
+                '',
+              ],
+            ]"
+            :scale="21"
+          />
+        </div>
+      </div>
       <p>
         <strong>有个例外：</strong
         >纹理效果（金属表面的反光点、石头纹理、星空）中，孤立像素是有意为之且有效的。
@@ -318,18 +659,192 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
         当两种颜色需要平滑过渡，但你又不想引入新颜色时，用<strong>抖动</strong>——交替排列两种颜色的像素：
       </p>
 
-      <pre><code>纯基础色         50% 抖动        纯暗部色
-<span style="color:#dd5555">████████</span>        <span style="color:#dd5555">████</span><span style="color:#881111">▓▓▓▓</span>        <span style="color:#881111">▓▓▓▓▓▓▓▓</span>
-<span style="color:#dd5555">████████</span>        <span style="color:#dd5555">██</span><span style="color:#881111">▓▓▓▓</span><span style="color:#dd5555">██</span>        <span style="color:#881111">▓▓▓▓▓▓▓▓</span>
-<span style="color:#dd5555">████████</span>   →    <span style="color:#dd5555">████</span><span style="color:#881111">▓▓▓▓</span>   →    <span style="color:#881111">▓▓▓▓▓▓▓▓</span>
-<span style="color:#dd5555">████████</span>        <span style="color:#dd5555">██</span><span style="color:#881111">▓▓▓▓</span><span style="color:#dd5555">██</span>        <span style="color:#881111">▓▓▓▓▓▓▓▓</span>
+      <div class="px-compare">
+        <div>
+          <p class="px-label">纯基础色</p>
+          <PixelCanvas
+            :grid="[
+              [
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+              ],
+              [
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+              ],
+              [
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+              ],
+              [
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+                '#dd5555',
+              ],
+            ]"
+            :scale="23"
+          />
+        </div>
+        <div>
+          <p class="px-label">→ 50% 抖动 →</p>
+          <PixelCanvas
+            :grid="[
+              [
+                '#dd5555',
+                '#881111',
+                '#dd5555',
+                '#881111',
+                '#dd5555',
+                '#881111',
+                '#dd5555',
+                '#881111',
+              ],
+              [
+                '#881111',
+                '#dd5555',
+                '#881111',
+                '#dd5555',
+                '#881111',
+                '#dd5555',
+                '#881111',
+                '#dd5555',
+              ],
+              [
+                '#dd5555',
+                '#881111',
+                '#dd5555',
+                '#881111',
+                '#dd5555',
+                '#881111',
+                '#dd5555',
+                '#881111',
+              ],
+              [
+                '#881111',
+                '#dd5555',
+                '#881111',
+                '#dd5555',
+                '#881111',
+                '#dd5555',
+                '#881111',
+                '#dd5555',
+              ],
+            ]"
+            :scale="23"
+          />
+        </div>
+        <div>
+          <p class="px-label">纯暗部色</p>
+          <PixelCanvas
+            :grid="[
+              [
+                '#881111',
+                '#881111',
+                '#881111',
+                '#881111',
+                '#881111',
+                '#881111',
+                '#881111',
+                '#881111',
+              ],
+              [
+                '#881111',
+                '#881111',
+                '#881111',
+                '#881111',
+                '#881111',
+                '#881111',
+                '#881111',
+                '#881111',
+              ],
+              [
+                '#881111',
+                '#881111',
+                '#881111',
+                '#881111',
+                '#881111',
+                '#881111',
+                '#881111',
+                '#881111',
+              ],
+              [
+                '#881111',
+                '#881111',
+                '#881111',
+                '#881111',
+                '#881111',
+                '#881111',
+                '#881111',
+                '#881111',
+              ],
+            ]"
+            :scale="23"
+          />
+        </div>
+      </div>
 
-常见抖动图案：
-棋盘格：  斜条纹：   随机点：
-<span style="color:#dd5555">█</span> <span style="color:#881111">█</span> <span style="color:#dd5555">█</span> <span style="color:#881111">█</span>   <span style="color:#dd5555">█</span> <span style="color:#dd5555">█</span> <span style="color:#dd5555">█</span> <span style="color:#881111">█</span>   <span style="color:#dd5555">█</span>   <span style="color:#881111">█</span>
- <span style="color:#881111">█</span> <span style="color:#dd5555">█</span> <span style="color:#881111">█</span> <span style="color:#dd5555">█</span>   <span style="color:#dd5555">█</span> <span style="color:#dd5555">█</span> <span style="color:#881111">█</span>   <span style="color:#dd5555">█</span>   <span style="color:#dd5555">█</span> <span style="color:#881111">█</span>
-<span style="color:#dd5555">█</span> <span style="color:#881111">█</span> <span style="color:#dd5555">█</span> <span style="color:#881111">█</span>     <span style="color:#dd5555">█</span> <span style="color:#dd5555">█</span> <span style="color:#881111">█</span>     <span style="color:#dd5555">█</span> <span style="color:#881111">█</span>
- <span style="color:#881111">█</span> <span style="color:#dd5555">█</span> <span style="color:#881111">█</span> <span style="color:#dd5555">█</span>     <span style="color:#dd5555">█</span> <span style="color:#881111">█</span> <span style="color:#dd5555">█</span>   <span style="color:#881111">█</span></code></pre>
+      <p>常见抖动图案：</p>
+      <div class="px-compare">
+        <div>
+          <p class="px-label">棋盘格</p>
+          <PixelCanvas
+            :grid="[
+              ['#dd5555', '#881111', '#dd5555', '#881111'],
+              ['#881111', '#dd5555', '#881111', '#dd5555'],
+              ['#dd5555', '#881111', '#dd5555', '#881111'],
+              ['#881111', '#dd5555', '#881111', '#dd5555'],
+            ]"
+            :scale="18"
+          />
+        </div>
+        <div>
+          <p class="px-label">斜条纹</p>
+          <PixelCanvas
+            :grid="[
+              ['#dd5555', '#dd5555', '#dd5555', '#881111'],
+              ['#881111', '#dd5555', '#dd5555', '#dd5555'],
+              ['#dd5555', '#dd5555', '#881111', '#dd5555'],
+              ['#dd5555', '#881111', '#dd5555', '#dd5555'],
+            ]"
+            :scale="18"
+          />
+        </div>
+        <div>
+          <p class="px-label">随机点</p>
+          <PixelCanvas
+            :grid="[
+              ['#dd5555', '', '#881111', ''],
+              ['', '#881111', '', '#dd5555'],
+              ['#881111', '', '#dd5555', ''],
+              ['', '#dd5555', '', '#881111'],
+            ]"
+            :scale="18"
+          />
+        </div>
+      </div>
 
       <p>
         抖动在<strong>背景过渡</strong>（天空从深蓝到浅蓝）和<strong>大块平面</strong>（金属表面纹理）中最常用。小型角色通常不需要抖动——4

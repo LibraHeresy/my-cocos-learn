@@ -182,6 +182,11 @@ export class CollisionManager extends Component {
 
   private _collidables: ICollidable[] = []
 
+  /** DebugDrawer 使用的只读访问 */
+  get collidables(): readonly ICollidable[] {
+    return this._collidables
+  }
+
   // 碰撞矩阵：定义哪些 group 之间需要检测
   private static MATRIX: Record&lt;string, string[]&gt; = {
     playerBullet: ['enemy'],

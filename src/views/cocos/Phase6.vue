@@ -282,14 +282,117 @@ update(dt: number) {
   if (GameManager.instance.state !== GameState.PLAYING) return
   // ... 只在 PLAYING 状态下执行游戏逻辑
 }</code></pre>
+      <div class="warn-box">
+        <strong>小游戏生命周期提示：</strong>微信小游戏有 <code>wx.onShow</code> /
+        <code>wx.onHide</code>
+        生命周期——用户切到聊天界面时游戏挂起。你应该在 GameManager 中监听这两个事件：
+        <code>onHide</code> 时暂停游戏 + 暂停 BGM + 保存临时进度； <code>onShow</code> 时恢复。这和
+        Web 端的 <code>Page Visibility API</code>（<code>document.hidden</code>）完全一样。阶段 8
+        有完整代码。
+      </div>
     </ConceptBlock>
 
-    <div class="warn-box">
-      <strong>小游戏生命周期提示：</strong>微信小游戏有 <code>wx.onShow</code> / <code>wx.onHide</code>
-      生命周期——用户切到聊天界面时游戏挂起。你应该在 GameManager 中监听这两个事件：
-      <code>onHide</code> 时暂停游戏 + 暂停 BGM + 保存临时进度；
-      <code>onShow</code> 时恢复。这和 Web 端的 <code>Page Visibility API</code>（<code>document.hidden</code>）完全一样。Phase 8 有完整代码。
-    </div>
+    <!-- ============ Game UI ============ -->
+    <ConceptBlock icon="🖼️" title="游戏 HUD —— 血条 / 分数 / 暂停">
+      <p>
+        游戏 UI 不是在编辑器里摆几个 Label
+        就完了——它需要<strong>实时响应游戏状态变化</strong>。下面用 EventBus 驱动 UI 更新，保持 UI
+        层和游戏逻辑的解耦：
+      </p>
+
+      <h3>HUD 结构（挂在 Canvas 上）</h3>
+      <pre><code>// HUD.ts —— 游戏内面板，监听事件总线
+import { Component, _decorator, Label, Sprite, UITransform } from 'cc'
+import { eventBus } from '../utils/EventBus'
+const { ccclass, property } = _decorator
+
+@ccclass('HUD')
+export class HUD extends Component {
+
+  @property({ type: Label })
+  scoreLabel: Label = null      // 分数文本
+  @property({ type: Label })
+  livesLabel: Label = null      // 生命值文本
+  @property({ type: Sprite })
+  hpBarFill: Sprite = null      // 血条填充（通过 scaleX 控制宽度）
+
+  onEnable() {
+    eventBus.on('score:changed', this.onScoreChanged, this)
+    eventBus.on('lives:changed', this.onLivesChanged, this)
+    eventBus.on('hp:changed', this.onHPChanged, this)
+  }
+
+  onDisable() {
+    eventBus.off('score:changed', this.onScoreChanged, this)
+    eventBus.off('lives:changed', this.onLivesChanged, this)
+    eventBus.off('hp:changed', this.onHPChanged, this)
+  }
+
+  private onScoreChanged(score: number) {
+    this.scoreLabel.string = `SCORE: ${score.toString().padStart(6, '0')}`
+  }
+
+  private onLivesChanged(lives: number) {
+    // 用 ❤ 符号显示剩余命数
+    this.livesLabel.string = '❤'.repeat(Math.max(0, lives))
+  }
+
+  private onHPChanged(ratio: number) {
+    // ratio: 0~1，控制血条宽度
+    this.hpBarFill.node.setScale(ratio, 1, 1)
+  }
+}</code></pre>
+
+      <h3>血条实现细节</h3>
+      <p>
+        血条的核心技巧：用一张纯色小图（比如 4×4 的红色像素），设置
+        <code>scaleX</code> 来伸缩宽度。这样无论血条多长都不会失真：
+      </p>
+      <pre><code>// 血条节点结构：
+// HPBar (父节点，固定宽度 100px)
+//   └── Fill (Sprite，红色 4×4 像素图，anchor 设为 (0, 0.5))
+//
+// 扣血时：
+this.hpBarFill.node.setScale(newHP / maxHP, 1, 1)
+// 加一个短暂的 scale 动画更自然
+tween(this.hpBarFill.node)
+  .to(0.2, { scale: new Vec3(newHP / maxHP, 1, 1) })
+  .start()</code></pre>
+
+      <h3>暂停弹窗</h3>
+      <p>暂停是 GameManager 状态 + UI 显示的组合：</p>
+      <pre><code>// PauseModal.ts
+import { Component, _decorator, Node, director } from 'cc'
+import { GameManager, GameState } from '../manager/GameManager'
+const { ccclass } = _decorator
+
+@ccclass('PauseModal')
+export class PauseModal extends Component {
+
+  @property({ type: Node })
+  panel: Node = null        // 暂停面板（默认隐藏）
+
+  // 由 ESC 键或暂停按钮调用
+  show() {
+    director.pause()        // 暂停整个游戏引擎（所有 update 停止）
+    this.panel.active = true
+    GameManager.instance.state = GameState.PAUSED
+  }
+
+  hide() {
+    director.resume()       // 恢复引擎
+    this.panel.active = false
+    GameManager.instance.state = GameState.PLAYING
+  }
+}</code></pre>
+
+      <div class="warn-box">
+        <strong>director.pause() 不会暂停 tween：</strong>Cocos 的
+        <code>director.pause()</code> 暂停所有 Component 的 update，但
+        <strong>不会暂停正在运行的 tween 和 scheduleOnce</strong>。如果你的暂停面板用 tween
+        做了淡入动画，需要在 onDestroy 中手动 stop 这些 tween，否则恢复后可能残留回调。
+      </div>
+    </ConceptBlock>
 
     <!-- ============ State Machine ============ -->
     <ConceptBlock icon="🤖" title="状态机 —— 管理敌机 AI 行为">
@@ -565,7 +668,8 @@ gameOver() {
 
       <div class="warn-box">
         <strong>小游戏注意：</strong>微信小游戏中 <code>sys.localStorage</code> 底层是
-        <code>wx.setStorageSync</code>，上限 <strong>10MB</strong>（比浏览器的 5MB 宽松）。如果你要存大量数据（如排行榜缓存），建议用
+        <code>wx.setStorageSync</code>，上限 <strong>10MB</strong>（比浏览器的 5MB
+        宽松）。如果你要存大量数据（如排行榜缓存），建议用
         <code>wx.getFileSystemManager()</code> 写本地文件，或直接用微信云开发数据库。
       </div>
     </ConceptBlock>

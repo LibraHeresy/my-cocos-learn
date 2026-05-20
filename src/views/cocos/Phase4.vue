@@ -22,7 +22,10 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
       </p>
 
       <div class="warn-box">
-        <strong>小游戏注意：</strong>微信小游戏<strong>没有键盘事件</strong>。本节键盘方案仅用于 Web/桌面预览。在小游戏中，移动必须靠触摸或虚拟摇杆。好在本章末尾的 InputManager 封装已经屏蔽了键盘/触摸的差异——你只需要确保 InputManager 中小游戏路径走触摸逻辑即可，Player 代码不用改。
+        <strong>小游戏注意：</strong>微信小游戏<strong>没有键盘事件</strong>。本节键盘方案仅用于
+        Web/桌面预览。在小游戏中，移动必须靠触摸或虚拟摇杆。好在本章末尾的 InputManager
+        封装已经屏蔽了键盘/触摸的差异——你只需要确保 InputManager 中小游戏路径走触摸逻辑即可，Player
+        代码不用改。
       </div>
 
       <h3>错误做法：</h3>
@@ -258,6 +261,93 @@ update(dt: number) {
         <strong>设计原则：</strong>游戏逻辑只依赖
         <code>InputState</code> 接口，不关心底层是键盘还是触摸。以后加手柄支持，只需要在
         InputManager 中增加处理，Player 代码不动。
+      </div>
+    </ConceptBlock>
+
+    <!-- ============ 高级输入模式 ============ -->
+    <ConceptBlock icon="⚡" title="高级输入模式：组合键 / 长按 / 双击">
+      <p>飞机大战的操控远不止上下左右。下面是三种常见的进阶输入需求：</p>
+
+      <h3>1. 组合键：斜向移动</h3>
+      <p>
+        玩家同时按住 ↑ 和 → 时，飞机应该向右上移动——速度<strong>不能翻倍</strong>。InputManager 中
+        <code>dir.x</code> 和 <code>dir.y</code> 各自独立，Player 中对方向向量做归一化：
+      </p>
+      <pre><code>// Player.ts —— 斜向移动归一化
+update(dt: number) {
+  const input = InputManager.instance.input
+  const dir = input.direction.clone()
+
+  // 如果同时按下水平和垂直键，归一化防止斜向速度翻倍
+  if (dir.length() > 1) {
+    dir.normalize()
+  }
+
+  this.node.x += dir.x * this.speed * dt
+  this.node.y += dir.y * this.speed * dt
+}</code></pre>
+
+      <h3>2. 长按：蓄力攻击 / 连射</h3>
+      <p>记录按键按下的时刻，在 update 中比较持续时间：</p>
+      <pre><code>// InputManager 中增加长按检测
+private _firePressTime = 0
+private _fireHeld = false
+
+private onKeyDown(e: EventKeyboard) {
+  this._keysDown.add(e.keyCode)
+  if (e.keyCode === KeyCode.SPACE) {
+    this._firePressTime = Date.now()
+    this._fireHeld = true
+  }
+}
+
+private onKeyUp(e: EventKeyboard) {
+  this._keysDown.delete(e.keyCode)
+  if (e.keyCode === KeyCode.SPACE) {
+    this._fireHeld = false
+  }
+}
+
+// 对外暴露：是否长按超过 0.3 秒（用于蓄力判定）
+get isHoldingFire(): boolean {
+  return this._fireHeld &&
+    (Date.now() - this._firePressTime) > 300
+}</code></pre>
+
+      <h3>3. 双击：冲刺 / 闪避</h3>
+      <p>双击检测的核心：两次同方向按键间隔 < 300ms：</p>
+      <pre><code>// Player.ts —— 双击方向键触发冲刺
+private _lastTapTime = 0
+private _lastTapKey = -1
+private _dashCooldown = 0
+
+update(dt: number) {
+  // 检测双击（同一键 300ms 内按两次）
+  for (const key of [
+    KeyCode.ARROW_LEFT, KeyCode.ARROW_RIGHT,
+    KeyCode.ARROW_UP, KeyCode.ARROW_DOWN
+  ]) {
+    if (this.keysDown.has(key) && key !== this._lastTapKey) {
+      const now = Date.now()
+      if (now - this._lastTapTime < 300 && key === this._lastTapKey) {
+        this.doDash(key)  // 触发冲刺
+        this._lastTapTime = 0
+      } else {
+        this._lastTapTime = now
+        this._lastTapKey = key
+      }
+    }
+  }
+}
+
+private doDash(key: KeyCode) {
+  if (this._dashCooldown > 0) return
+  // ... 冲刺逻辑 ...
+}</code></pre>
+
+      <div class="tip-box">
+        <strong>取舍建议：</strong
+        >双击冲刺需要记录额外状态，复杂度不低。对于飞机大战，如果已有武器升级/道具系统，冲刺可以作为<strong>拾取"加速道具"后的能力</strong>，而不是基础操作。评估你的游戏是否需要。
       </div>
     </ConceptBlock>
 

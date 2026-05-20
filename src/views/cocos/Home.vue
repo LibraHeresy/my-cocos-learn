@@ -39,8 +39,8 @@ const phases = [
     icon: '💥',
     title: '碰撞检测',
     duration: '2-3 天',
-    summary: '碰撞系统入门：内置 Collider2D 与手写 AABB 碰撞，让游戏产生"规则"。',
-    concepts: ['Collider2D', 'AABB', '碰撞矩阵'],
+    summary: '手写 AABB 碰撞检测、碰撞矩阵、射击游戏精确碰撞，让游戏产生"规则"。',
+    concepts: ['AABB', '碰撞矩阵', '手写物理'],
   },
   {
     id: 6,
@@ -164,7 +164,9 @@ const phases = [
         <div>
           <p>总共约 <strong>4-5 周</strong>，每天投入 2-4 小时。</p>
           <p class="footer-path">
-            核心路径：<em>帧驱动 → 节点体系 → 资源渲染 → 输入控制 → 碰撞检测 → 架构模式 → 实战 → 小游戏发布</em>
+            核心路径：<em
+              >帧驱动 → 节点体系 → 资源渲染 → 输入控制 → 碰撞检测 → 架构模式 → 实战 → 小游戏发布</em
+            >
           </p>
         </div>
       </div>

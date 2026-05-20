@@ -115,7 +115,7 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
       </div>
     </ConceptBlock>
 
-    <ConceptBlock icon="🔧" title="工具二：Chiptone — 浏览器版合成器">
+    <ConceptBlock icon="🎛️" title="工具二：Chiptone — 浏览器版合成器">
       <p>
         <strong>Chiptone</strong>（<strong>sfbgames.itch.io/chiptone</strong>）是一个免费的浏览器端
         chiptune 音效合成器。如果 BFXR 下载不了或者用得不顺手，它是最佳替代：

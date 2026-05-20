@@ -57,14 +57,17 @@ onBeforeUnmount(() => {
   observer?.disconnect()
 })
 
-watch(() => route.path, () => {
-  nextTick(() => {
-    buildToc()
-    // re-observe new sections
-    observer?.disconnect()
-    setupObserver()
-  })
-})
+watch(
+  () => route.path,
+  () => {
+    nextTick(() => {
+      buildToc()
+      // re-observe new sections
+      observer?.disconnect()
+      setupObserver()
+    })
+  },
+)
 
 function scrollTo(id: string) {
   const el = document.getElementById(id)

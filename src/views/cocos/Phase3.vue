@@ -235,8 +235,8 @@ nineSlice.spriteFrame = myFrame
 
       <div class="tip-box">
         <strong>前端直觉：</strong>做过组件库的按钮/弹窗封装，一定用过
-        <code>border-image</code> 或类似的切图方案。Scale9Sprite 就是那个概念，只是目标不是 CSS
-        而是 GPU 纹理采样。Aseprite 画素材时，四角装饰要放在切边范围内，中间区域保持纯色/简单纹理。
+        <code>border-image</code> 或类似的切图方案。Scale9Sprite 就是那个概念，只是目标不是 CSS 而是
+        GPU 纹理采样。Aseprite 画素材时，四角装饰要放在切边范围内，中间区域保持纯色/简单纹理。
       </div>
     </ConceptBlock>
 
@@ -421,8 +421,10 @@ Sprite → ┤
 Sprite → ┘</code></pre>
 
       <div class="warn-box">
-        <strong>小游戏特别注意：</strong>低端 Android 手机的 DrawCall 预算约 50-80，远低于桌面浏览器（200+）。你的飞机大战场景应该控制在 <strong>30 DrawCall 以下</strong>。打开 Profiler
-        看着它开发——每加一个 Atlas 之外的独立素材就多一次 DrawCall。
+        <strong>小游戏特别注意：</strong>低端 Android 手机的 DrawCall 预算约
+        50-80，远低于桌面浏览器（200+）。你的飞机大战场景应该控制在
+        <strong>30 DrawCall 以下</strong>。打开 Profiler 看着它开发——每加一个 Atlas
+        之外的独立素材就多一次 DrawCall。
       </div>
     </ConceptBlock>
 
