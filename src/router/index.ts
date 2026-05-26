@@ -65,6 +65,21 @@ const artPhases: RouteRecordRaw[] = [
     name: 'art-phase4',
     component: () => import('@/views/art/Phase4.vue'),
   },
+  {
+    path: '/art/phase/5',
+    name: 'art-phase5',
+    component: () => import('@/views/art/Phase5.vue'),
+  },
+  {
+    path: '/art/phase/6',
+    name: 'art-phase6',
+    component: () => import('@/views/art/Phase6.vue'),
+  },
+  {
+    path: '/art/phase/7',
+    name: 'art-phase7',
+    component: () => import('@/views/art/Phase7.vue'),
+  },
 ]
 
 const audioPhases: RouteRecordRaw[] = [

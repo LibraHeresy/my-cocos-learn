@@ -1,38 +1,65 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
 
-const phases = [
+interface Phase {
+  id: number
+  icon: string
+  title: string
+  duration: string
+  summary: string
+  concepts: string[]
+}
+
+interface PhaseGroup {
+  label: string
+  tagline: string
+  phases: Phase[]
+}
+
+const phaseGroups: PhaseGroup[] = [
   {
-    id: 1,
-    icon: '🔊',
-    title: '音频基础与免费工具',
-    duration: '1 天',
-    summary: '采样率、位深度、音频格式（WAV/OGG）、BFXR 合成器上手、Audacity 基础编辑。',
-    concepts: ['采样率与位深度', 'BFXR', 'Audacity', 'WAV vs OGG'],
+    label: '创作篇',
+    tagline: '像用 Figma 出设计稿一样，用免费工具从零制作游戏音效和背景音乐 —— 无需录音设备',
+    phases: [
+      {
+        id: 1,
+        icon: '🔊',
+        title: '音频基础与免费工具',
+        duration: '1 天',
+        summary: '采样率、位深度、音频格式（WAV/OGG）、BFXR 合成器上手、Audacity 基础编辑。',
+        concepts: ['采样率与位深度', 'BFXR', 'Audacity', 'WAV vs OGG'],
+      },
+      {
+        id: 2,
+        icon: '🔫',
+        title: '射击游戏音效制作',
+        duration: '1-2 天',
+        summary: 'ADSR 包络塑形、12 种射击游戏核心音效逐一制作、频率分层避免音频"打架"。',
+        concepts: ['ADSR 包络', '频率分层', 'BFXR 参数调校', '音效命名规范'],
+      },
+      {
+        id: 3,
+        icon: '🎵',
+        title: '背景音乐基础',
+        duration: '1 天',
+        summary: 'Bosca Ceoil 零门槛作曲、Intro+Loop 音乐结构、无缝循环技巧、导出 OGG。',
+        concepts: ['Bosca Ceoil', 'Pattern 编排', '无缝循环', 'BGM 频率避让'],
+      },
+    ],
   },
   {
-    id: 2,
-    icon: '🔫',
-    title: '射击游戏音效制作',
-    duration: '1-2 天',
-    summary: 'ADSR 包络塑形、12 种射击游戏核心音效逐一制作、频率分层避免音频"打架"。',
-    concepts: ['ADSR 包络', '频率分层', 'BFXR 参数调校', '音效命名规范'],
-  },
-  {
-    id: 3,
-    icon: '🎵',
-    title: '背景音乐基础',
-    duration: '1 天',
-    summary: 'Bosca Ceoil 零门槛作曲、Intro+Loop 音乐结构、无缝循环技巧、导出 OGG。',
-    concepts: ['Bosca Ceoil', 'Pattern 编排', '无缝循环', 'BGM 频率避让'],
-  },
-  {
-    id: 4,
-    icon: '🎮',
-    title: 'Cocos 音频集成',
-    duration: '1-2 天',
-    summary: 'AudioSource 组件、AudioClip 资源加载、AudioManager 单例、BGM 淡入淡出、音量控制。',
-    concepts: ['AudioSource', 'AudioClip', 'AudioManager', 'cc.tween 淡入淡出'],
+    label: '集成篇',
+    tagline: '将音频资源接入 Cocos —— 像 import 一个 npm 包一样，挂载、播放、控制',
+    phases: [
+      {
+        id: 4,
+        icon: '🎮',
+        title: 'Cocos 音频集成',
+        duration: '1-2 天',
+        summary: 'AudioSource 组件、AudioClip 资源加载、AudioManager 单例、BGM 淡入淡出、音量控制。',
+        concepts: ['AudioSource', 'AudioClip', 'AudioManager', 'cc.tween 淡入淡出'],
+      },
+    ],
   },
 ]
 </script>
@@ -50,19 +77,26 @@ const phases = [
 
     <section class="phases-section">
       <h2 class="section-title">课程阶段</h2>
-      <div class="phases-grid">
-        <RouterLink v-for="p in phases" :key="p.id" :to="`/audio/phase/${p.id}`" class="phase-card">
-          <div class="card-top">
-            <span class="card-icon">{{ p.icon }}</span>
-            <span class="card-duration">{{ p.duration }}</span>
-          </div>
-          <span class="card-phase">阶段 {{ p.id }}</span>
-          <strong class="card-title">{{ p.title }}</strong>
-          <p class="card-summary">{{ p.summary }}</p>
-          <div class="card-concepts">
-            <span v-for="c in p.concepts" :key="c" class="concept-tag">{{ c }}</span>
-          </div>
-        </RouterLink>
+
+      <div v-for="group in phaseGroups" :key="group.label" class="phase-group">
+        <div class="group-header">
+          <h3 class="group-label">{{ group.label }}</h3>
+          <p class="group-tagline">{{ group.tagline }}</p>
+        </div>
+        <div class="phases-grid">
+          <RouterLink v-for="p in group.phases" :key="p.id" :to="`/audio/phase/${p.id}`" class="phase-card">
+            <div class="card-top">
+              <span class="card-icon">{{ p.icon }}</span>
+              <span class="card-duration">{{ p.duration }}</span>
+            </div>
+            <span class="card-phase">阶段 {{ p.id }}</span>
+            <strong class="card-title">{{ p.title }}</strong>
+            <p class="card-summary">{{ p.summary }}</p>
+            <div class="card-concepts">
+              <span v-for="c in p.concepts" :key="c" class="concept-tag">{{ c }}</span>
+            </div>
+          </RouterLink>
+        </div>
       </div>
     </section>
 
@@ -157,6 +191,37 @@ const phases = [
 
 .phases-section {
   margin-bottom: 3.5rem;
+}
+
+.phase-group {
+  margin-bottom: 2rem;
+}
+
+.phase-group:last-child {
+  margin-bottom: 0;
+}
+
+.group-header {
+  margin-bottom: 0.85rem;
+}
+
+.group-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: 0.2rem;
+  display: inline-block;
+  background: var(--color-primary-soft);
+  padding: 0.15em 0.7em;
+  border-radius: 4px;
+}
+
+.group-tagline {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  margin-top: 0.4rem;
+  margin-bottom: 0;
+  padding-left: 0.15rem;
 }
 
 .phases-grid {

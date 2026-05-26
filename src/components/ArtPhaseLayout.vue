@@ -13,7 +13,7 @@ defineProps<{
     <!-- 进度指示器 -->
     <div class="progress-bar" aria-label="学习进度">
       <div
-        v-for="i in 4"
+        v-for="i in 7"
         :key="i"
         class="progress-dot"
         :class="{ active: i <= phase, current: i === phase }"
@@ -48,7 +48,7 @@ defineProps<{
       </RouterLink>
       <span v-else class="nav-btn placeholder" />
 
-      <RouterLink v-if="phase < 4" :to="`/art/phase/${phase + 1}`" class="nav-btn next">
+      <RouterLink v-if="phase < 7" :to="`/art/phase/${phase + 1}`" class="nav-btn next">
         <span class="nav-label">
           <small>下一阶段</small>
           <strong>第 {{ phase + 1 }} 阶段</strong>
