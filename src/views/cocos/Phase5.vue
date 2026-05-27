@@ -7,11 +7,11 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
   <PhaseLayout :phase="5" title="碰撞检测" duration="2-3 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
-        <li>手写 AABB 和圆形碰撞检测算法</li>
-        <li>封装 CollisionManager，集中管理游戏中所有碰撞检测</li>
+        <li>手写 <strong>AABB</strong> 和圆形<strong>碰撞检测</strong>算法</li>
+        <li>封装 <strong>CollisionManager</strong>，集中管理游戏中所有碰撞检测</li>
         <li>实现碰撞可视化调试（开发阶段画出碰撞框）</li>
         <li>解决高速物体的"穿透"问题</li>
-        <li>理解碰撞矩阵，正确管理不同阵营的碰撞关系</li>
+        <li>理解<strong>碰撞矩阵</strong>，正确管理不同阵营的碰撞关系</li>
       </ul>
     </ConceptBlock>
 

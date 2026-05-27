@@ -7,13 +7,13 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
   <PhaseLayout :phase="2" title="场景、节点、组件" duration="2-3 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
-        <li>理解 Scene / Node / Component 三者的关系和各自职责</li>
-        <li>用 Widget 和 Layout 组件搭建响应式 UI（不写一行定位代码）</li>
-        <li>用 ScrollView 实现排行榜、设置面板等可滚动内容</li>
-        <li>用 <code>@property</code> 暴露参数到编辑器面板，运行时实时调整</li>
-        <li>创建 Prefab（预制体），理解它和 Vue 组件的异同</li>
+        <li>理解 <strong>Scene</strong> / <strong>Node</strong> / <strong>Component</strong> 三者的关系和各自职责</li>
+        <li>用 <strong>Widget</strong> 和 <strong>Layout</strong> 组件搭建响应式 UI（不写一行定位代码）</li>
+        <li>用 <strong>ScrollView</strong> 实现排行榜、设置面板等可滚动内容</li>
+        <li>用 <strong><code>@property</code></strong> 暴露参数到编辑器面板，运行时实时调整</li>
+        <li>创建 <strong>Prefab</strong>（预制体），理解它和 Vue 组件的异同</li>
         <li>在代码中动态创建和销毁节点</li>
-        <li>掌握完整的生命周期：<code>onLoad → start → update → onDestroy</code></li>
+        <li>掌握完整的<strong>生命周期</strong>：<code>onLoad → start → update → onDestroy</code></li>
       </ul>
     </ConceptBlock>
 

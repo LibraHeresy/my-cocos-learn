@@ -97,9 +97,9 @@ const lagFrames = [
   <ArtPhaseLayout :phase="4" title="运动规律与帧数设计" duration="1-2 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
-        <li>理解帧间距如何决定动画的"快慢节奏"，而非单纯加减帧数</li>
-        <li>用缓动曲线设计子弹、引擎、爆炸等不同物体的运动节奏</li>
-        <li>判断一个动作该逐帧画（Aseprite）还是用代码做（Cocos tween）</li>
+        <li>理解<strong>帧间距</strong>如何决定动画的"快慢节奏"，而非单纯加减帧数</li>
+        <li>用<strong>缓动曲线</strong>设计子弹、引擎、爆炸等不同物体的运动节奏</li>
+        <li>判断一个动作该<strong>逐帧</strong>画（<strong>Aseprite</strong>）还是用代码做（<strong>Cocos</strong> tween）</li>
         <li>给飞机大战的每个动作选对帧数——不过度、不寒酸</li>
       </ul>
     </ConceptBlock>

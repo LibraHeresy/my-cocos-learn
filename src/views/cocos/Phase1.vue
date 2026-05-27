@@ -8,9 +8,9 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
     <!-- ============ 本节目标 ============ -->
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
-        <li>独立安装 Cocos Creator 并创建第一个项目</li>
+        <li>独立安装 <strong>Cocos Creator</strong> 并创建第一个项目</li>
         <li>认识编辑器六大面板，知道每个面板的作用</li>
-        <li>理解"帧驱动"的运行方式，能写出第一个 <code>update(dt)</code></li>
+        <li>理解"<strong>帧驱动</strong>"的运行方式，能写出第一个 <code>update(dt)</code></li>
         <li>创建一个在屏幕内来回弹跳的小球</li>
       </ul>
     </ConceptBlock>

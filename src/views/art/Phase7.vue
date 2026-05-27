@@ -7,11 +7,11 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
   <ArtPhaseLayout :phase="7" title="进阶像素技巧" duration="1-2 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
-        <li>用视差滚动制作有纵深感的星空背景——不用逐帧画，而是分层平移</li>
-        <li>用 Tileset 思路设计可重复拼接的地面或星空底纹</li>
-        <li>用简单像素粒子增强击中和爆炸的视觉冲击力</li>
-        <li>通过调色板换色从一套素材变出多种敌机颜色</li>
-        <li>用色彩循环让传送带、能量槽、魔法阵"低成本动起来"</li>
+        <li>用<strong>视差滚动</strong>制作有纵深感的星空背景——不用逐帧画，而是分层平移</li>
+        <li>用 <strong>Tileset</strong> 思路设计可重复拼接的地面或星空底纹</li>
+        <li>用简单<strong>像素粒子</strong>增强击中和爆炸的视觉冲击力</li>
+        <li>通过<strong>调色板换色</strong>从一套素材变出多种敌机颜色</li>
+        <li>用<strong>色彩循环</strong>让传送带、能量槽、魔法阵"低成本动起来"</li>
       </ul>
     </ConceptBlock>
 

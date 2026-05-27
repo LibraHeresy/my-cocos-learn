@@ -10,7 +10,7 @@ import PixelCanvas from '@/components/PixelCanvas.vue'
       <ul>
         <li>画出无锯齿的平滑像素线条</li>
         <li>掌握像素抗锯齿（AA）技术，手动消除边缘锯齿</li>
-        <li>理解经典像素色盘的设计哲学，在 Aseprite 中自建色盘 Ramp</li>
+        <li>理解经典像素色盘的设计哲学，在 <strong>Aseprite</strong> 中自建色盘 Ramp</li>
         <li>用明暗上色给像素画增加立体感</li>
         <li>识别并避免枕形阴影、条纹伪影、孤立像素三大常见错误</li>
         <li>掌握抖动技法（Dithering）做渐变过渡</li>

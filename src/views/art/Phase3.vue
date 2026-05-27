@@ -7,7 +7,7 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
   <ArtPhaseLayout :phase="3" title="飞机大战素材绘制" duration="2 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
-        <li>用 Aseprite 对称工具高效绘制完全对称的飞机</li>
+        <li>用 <strong>Aseprite</strong> 对称工具高效绘制完全对称的飞机</li>
         <li>独立绘制玩家飞机（俯视视角）</li>
         <li>设计三种敌机：小型侦察机、中型战斗机、大型 Boss</li>
         <li>绘制子弹、道具图标、像素数字和 HUD 元素</li>

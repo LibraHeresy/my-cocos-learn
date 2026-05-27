@@ -7,9 +7,9 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
   <PhaseLayout :phase="6" title="游戏架构模式" duration="2-3 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
-        <li>实现一个对象池，子弹/敌机/特效不再频繁 new/destroy</li>
-        <li>用事件总线解耦分数系统、音效系统、UI 系统</li>
-        <li>用状态机管理游戏流程（菜单→游戏中→暂停→结算）</li>
+        <li>实现一个<strong>对象池</strong>，子弹/敌机/特效不再频繁 new/destroy</li>
+        <li>用<strong>事件总线</strong>解耦分数系统、音效系统、UI 系统</li>
+        <li>用<strong>状态机</strong>管理游戏流程（菜单→游戏中→暂停→结算）</li>
         <li>理解这四种模式<strong>如何配合</strong>——它们不是孤立的</li>
       </ul>
     </ConceptBlock>

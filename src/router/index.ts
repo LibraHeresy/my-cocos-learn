@@ -125,7 +125,7 @@ const router = createRouter({
     ...audioPhases,
   ],
   scrollBehavior() {
-    return { top: 0 }
+    return { top: 0, behavior: 'instant' }
   },
 })
 

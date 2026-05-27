@@ -1,17 +1,80 @@
 <script setup lang="ts">
 import ArtPhaseLayout from '@/components/ArtPhaseLayout.vue'
 import ConceptBlock from '@/components/ConceptBlock.vue'
+import PixelCanvas from '@/components/PixelCanvas.vue'
+
+function empty(rows: number, cols: number): string[][] {
+  return Array.from({ length: rows }, () => Array(cols).fill(''))
+}
+
+function fill(g: string[][], row: number, col: number, w: number, h: number, color: string) {
+  for (let r = row; r < row + h && r < g.length; r++)
+    for (let c = col; c < col + w && c < g[r].length; c++)
+      g[r][c] = color
+}
+
+function makeSlice9Panel(cols: number): string[][] {
+  const rows = 17
+  const g = empty(rows, cols)
+
+  const border = '#4a3728'
+  const bevel = '#6b5240'
+  const corner = '#e8b84b'
+  const edgeH = '#7a9a5c'
+  const edgeV = '#5c8a9a'
+  const center = '#4a4a6a'
+  const guide = '#4caf50'
+
+  const hg1 = 4, hg2 = 12
+  const vg1 = 5, vg2 = cols - 6
+
+  // outer border
+  for (let c = 0; c < cols; c++) { g[0][c] = border; g[rows - 1][c] = border }
+  for (let r = 0; r < rows; r++) { g[r][0] = border; g[r][cols - 1] = border }
+
+  // inner bevel
+  for (let c = 1; c < cols - 1; c++) { g[1][c] = bevel; g[rows - 2][c] = bevel }
+  for (let r = 2; r < rows - 2; r++) { g[r][1] = bevel; g[r][cols - 2] = bevel }
+
+  // corner blocks (gold — identical in both panels)
+  const cw = vg1 - 2
+  const ch = hg1 - 2
+  fill(g, 2, 2, cw, ch, corner)
+  fill(g, 2, vg2 + 1, cols - vg2 - 3, ch, corner)
+  fill(g, hg2 + 1, 2, cw, rows - hg2 - 3, corner)
+  fill(g, hg2 + 1, vg2 + 1, cols - vg2 - 3, rows - hg2 - 3, corner)
+
+  // horizontal edges (green — stretch horizontally in right panel)
+  fill(g, 2, vg1 + 1, vg2 - vg1 - 1, ch, edgeH)
+  fill(g, hg2 + 1, vg1 + 1, vg2 - vg1 - 1, rows - hg2 - 3, edgeH)
+
+  // vertical edges (teal — same width in both panels)
+  fill(g, hg1 + 1, 2, cw, hg2 - hg1 - 1, edgeV)
+  fill(g, hg1 + 1, vg2 + 1, cols - vg2 - 3, hg2 - hg1 - 1, edgeV)
+
+  // center (blue-gray — stretches both directions in right panel)
+  fill(g, hg1 + 1, vg1 + 1, vg2 - vg1 - 1, hg2 - hg1 - 1, center)
+
+  // dashed guide lines (interior only)
+  for (let c = 2; c < cols - 2; c += 2) { g[hg1][c] = guide; g[hg2][c] = guide }
+  for (let r = 2; r < rows - 2; r += 2) { g[r][vg1] = guide; g[r][vg2] = guide }
+
+  return g
+}
+
+const slice9Original = makeSlice9Panel(17)
+const slice9Stretched = makeSlice9Panel(25)
 </script>
 
 <template>
   <ArtPhaseLayout :phase="6" title="Cocos 导入管线与性能优化" duration="1 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
-        <li>在 Cocos 中正确配置纹理导入参数，避免常见的"画面变糊"问题</li>
-        <li>用 SpriteSheet 从一张 PNG 导入多套动画，减少文件数量和加载次数</li>
-        <li>配置 Auto Atlas 自动合批，降低 DrawCall</li>
+        <li>在 <strong>Cocos</strong> 中正确配置纹理导入参数，避免常见的"画面变糊"问题</li>
+        <li>用 <strong>SpriteSheet</strong> 从一张 <strong>PNG</strong> 导入多套动画，减少文件数量和加载次数</li>
+        <li>配置 <strong>Auto Atlas</strong> 自动合批，降低 <strong>DrawCall</strong></li>
         <li>控制纹理内存预算在合理范围内，尤其是小游戏平台</li>
-        <li>使用 9-Slice 技术制作可任意拉伸的 UI 面板</li>
+        <li>使用 <strong>9-Slice</strong> 技术制作可任意拉伸的 UI 面板</li>
         <li>理解屏幕适配方案，在多分辨率下保持画面清晰</li>
       </ul>
     </ConceptBlock>
@@ -402,18 +465,46 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
       </p>
 
       <h3>9-Slice 的区域图解</h3>
-      <pre><code>┌─────┬───────────┬─────┐
-        │ ①   │    ②      │  ③  │  ← 上排：左上角 ① 固定，上边 ② 水平拉伸，右上角 ③ 固定
-        │ 固定 │  水平拉伸  │ 固定 │
-        ├─────┼───────────┼─────┤
-        │     │           │     │
-        │ ④   │    ⑤      │  ⑥  │  ← 中排：左边 ④ 垂直拉伸，中心 ⑤ 双向拉伸，右边 ⑥ 垂直拉伸
-        │垂直 │  双向拉伸  │ 垂直 │
-        │拉伸 │           │ 拉伸 │
-        ├─────┼───────────┼─────┤
-        │ ⑦   │    ⑧      │  ⑨  │  ← 下排：左下角 ⑦ 固定，下边 ⑧ 水平拉伸，右下角 ⑨ 固定
-        │ 固定 │  水平拉伸  │ 固定 │
-        └─────┴───────────┴─────┘</code></pre>
+      <p>
+        下面两个面板中，右侧面板比左侧<strong>更宽</strong>。注意四个<strong>金色圆角块完全一致</strong>——它们没有被拉伸。
+        绿色参考线之间的区域（上下边框、左右边框、中心区）才发生了拉伸。
+      </p>
+
+      <div class="slice9-compare">
+        <div class="slice9-col">
+          <p class="slice9-label">原始面板（17×17）</p>
+          <PixelCanvas :grid="slice9Original" :scale="12" />
+        </div>
+        <div class="slice9-arrow">→</div>
+        <div class="slice9-col">
+          <p class="slice9-label">拉伸后（25×17）</p>
+          <PixelCanvas :grid="slice9Stretched" :scale="12" />
+        </div>
+      </div>
+
+      <div class="slice9-legend">
+        <div class="slice9-legend-item">
+          <span class="swatch" style="background:#e8b84b"></span>
+          <span><strong>四角</strong> — 固定不变，保留圆角</span>
+        </div>
+        <div class="slice9-legend-item">
+          <span class="swatch" style="background:#7a9a5c"></span>
+          <span><strong>上下边</strong> — 水平拉伸（高度不变，宽度随面板变化）</span>
+        </div>
+        <div class="slice9-legend-item">
+          <span class="swatch" style="background:#5c8a9a"></span>
+          <span><strong>左右边</strong> — 垂直拉伸（宽度不变，高度随面板变化）</span>
+        </div>
+        <div class="slice9-legend-item">
+          <span class="swatch" style="background:#4a4a6a"></span>
+          <span><strong>中心</strong> — 双向拉伸，填充内容区域</span>
+        </div>
+      </div>
+
+      <p class="slice9-verify">
+        对比两个面板的四角 → 像素完全一致。这就是 9-Slice 的核心价值：
+        <strong>无论面板拉伸到多大，圆角和边框装饰永不失真</strong>。
+      </p>
 
       <h3>在 Cocos 中设置</h3>
       <ol>
@@ -500,3 +591,62 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
     </ConceptBlock>
   </ArtPhaseLayout>
 </template>
+
+<style scoped>
+.slice9-compare {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 1.25rem;
+  margin: 1rem 0;
+  flex-wrap: wrap;
+}
+
+.slice9-col {
+  text-align: center;
+}
+
+.slice9-label {
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--c-text-light, #999);
+}
+
+.slice9-arrow {
+  font-size: 2rem;
+  color: var(--c-brand, #4caf50);
+  padding-top: 1.8rem;
+  font-weight: 700;
+}
+
+.slice9-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.5rem;
+  margin-top: 0.8rem;
+  justify-content: center;
+}
+
+.slice9-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+}
+
+.slice9-verify {
+  margin-top: 0.8rem;
+  text-align: center;
+  color: var(--c-brand, #4caf50);
+  font-size: 0.9rem;
+}
+
+.swatch {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+</style>

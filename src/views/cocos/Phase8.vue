@@ -7,11 +7,11 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
   <PhaseLayout :phase="8" title="微信小游戏适配与发布" duration="2-3 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
-        <li>理解小游戏 JS 运行环境和浏览器的核心差异</li>
+        <li>理解<strong>微信小游戏</strong> JS 运行环境和浏览器的核心差异</li>
         <li>适配音频系统——小游戏中最容易出问题的模块</li>
-        <li>用 Bundle 分包突破 4MB 主包限制</li>
-        <li>接入微信分享、排行榜、激励视频广告</li>
-        <li>处理 onShow/onHide 生命周期</li>
+        <li>用 <strong>Bundle 分包</strong>突破 <strong>4MB</strong> 主包限制</li>
+        <li>接入微信分享、排行榜、<strong>激励视频</strong>广告</li>
+        <li>处理 <strong>onShow/onHide</strong> 生命周期</li>
         <li>完成审核上线全流程</li>
       </ul>
     </ConceptBlock>

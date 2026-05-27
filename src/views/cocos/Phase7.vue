@@ -8,8 +8,8 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
         <li>一款完整可玩的像素飞机大战，包含：玩家操控、多种敌机、碰撞、道具、UI、音效</li>
-        <li>一个可复用的游戏框架（对象池 + 事件总线 + 状态机），以后做其他 2D 游戏直接拿来用</li>
-        <li>对 Cocos 开发流程的完整认知——从创建项目到最终打磨</li>
+        <li>一个可复用的游戏框架（<strong>对象池</strong> + <strong>事件总线</strong> + <strong>状态机</strong>），以后做其他 2D 游戏直接拿来用</li>
+        <li>对 <strong>Cocos Creator</strong> 开发流程的完整认知——从创建项目到最终打磨</li>
       </ul>
     </ConceptBlock>
 

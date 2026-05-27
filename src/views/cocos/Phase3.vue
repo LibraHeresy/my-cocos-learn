@@ -8,12 +8,12 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
         <li>规范组织 <code>assets/</code> 目录结构</li>
-        <li>导入图片资源，创建 SpriteFrame、Scale9Sprite 和 Atlas 图集</li>
-        <li>用 Profiler 面板监控 FPS/DrawCall/渲染耗时</li>
-        <li>用 Animation Editor 制作帧动画（爆炸、行走等）</li>
-        <li>用 <code>cc.tween</code> 写 UI 动效（弹窗、按钮反馈）</li>
-        <li>理解资源动态加载 <code>resources.load()</code> 的异步流程</li>
-        <li>搭建 Loading 场景预加载资源</li>
+        <li>导入图片资源，创建 <strong>SpriteFrame</strong>、<strong>Scale9Sprite</strong> 和 <strong>Atlas</strong> 图集</li>
+        <li>用 <strong>Profiler</strong> 面板监控 <strong>FPS</strong>/<strong>DrawCall</strong>/渲染耗时</li>
+        <li>用 <strong>Animation</strong> Editor 制作<strong>帧动画</strong>（爆炸、行走等）</li>
+        <li>用 <strong><code>cc.tween</code></strong> 写 UI 动效（弹窗、按钮反馈）</li>
+        <li>理解<strong>资源加载</strong> <code>resources.load()</code> 的异步流程</li>
+        <li>搭建 <strong>Loading</strong> 场景预加载资源</li>
       </ul>
     </ConceptBlock>
 

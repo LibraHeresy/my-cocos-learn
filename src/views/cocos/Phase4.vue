@@ -8,8 +8,8 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
         <li>用键盘方向键/WASD 流畅控制角色移动（不依赖系统按键重复）</li>
-        <li>处理触摸事件，让游戏在手机上也能操作</li>
-        <li>封装一个统一的 InputManager，屏蔽键盘/触摸的差异</li>
+        <li>处理<strong>触摸事件</strong>，让游戏在手机上也能操作</li>
+        <li>封装一个统一的 <strong>InputManager</strong>，屏蔽键盘/触摸的差异</li>
         <li>让飞机大战的玩家飞机在屏幕内自由移动 + 发射子弹</li>
       </ul>
     </ConceptBlock>

@@ -7,10 +7,10 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
   <AudioPhaseLayout :phase="2" title="射击游戏音效制作" duration="1-2 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
-        <li>为飞机大战的所有动作设计并制作完整的音效组</li>
-        <li>理解包络（Attack/Decay/Sustain/Release）如何塑造音效质感</li>
-        <li>为不同游戏事件匹配音色和频率范围</li>
-        <li>建立一套音效命名规范，方便在 Cocos 代码中调用</li>
+        <li>为飞机大战的所有动作设计并制作完整的<strong>射击音效</strong>、<strong>爆炸音效</strong>组</li>
+        <li>理解<strong>包络</strong>（<strong>Attack/Decay/Sustain/Release</strong>）如何塑造音效质感</li>
+        <li>为不同游戏事件匹配音色和<strong>频率</strong>范围</li>
+        <li>建立一套音效命名规范，方便在 <strong>Cocos</strong> 代码中调用</li>
       </ul>
     </ConceptBlock>
 

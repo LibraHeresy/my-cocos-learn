@@ -7,10 +7,10 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
   <AudioPhaseLayout :phase="1" title="音频基础与免费工具" duration="1 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
-        <li>理解游戏音频的基础概念：采样率、位深度、单声道/立体声</li>
-        <li>区分 WAV、MP3、OGG 格式，知道各自适合什么场景</li>
-        <li>使用 BFXR 合成器从零生成像素风音效</li>
-        <li>使用 Audacity 对音频做基础编辑（裁剪、标准化、导出）</li>
+        <li>理解游戏音频的基础概念：<strong>采样率</strong>、<strong>位深度</strong>、<strong>单声道/立体声</strong></li>
+        <li>区分 <strong>WAV</strong>、<strong>MP3</strong>、<strong>OGG</strong> 格式，知道各自适合什么场景</li>
+        <li>使用 <strong>BFXR</strong> 合成器从零生成像素风音效</li>
+        <li>使用 <strong>Audacity</strong> 对音频做基础编辑（裁剪、标准化、导出）</li>
       </ul>
     </ConceptBlock>
 

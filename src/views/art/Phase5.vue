@@ -8,12 +8,12 @@ import PixelCanvas from '@/components/PixelCanvas.vue'
   <ArtPhaseLayout :phase="5" title="帧动画制作" duration="1-2 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
-        <li>用 Aseprite 时间轴和洋葱皮工具制作逐帧动画</li>
-        <li>将 Phase 4 学的运动规律落地——在 Aseprite 中实现缓动、挤压拉伸、次级运动</li>
-        <li>制作飞机爆炸动画（6-12 帧，参考 Phase 4 的帧数速查表）</li>
-        <li>制作引擎火焰循环动画（4-6 帧）和玩家飞机待机浮动动画</li>
-        <li>制作飞机受击闪烁效果和道具旋转动画</li>
-        <li>导出 SpriteSheet（雪碧图）导入 Cocos 使用</li>
+        <li>用 <strong>Aseprite</strong> 时间轴和<strong>洋葱皮</strong>工具制作<strong>逐帧动画</strong></li>
+        <li>将 Phase 4 学的运动规律落地——在 <strong>Aseprite</strong> 中实现缓动、<strong>挤压拉伸</strong>、<strong>次级运动</strong></li>
+        <li>制作飞机<strong>爆炸动画</strong>（6-12 帧，参考 Phase 4 的帧数速查表）</li>
+        <li>制作<strong>引擎火焰</strong><strong>循环动画</strong>（4-6 帧）和玩家飞机<strong>待机浮动</strong>动画</li>
+        <li>制作飞机<strong>受击闪烁</strong>效果和道具旋转动画</li>
+        <li>导出 <strong>SpriteSheet</strong>（<strong>雪碧图</strong>）导入 <strong>Cocos</strong> 使用</li>
       </ul>
     </ConceptBlock>
 

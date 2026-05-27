@@ -7,8 +7,8 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
   <ArtPhaseLayout :phase="1" title="Aseprite 工具入门" duration="1 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
-        <li>独立安装 Aseprite 并完成基础配置</li>
-        <li>熟悉 Aseprite 的界面布局和核心面板</li>
+        <li>独立安装 <strong>Aseprite</strong> 并完成基础配置</li>
+        <li>熟悉 <strong>Aseprite</strong> 的界面布局和核心面板</li>
         <li>掌握画笔、橡皮擦、油漆桶、选区等基本工具</li>
         <li>使用图层管理像素画的各部分</li>
         <li>创建并导出你的第一张像素画</li>

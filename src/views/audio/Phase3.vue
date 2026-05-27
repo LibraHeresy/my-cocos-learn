@@ -7,10 +7,10 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
   <AudioPhaseLayout :phase="3" title="背景音乐基础" duration="1 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
-        <li>理解游戏背景音乐的两大模式：线性播放 vs 无缝循环</li>
-        <li>使用 Bosca Ceoil 从零创作一段 chiptune 风格旋律</li>
-        <li>构建 "Intro → Loop → Outro" 的音乐结构</li>
-        <li>导出无缝循环的 OGG 文件，保证循环时没有"咔嗒"声</li>
+        <li>理解<strong>游戏背景音乐</strong>的两大模式：线性播放 vs <strong>无缝循环</strong></li>
+        <li>使用 <strong>Bosca Ceoil</strong> 从零创作一段 <strong>chiptune</strong> 风格旋律</li>
+        <li>构建 "<strong>Intro</strong> → <strong>Loop</strong> → Outro" 的音乐结构</li>
+        <li>导出<strong>无缝循环</strong>的 <strong>OGG</strong> 文件，保证循环时没有"咔嗒"声</li>
       </ul>
     </ConceptBlock>
 

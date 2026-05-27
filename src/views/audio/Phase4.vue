@@ -7,11 +7,11 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
   <AudioPhaseLayout :phase="4" title="Cocos 音频集成" duration="1-2 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
-        <li>理解 Cocos 的 AudioSource 组件和 AudioClip 资源</li>
-        <li>编写 AudioManager 单例脚本，统一管理所有游戏音效</li>
-        <li>用 resources.load 动态加载和播放音频</li>
-        <li>实现场景切换时的 BGM 过渡（淡入淡出 + 跨场景播放）</li>
-        <li>添加音量控制和静音开关</li>
+        <li>理解 Cocos 的 <strong>AudioSource</strong> 组件和 <strong>AudioClip</strong> 资源</li>
+        <li>编写 <strong>AudioManager</strong> <strong>单例</strong>脚本，统一管理所有游戏音效</li>
+        <li>用 <strong>resources.load</strong> 动态加载和播放音频</li>
+        <li>实现场景切换时的 <strong>BGM</strong> 过渡（<strong>淡入淡出</strong> + 跨场景播放）</li>
+        <li>添加<strong>音量控制</strong>和静音开关</li>
       </ul>
     </ConceptBlock>
 
