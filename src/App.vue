@@ -6,11 +6,17 @@ import NavBar from '@/components/NavBar.vue'
 const router = useRouter()
 const route = useRoute()
 
-const PHASE_COUNTS: Record<string, number> = {
-  cocos: 8,
-  art: 4,
-  audio: 4,
-}
+const PHASE_COUNTS: Record<string, number> = (() => {
+  const counts: Record<string, number> = {}
+  for (const r of router.getRoutes()) {
+    const m = (r.name as string)?.match(/^(cocos|art|audio)-phase(\d+)$/)
+    if (m) {
+      const num = parseInt(m[2])
+      if (num > (counts[m[1]] ?? 0)) counts[m[1]] = num
+    }
+  }
+  return counts
+})()
 
 function getRouteInfo() {
   const name = route.name as string

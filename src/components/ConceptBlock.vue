@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 const props = defineProps<{
   title: string
@@ -12,10 +12,56 @@ const slugId = computed(() =>
     .replace(/[^a-z0-9一-鿿]+/g, '-')
     .replace(/^-+|-+$/g, ''),
 )
+
+const blockRef = ref<HTMLElement | null>(null)
+
+onMounted(() => {
+  const root = blockRef.value
+  if (!root) return
+  root.querySelectorAll('pre').forEach((pre) => {
+    if (pre.querySelector('.copy-btn')) return
+
+    const btn = document.createElement('button')
+    btn.className = 'copy-btn'
+    btn.innerHTML = '<span class="copy-icon">📋</span> 复制'
+
+    btn.addEventListener('click', async () => {
+      const code = pre.querySelector('code')
+      const text = code?.textContent ?? pre.textContent ?? ''
+      try {
+        await navigator.clipboard.writeText(text)
+        btn.classList.add('copied')
+        btn.innerHTML = '<span class="copy-icon">✓</span> 已复制'
+        setTimeout(() => {
+          btn.classList.remove('copied')
+          btn.innerHTML = '<span class="copy-icon">📋</span> 复制'
+        }, 2000)
+      } catch {
+        // 降级方案
+        const ta = document.createElement('textarea')
+        ta.value = text
+        ta.style.position = 'fixed'
+        ta.style.opacity = '0'
+        document.body.appendChild(ta)
+        ta.select()
+        document.execCommand('copy')
+        document.body.removeChild(ta)
+        btn.classList.add('copied')
+        btn.innerHTML = '<span class="copy-icon">✓</span> 已复制'
+        setTimeout(() => {
+          btn.classList.remove('copied')
+          btn.innerHTML = '<span class="copy-icon">📋</span> 复制'
+        }, 2000)
+      }
+    })
+
+    pre.appendChild(btn)
+  })
+})
 </script>
 
 <template>
-  <section :id="slugId" class="concept-block">
+  <section :id="slugId" ref="blockRef" class="concept-block">
     <h2 class="block-title">
       <span v-if="icon" class="block-icon">{{ icon }}</span>
       {{ title }}

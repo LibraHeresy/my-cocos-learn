@@ -42,6 +42,51 @@ const cocosPhases: RouteRecordRaw[] = [
     name: 'cocos-phase8',
     component: () => import('@/views/cocos/Phase8.vue'),
   },
+  {
+    path: '/cocos/phase/9',
+    name: 'cocos-phase9',
+    component: () => import('@/views/cocos/Phase9.vue'),
+  },
+  {
+    path: '/cocos/phase/10',
+    name: 'cocos-phase10',
+    component: () => import('@/views/cocos/Phase10.vue'),
+  },
+  {
+    path: '/cocos/phase/11',
+    name: 'cocos-phase11',
+    component: () => import('@/views/cocos/Phase11.vue'),
+  },
+  {
+    path: '/cocos/phase/12',
+    name: 'cocos-phase12',
+    component: () => import('@/views/cocos/Phase12.vue'),
+  },
+  {
+    path: '/cocos/phase/13',
+    name: 'cocos-phase13',
+    component: () => import('@/views/cocos/Phase13.vue'),
+  },
+  {
+    path: '/cocos/phase/14',
+    name: 'cocos-phase14',
+    component: () => import('@/views/cocos/Phase14.vue'),
+  },
+  {
+    path: '/cocos/phase/15',
+    name: 'cocos-phase15',
+    component: () => import('@/views/cocos/Phase15.vue'),
+  },
+  {
+    path: '/cocos/phase/16',
+    name: 'cocos-phase16',
+    component: () => import('@/views/cocos/Phase16.vue'),
+  },
+  {
+    path: '/cocos/phase/17',
+    name: 'cocos-phase17',
+    component: () => import('@/views/cocos/Phase17.vue'),
+  },
 ]
 
 const artPhases: RouteRecordRaw[] = [

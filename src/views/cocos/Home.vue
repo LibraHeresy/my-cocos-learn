@@ -112,6 +112,96 @@ const phaseGroups: PhaseGroup[] = [
       },
     ],
   },
+  {
+    label: '微信生态篇',
+    tagline: '接入微信开放能力 —— 登录、云开发、排行榜，让小游戏拥有完整生态',
+    phases: [
+      {
+        id: 9,
+        icon: '🔐',
+        title: '微信开放能力接入',
+        duration: '1-2 天',
+        summary: 'wx.login 静默登录、用户信息获取、开放数据域排行榜、设备信息与自适应。',
+        concepts: ['wx.login', '开放数据域', 'wx.getSystemInfoSync', 'CloudStorage'],
+      },
+      {
+        id: 10,
+        icon: '☁️',
+        title: '数据持久化与云开发',
+        duration: '1-2 天',
+        summary: '微信云开发（云数据库/云函数/云存储）、玩家进度云端同步、离线数据队列。',
+        concepts: ['云数据库', '云函数', '云存储', '进度同步', '离线队列'],
+      },
+      {
+        id: 11,
+        icon: '📲',
+        title: '真机调试与性能适配',
+        duration: '1-2 天',
+        summary: '远程调试工具链、设备分档策略、WeChat 性能面板、常见机型兼容坑。',
+        concepts: ['真机调试', '设备分档', '性能面板', '机型兼容', '自适应'],
+      },
+    ],
+  },
+  {
+    label: '运营篇',
+    tagline: '让玩家留下来 —— 数值、留存、数据，像做产品一样做游戏',
+    phases: [
+      {
+        id: 12,
+        icon: '📊',
+        title: '游戏数值设计',
+        duration: '2-3 天',
+        summary: '难度曲线设计、经济系统平衡、DPS 与血量计算、关卡节奏编排、数值调优流程。',
+        concepts: ['难度曲线', '经济平衡', 'DPS计算', '关卡节奏', '数值调优'],
+      },
+      {
+        id: 13,
+        icon: '📅',
+        title: '留存系统设计',
+        duration: '2-3 天',
+        summary: '每日签到/任务系统、成就系统、新手引导流程、七日留存活动设计。',
+        concepts: ['每日签到', '每日任务', '成就系统', '新手引导', '七日留存'],
+      },
+      {
+        id: 14,
+        icon: '📈',
+        title: '数据运营分析',
+        duration: '1-2 天',
+        summary: '微信后台数据指标、自定义打点埋点、广告收益优化、数据驱动迭代方法。',
+        concepts: ['DAU/留存', 'wx.reportMonitor', '广告优化', '漏斗分析', '隐私合规'],
+      },
+    ],
+  },
+  {
+    label: '工程化篇',
+    tagline: '专业级交付 —— Shader、测试、CI/CD，让游戏开发像前端工程一样可靠',
+    phases: [
+      {
+        id: 15,
+        icon: '✨',
+        title: 'Shader 与后处理特效',
+        duration: '2-3 天',
+        summary: 'Cocos Effect 语法入门、溶解/描边/受击闪白 Shader 实战、全屏后处理管线。',
+        concepts: ['Cocos Effect', 'Fragment Shader', '后处理', '溶解效果', '描边'],
+      },
+      {
+        id: 16,
+        icon: '🧪',
+        title: '游戏测试体系',
+        duration: '1-2 天',
+        summary: '游戏逻辑单元测试、录制回放回归测试、性能基准测试、兼容性测试矩阵。',
+        concepts: ['单元测试', '回归测试', '性能基准', '兼容性矩阵', 'Vitest'],
+      },
+      {
+        id: 17,
+        icon: '🚀',
+        title: 'CI/CD 构建流水线',
+        duration: '1-2 天',
+        summary: 'Cocos CLI 构建、GitHub Actions 自动化、多平台构建矩阵、Bundle 热更新。',
+        concepts: ['Cocos CLI', 'GitHub Actions', '热更新', '多平台构建', '发布流水线'],
+      },
+    ],
+  },
 ]
 </script>
 
@@ -220,11 +310,11 @@ const phaseGroups: PhaseGroup[] = [
       <div class="footer-card">
         <span class="footer-icon">⏱️</span>
         <div>
-          <p>总共约 <strong>4-5 周</strong>，每天投入 2-4 小时。</p>
+          <p>总共约 <strong>8-12 周</strong>，每天投入 2-4 小时。</p>
           <p class="footer-path">
             核心路径：<em
               >入门：帧驱动+节点体系 → 核心：渲染+输入+碰撞 → 架构：对象池+状态机 → 实战：飞机大战 →
-              发布：微信小游戏</em
+              发布：微信小游戏 → 微信生态：登录+云开发+真机调试 → 运营：数值+留存+数据分析 → 工程化：Shader+测试+CI/CD</em
             >
           </p>
         </div>
@@ -258,187 +348,9 @@ const phaseGroups: PhaseGroup[] = [
   </div>
 </template>
 
+<style scoped src="@/styles/home-shared.css"></style>
+
 <style scoped>
-.home {
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 3rem 1.5rem 2rem;
-}
-
-/* ---- Hero ---- */
-.hero {
-  text-align: center;
-  margin-bottom: 3.5rem;
-}
-
-.hero-eyebrow {
-  font-size: 0.8rem;
-  color: var(--color-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: 0.65rem;
-}
-
-.hero h1 {
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 0.85rem;
-  line-height: 1.3;
-}
-
-.highlight {
-  color: var(--color-accent);
-  position: relative;
-}
-
-.highlight::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: 2px;
-  width: 100%;
-  height: 3px;
-  background: var(--color-accent-soft);
-  border-radius: 2px;
-  opacity: 0.6;
-}
-
-.subtitle {
-  color: var(--color-text-muted);
-  font-size: 1.05rem;
-  max-width: 540px;
-  margin: 0 auto;
-  line-height: 1.7;
-}
-
-/* ---- Section title ---- */
-.section-title {
-  font-size: 1.2rem;
-  margin-bottom: 1.15rem;
-  padding-left: 0.9rem;
-  border-left: 3px solid var(--color-primary);
-}
-
-/* ---- 阶段卡片 ---- */
-.phases-section {
-  margin-bottom: 3.5rem;
-}
-
-.phase-group {
-  margin-bottom: 2rem;
-}
-
-.phase-group:last-child {
-  margin-bottom: 0;
-}
-
-.group-header {
-  margin-bottom: 0.85rem;
-}
-
-.group-label {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-primary);
-  margin-bottom: 0.2rem;
-  display: inline-block;
-  background: var(--color-primary-soft);
-  padding: 0.15em 0.7em;
-  border-radius: 4px;
-}
-
-.group-tagline {
-  font-size: 0.78rem;
-  color: var(--color-text-muted);
-  margin-top: 0.4rem;
-  margin-bottom: 0;
-  padding-left: 0.15rem;
-}
-
-.phases-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(255px, 1fr));
-  gap: 1.15rem;
-}
-
-.phase-card {
-  display: flex;
-  flex-direction: column;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border-light);
-  border-radius: var(--radius-lg);
-  padding: 1.3rem;
-  transition:
-    border-color 0.25s,
-    box-shadow 0.25s,
-    transform 0.2s;
-  color: var(--color-text);
-  cursor: pointer;
-}
-
-.phase-card:hover {
-  border-color: var(--color-primary);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-3px);
-}
-
-.card-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.4rem;
-}
-
-.card-icon {
-  font-size: 1.5rem;
-  line-height: 1;
-}
-
-.card-duration {
-  font-size: 0.7rem;
-  color: var(--color-text-muted);
-  background: var(--color-bg-soft);
-  padding: 0.2em 0.6em;
-  border-radius: 10px;
-}
-
-.card-phase {
-  font-size: 0.7rem;
-  color: var(--color-primary);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 0.3rem;
-}
-
-.phase-card h3 {
-  font-size: 1.08rem;
-  margin-bottom: 0.45rem;
-}
-
-.card-summary {
-  font-size: 0.83rem;
-  color: var(--color-text-muted);
-  line-height: 1.65;
-  flex: 1;
-  margin-bottom: 0.85rem;
-}
-
-.card-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-}
-
-.tag {
-  font-size: 0.68rem;
-  background: var(--color-bg-soft);
-  padding: 0.2em 0.6em;
-  border-radius: 10px;
-  color: var(--color-text-muted);
-  border: 1px solid var(--color-border-light);
-}
-
 /* ---- 速查表 ---- */
 .mapping-section {
   margin-bottom: 3rem;
@@ -454,117 +366,7 @@ const phaseGroups: PhaseGroup[] = [
   margin-bottom: 0;
 }
 
-/* ---- Footer ---- */
-.home-footer {
-  text-align: center;
-}
-
-.footer-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.8rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border-light);
-  border-radius: var(--radius-lg);
-  padding: 1.15rem 1.4rem;
-  text-align: left;
-  box-shadow: var(--shadow-sm);
-}
-
-.footer-icon {
-  font-size: 1.4rem;
-  line-height: 1;
-  margin-top: 0.1rem;
-}
-
-.footer-card p {
-  font-size: 0.88rem;
-  color: var(--color-text-muted);
-  margin-bottom: 0.25rem;
-}
-
-.footer-card p:last-child {
-  margin-bottom: 0;
-}
-
-.footer-path {
-  font-size: 0.82rem;
-}
-
-.footer-path em {
-  font-style: normal;
-  color: var(--color-primary);
-}
-
-.tools-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border-light);
-  border-radius: var(--radius-lg);
-  padding: 1.5rem;
-  margin-top: 1.5rem;
-  text-align: left;
-}
-
-.tools-card h3 {
-  margin-bottom: 1rem;
-}
-
-.tool-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 0.75rem;
-}
-
-.tool-item {
-  display: flex;
-  flex-direction: column;
-  background: var(--color-bg-soft);
-  border-radius: var(--radius-md);
-  padding: 0.75rem 1rem;
-}
-
-.tool-item strong {
-  font-size: 0.9rem;
-  margin-bottom: 0.15rem;
-}
-
-.tool-item span {
-  font-size: 0.75rem;
-  color: var(--color-text-muted);
-}
-
-.tool-item span:last-child {
-  font-family: monospace;
-  font-size: 0.7rem;
-  color: var(--color-primary);
-  margin-top: 0.15rem;
-}
-
 @media (max-width: 640px) {
-  .home {
-    padding: 1.5rem 1rem 2rem;
-  }
-
-  .hero {
-    margin-bottom: 2rem;
-  }
-
-  .hero h1 {
-    font-size: 1.6rem;
-  }
-
-  .subtitle {
-    font-size: 0.9rem;
-  }
-
-  .phases-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .tool-grid {
-    grid-template-columns: 1fr;
-  }
-
   .table-wrapper {
     width: 100%;
   }
