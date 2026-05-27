@@ -4,7 +4,7 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
 </script>
 
 <template>
-  <PhaseLayout :phase="17" title="CI/CD 构建流水线" duration="1-2 天" :total="17">
+  <PhaseLayout :phase="17" title="CI/CD 构建流水线" duration="1-2 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
         <li>用 <strong>Cocos Creator CLI</strong> 命令行构建替代手动点击"构建发布"</li>

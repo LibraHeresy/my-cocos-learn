@@ -4,7 +4,7 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
 </script>
 
 <template>
-  <PhaseLayout :phase="13" title="留存系统设计" duration="2-3 天" :total="17">
+  <PhaseLayout :phase="13" title="留存系统设计" duration="2-3 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
         <li>设计<strong>每日签到</strong>系统——7 天奖励递增循环，让玩家每天都想回来</li>

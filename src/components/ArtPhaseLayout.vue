@@ -1,19 +1,38 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import PageTOC from '@/components/PageTOC.vue'
 
-defineProps<{
+const props = withDefaults(defineProps<{
   phase: number
   title: string
   duration: string
-}>()
+  total?: number
+}>(), {
+  total: 0,
+})
+
+const router = useRouter()
+
+const maxPhase = computed(() => {
+  if (props.total > 0) return props.total
+  let max = 0
+  for (const r of router.getRoutes()) {
+    const m = (r.name as string)?.match(/^art-phase(\d+)$/)
+    if (m) {
+      const n = parseInt(m[1])
+      if (n > max) max = n
+    }
+  }
+  return max
+})
 </script>
 
 <template>
   <div class="phase-layout">
-    <!-- 进度指示器 -->
     <div class="progress-bar" aria-label="学习进度">
       <div
-        v-for="i in 7"
+        v-for="i in maxPhase"
         :key="i"
         class="progress-dot"
         :class="{ active: i <= phase, current: i === phase }"
@@ -48,7 +67,7 @@ defineProps<{
       </RouterLink>
       <span v-else class="nav-btn placeholder" />
 
-      <RouterLink v-if="phase < 7" :to="`/art/phase/${phase + 1}`" class="nav-btn next">
+      <RouterLink v-if="phase < maxPhase" :to="`/art/phase/${phase + 1}`" class="nav-btn next">
         <span class="nav-label">
           <small>下一阶段</small>
           <strong>第 {{ phase + 1 }} 阶段</strong>

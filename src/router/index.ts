@@ -87,6 +87,66 @@ const cocosPhases: RouteRecordRaw[] = [
     name: 'cocos-phase17',
     component: () => import('@/views/cocos/Phase17.vue'),
   },
+  {
+    path: '/cocos/phase/18',
+    name: 'cocos-phase18',
+    component: () => import('@/views/cocos/Phase18.vue'),
+  },
+  {
+    path: '/cocos/phase/19',
+    name: 'cocos-phase19',
+    component: () => import('@/views/cocos/Phase19.vue'),
+  },
+  {
+    path: '/cocos/phase/20',
+    name: 'cocos-phase20',
+    component: () => import('@/views/cocos/Phase20.vue'),
+  },
+  {
+    path: '/cocos/phase/21',
+    name: 'cocos-phase21',
+    component: () => import('@/views/cocos/Phase21.vue'),
+  },
+  {
+    path: '/cocos/phase/22',
+    name: 'cocos-phase22',
+    component: () => import('@/views/cocos/Phase22.vue'),
+  },
+  {
+    path: '/cocos/phase/23',
+    name: 'cocos-phase23',
+    component: () => import('@/views/cocos/Phase23.vue'),
+  },
+  {
+    path: '/cocos/phase/24',
+    name: 'cocos-phase24',
+    component: () => import('@/views/cocos/Phase24.vue'),
+  },
+  {
+    path: '/cocos/phase/25',
+    name: 'cocos-phase25',
+    component: () => import('@/views/cocos/Phase25.vue'),
+  },
+  {
+    path: '/cocos/phase/26',
+    name: 'cocos-phase26',
+    component: () => import('@/views/cocos/Phase26.vue'),
+  },
+  {
+    path: '/cocos/phase/27',
+    name: 'cocos-phase27',
+    component: () => import('@/views/cocos/Phase27.vue'),
+  },
+  {
+    path: '/cocos/phase/28',
+    name: 'cocos-phase28',
+    component: () => import('@/views/cocos/Phase28.vue'),
+  },
+  {
+    path: '/cocos/phase/29',
+    name: 'cocos-phase29',
+    component: () => import('@/views/cocos/Phase29.vue'),
+  },
 ]
 
 const artPhases: RouteRecordRaw[] = [
@@ -125,6 +185,16 @@ const artPhases: RouteRecordRaw[] = [
     name: 'art-phase7',
     component: () => import('@/views/art/Phase7.vue'),
   },
+  {
+    path: '/art/phase/8',
+    name: 'art-phase8',
+    component: () => import('@/views/art/Phase8.vue'),
+  },
+  {
+    path: '/art/phase/9',
+    name: 'art-phase9',
+    component: () => import('@/views/art/Phase9.vue'),
+  },
 ]
 
 const audioPhases: RouteRecordRaw[] = [
@@ -147,6 +217,21 @@ const audioPhases: RouteRecordRaw[] = [
     path: '/audio/phase/4',
     name: 'audio-phase4',
     component: () => import('@/views/audio/Phase4.vue'),
+  },
+  {
+    path: '/audio/phase/5',
+    name: 'audio-phase5',
+    component: () => import('@/views/audio/Phase5.vue'),
+  },
+  {
+    path: '/audio/phase/6',
+    name: 'audio-phase6',
+    component: () => import('@/views/audio/Phase6.vue'),
+  },
+  {
+    path: '/audio/phase/7',
+    name: 'audio-phase7',
+    component: () => import('@/views/audio/Phase7.vue'),
   },
 ]
 

@@ -1,5 +1,10 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
+import HomeSidebar from '@/components/HomeSidebar.vue'
+
+function slug(text: string): string {
+  return text.toLowerCase().replace(/[^a-z0-9一-鿿]+/g, '-').replace(/^-+|-+$/g, '')
+}
 
 interface Phase {
   id: number
@@ -89,7 +94,7 @@ const phaseGroups: PhaseGroup[] = [
   },
   {
     label: '进阶篇',
-    tagline: '高级技巧 —— 让像素画从"够用"到"出色"',
+    tagline: '高级技巧与完整设计 —— 从单体素材到完整游戏界面',
     phases: [
       {
         id: 7,
@@ -99,6 +104,24 @@ const phaseGroups: PhaseGroup[] = [
         summary:
           '视差滚动背景、Tileset 无缝拼接、像素粒子、调色板换色、色彩循环动画——像素画的生产力技巧。',
         concepts: ['视差滚动', 'Tileset', '像素粒子', '调色板换色', '色彩循环'],
+      },
+      {
+        id: 8,
+        icon: '🎛️',
+        title: 'UI 与 HUD 美术',
+        duration: '1-2 天',
+        summary:
+          '按钮多态设计、弹窗面板、血条/比分/图标——像设计组件库变体一样设计游戏 UI。',
+        concepts: ['按钮状态', '面板设计', 'HUD 元素', '小尺寸可读性'],
+      },
+      {
+        id: 9,
+        icon: '🏞️',
+        title: '背景设计进阶',
+        duration: '1-2 天',
+        summary:
+          '视差层级规划、大气透视、环境色统一、关卡主题区分——从单层背景到完整的游戏世界。',
+        concepts: ['视差层级', '大气透视', '环境色', '主题调色板'],
       },
     ],
   },
@@ -119,7 +142,7 @@ const phaseGroups: PhaseGroup[] = [
     <section class="phases-section">
       <h2 class="section-title">学习路径</h2>
 
-      <div v-for="group in phaseGroups" :key="group.label" class="phase-group">
+      <div v-for="(group, i) in phaseGroups" :key="group.label" :id="slug(group.label)" :data-group-index="i" class="phase-group">
         <div class="group-header">
           <h3 class="group-label">{{ group.label }}</h3>
           <p class="group-tagline">{{ group.tagline }}</p>
@@ -145,9 +168,9 @@ const phaseGroups: PhaseGroup[] = [
       <div class="footer-card">
         <span class="footer-icon">🎨</span>
         <div>
-          <p>总共约 <strong>8-12 天</strong>，每天投入 1-2 小时。</p>
+          <p>总共约 <strong>10-14 天</strong>，每天投入 1-2 小时。</p>
           <p class="footer-path">
-            核心路径：<em>Aseprite 工具 → 基本技法 → 飞机大战素材 → 运动规律 → 帧动画制作 → 导入管线 → 进阶技巧</em>
+            核心路径：<em>Aseprite 工具 → 基本技法 → 飞机大战素材 → 运动规律 → 帧动画制作 → 导入管线 → 进阶技巧 → UI/HUD 设计 → 背景设计进阶</em>
           </p>
         </div>
       </div>
@@ -178,6 +201,8 @@ const phaseGroups: PhaseGroup[] = [
         </div>
       </div>
     </footer>
+
+    <HomeSidebar :groups="phaseGroups" course="art" />
   </div>
 </template>
 

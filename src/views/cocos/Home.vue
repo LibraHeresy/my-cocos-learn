@@ -1,5 +1,10 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
+import HomeSidebar from '@/components/HomeSidebar.vue'
+
+function slug(text: string): string {
+  return text.toLowerCase().replace(/[^a-z0-9一-鿿]+/g, '-').replace(/^-+|-+$/g, '')
+}
 
 interface Phase {
   id: number
@@ -173,6 +178,126 @@ const phaseGroups: PhaseGroup[] = [
     ],
   },
   {
+    label: '物理与关卡篇',
+    tagline: '告别手写碰撞 —— 用引擎物理和 Tilemap 搭建真正的关卡',
+    phases: [
+      {
+        id: 18,
+        icon: '⚙️',
+        title: '2D 物理引擎入门',
+        duration: '2-3 天',
+        summary: 'RigidBody2D、Collider2D 类型选择、物理材质、Contact 回调——让引擎替你处理碰撞。',
+        concepts: ['RigidBody2D', 'Collider2D', '物理材质', 'Contact 回调'],
+      },
+      {
+        id: 19,
+        icon: '🗺️',
+        title: 'Tilemap 关卡编辑',
+        duration: '1-2 天',
+        summary: 'Tiled 编辑器导入 Cocos、瓦片碰撞、动态换砖——像 CSS Grid 一样编排游戏关卡。',
+        concepts: ['Tiled', 'TiledMap', '瓦片碰撞', '动态换砖'],
+      },
+    ],
+  },
+  {
+    label: '交互与网络篇',
+    tagline: '多点触控、复杂 UI、实时通信 —— 让游戏"连上网"',
+    phases: [
+      {
+        id: 20,
+        icon: '🖥️',
+        title: '复杂 UI 与 ScrollView',
+        duration: '1-2 天',
+        summary: 'Grid/Horizontal Layout、ScrollView、背包格、商店页——像写 Flexbox 一样搭 UI。',
+        concepts: ['Layout 组件', 'ScrollView', '背包网格', 'Item 复用'],
+      },
+      {
+        id: 21,
+        icon: '👆',
+        title: '多点触控与手势',
+        duration: '1 天',
+        summary: '双指缩放、滑动方向识别、虚拟摇杆——像 Hammer.js 一样处理复杂触摸。',
+        concepts: ['多点触摸', '手势识别', '虚拟摇杆', 'Touch ID 追踪'],
+      },
+      {
+        id: 22,
+        icon: '🌐',
+        title: 'WebSocket 实时通信',
+        duration: '1-2 天',
+        summary: '连接管理、心跳保活、消息协议设计、简单对战同步——让游戏拥有网络能力。',
+        concepts: ['WebSocket', '心跳', '消息协议', '断线重连'],
+      },
+    ],
+  },
+  {
+    label: '表现与优化篇',
+    tagline: '骨骼动画、手感打磨、内存与纹理——让游戏"看起来专业"',
+    phases: [
+      {
+        id: 23,
+        icon: '🦴',
+        title: 'Spine 骨骼动画',
+        duration: '1-2 天',
+        summary: 'Spine vs 序列帧选型、导入管线、运行时换皮、动画混合——像 Lottie 一样丝滑。',
+        concepts: ['Spine', '骨骼动画', '换皮', '动画混合'],
+      },
+      {
+        id: 24,
+        icon: '💫',
+        title: '游戏手感设计',
+        duration: '1 天',
+        summary: '屏幕震动、击打停顿、镜头跟随延迟、粒子爆发——游戏"手感"的量化方法。',
+        concepts: ['屏幕震动', '冻结帧', '镜头跟随', '视听同步'],
+      },
+      {
+        id: 25,
+        icon: '🗜️',
+        title: '纹理压缩与内存优化',
+        duration: '1 天',
+        summary: 'ETC2/ASTC/PVRTC 选型、Mipmap、SpriteAtlas 进阶、移动端纹理预算实战。',
+        concepts: ['纹理压缩', 'Mipmap', 'SpriteAtlas', '内存预算'],
+      },
+      {
+        id: 26,
+        icon: '🔍',
+        title: '内存泄漏排查实战',
+        duration: '1 天',
+        summary: '常见泄漏场景、Chrome Memory 面板、node.destroy 陷阱、事件清理检查清单。',
+        concepts: ['内存泄漏', 'Heap Snapshot', '事件清理', 'SafeDestroy'],
+      },
+    ],
+  },
+  {
+    label: '跨平台与模式篇',
+    tagline: '多端发布、国际化、TS 设计模式 —— 生产级项目的最后拼图',
+    phases: [
+      {
+        id: 27,
+        icon: '🌍',
+        title: '国际化 i18n',
+        duration: '1 天',
+        summary: '字符串表方案、运行时语言切换、CJK 字体裁剪——像 vue-i18n 一样做多语言。',
+        concepts: ['字符串表', '语言切换', '字体子集', 'RTL 适配'],
+      },
+      {
+        id: 28,
+        icon: '📦',
+        title: 'Web / 原生平台发布',
+        duration: '1 天',
+        summary: 'Web Mobile 部署、iOS/Android 原生构建、JSBridge、平台差异处理。',
+        concepts: ['Web Mobile', '原生构建', 'JSBridge', '平台差异'],
+      },
+      {
+        id: 29,
+        icon: '💎',
+        title: 'TypeScript 游戏模式',
+        duration: '1 天',
+        summary: 'Discriminated Union 做状态、Zod 校验配置、Branded Types——前端 TS 技巧在游戏中的落地。',
+        concepts: ['Discriminated Union', 'Zod', 'Branded Types', 'DI'],
+      },
+    ],
+  },
+  {
     label: '工程化篇',
     tagline: '专业级交付 —— Shader、测试、CI/CD，让游戏开发像前端工程一样可靠',
     phases: [
@@ -221,7 +346,7 @@ const phaseGroups: PhaseGroup[] = [
     <section class="phases-section">
       <h2 class="section-title">学习路径</h2>
 
-      <div v-for="group in phaseGroups" :key="group.label" class="phase-group">
+      <div v-for="(group, i) in phaseGroups" :key="group.label" :id="slug(group.label)" :data-group-index="i" class="phase-group">
         <div class="group-header">
           <h3 class="group-label">{{ group.label }}</h3>
           <p class="group-tagline">{{ group.tagline }}</p>
@@ -310,11 +435,14 @@ const phaseGroups: PhaseGroup[] = [
       <div class="footer-card">
         <span class="footer-icon">⏱️</span>
         <div>
-          <p>总共约 <strong>8-12 周</strong>，每天投入 2-4 小时。</p>
+          <p>总共约 <strong>10-14 周</strong>，每天投入 2-4 小时。</p>
           <p class="footer-path">
             核心路径：<em
               >入门：帧驱动+节点体系 → 核心：渲染+输入+碰撞 → 架构：对象池+状态机 → 实战：飞机大战 →
-              发布：微信小游戏 → 微信生态：登录+云开发+真机调试 → 运营：数值+留存+数据分析 → 工程化：Shader+测试+CI/CD</em
+              发布：微信小游戏 → 微信生态：登录+云开发+真机调试 → 运营：数值+留存+数据分析 →
+              物理与关卡：2D物理+Tilemap → 交互与网络：UI+触控+WebSocket →
+              表现与优化：Spine+手感+纹理+内存 → 工程化：Shader+测试+CI/CD →
+              跨平台与模式：i18n+多端发布+TS模式</em
             >
           </p>
         </div>
@@ -345,6 +473,8 @@ const phaseGroups: PhaseGroup[] = [
         </div>
       </div>
     </footer>
+
+    <HomeSidebar :groups="phaseGroups" course="cocos" />
   </div>
 </template>
 

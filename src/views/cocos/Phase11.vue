@@ -4,7 +4,7 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
 </script>
 
 <template>
-  <PhaseLayout :phase="11" title="真机调试与性能适配" duration="1-2 天" :total="17">
+  <PhaseLayout :phase="11" title="真机调试与性能适配" duration="1-2 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
         <li>掌握<strong>真机调试</strong>的完整调试链路：Chrome DevTools → 微信开发者工具 → 实体手机</li>

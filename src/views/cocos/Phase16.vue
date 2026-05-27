@@ -4,7 +4,7 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
 </script>
 
 <template>
-  <PhaseLayout :phase="16" title="游戏测试体系" duration="1-2 天" :total="17">
+  <PhaseLayout :phase="16" title="游戏测试体系" duration="1-2 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
         <li>建立游戏项目的<strong>测试金字塔</strong>：单元 → 集成 → E2E</li>

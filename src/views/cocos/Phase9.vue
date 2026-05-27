@@ -4,7 +4,7 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
 </script>
 
 <template>
-  <PhaseLayout :phase="9" title="微信开放能力接入" duration="1-2 天" :total="17">
+  <PhaseLayout :phase="9" title="微信开放能力接入" duration="1-2 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
         <li>实现<strong>静默登录</strong>——玩家进游戏无需点击授权，自动获取 openid</li>

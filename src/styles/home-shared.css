@@ -65,6 +65,7 @@
 
 .phase-group {
   margin-bottom: 2rem;
+  scroll-margin-top: 5rem;
 }
 
 .phase-group:last-child {

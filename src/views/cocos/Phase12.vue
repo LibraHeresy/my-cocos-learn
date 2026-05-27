@@ -4,7 +4,7 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
 </script>
 
 <template>
-  <PhaseLayout :phase="12" title="游戏数值设计" duration="2-3 天" :total="17">
+  <PhaseLayout :phase="12" title="游戏数值设计" duration="2-3 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
         <li>理解射击游戏<strong>四种经典难度曲线</strong>，能根据游戏类型选择合适的曲线</li>

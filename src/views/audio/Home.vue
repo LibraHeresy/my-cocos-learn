@@ -1,5 +1,10 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
+import HomeSidebar from '@/components/HomeSidebar.vue'
+
+function slug(text: string): string {
+  return text.toLowerCase().replace(/[^a-z0-9一-鿿]+/g, '-').replace(/^-+|-+$/g, '')
+}
 
 interface Phase {
   id: number
@@ -61,6 +66,36 @@ const phaseGroups: PhaseGroup[] = [
       },
     ],
   },
+  {
+    label: '进阶篇',
+    tagline: '自适应配乐、最终混音、空间定位 —— 从"有声音"到"声音是游戏玩法的一部分"',
+    phases: [
+      {
+        id: 5,
+        icon: '🎼',
+        title: '自适应音乐系统',
+        duration: '1-2 天',
+        summary: '强度分层（vertical layering）、游戏状态驱动切歌、过渡 Stinger、无缝循环进阶。',
+        concepts: ['Vertical Layering', '状态驱动', 'Stinger', 'BPM 匹配'],
+      },
+      {
+        id: 6,
+        icon: '🎚️',
+        title: '音频后期与混音',
+        duration: '1 天',
+        summary: 'LUFS 响度归一化、移动端扬声器适配、削波防护、多平台响度标准。',
+        concepts: ['LUFS', 'Limiter', '响度标准', '移动端适配'],
+      },
+      {
+        id: 7,
+        icon: '🔉',
+        title: '空间音频',
+        duration: '1-2 天',
+        summary: '基于坐标的声像定位、距离衰减曲线、AudioSource 3D 模式、耳机空间感。',
+        concepts: ['Panning', '距离衰减', '3D Audio', '声像定位'],
+      },
+    ],
+  },
 ]
 </script>
 
@@ -78,7 +113,7 @@ const phaseGroups: PhaseGroup[] = [
     <section class="phases-section">
       <h2 class="section-title">学习路径</h2>
 
-      <div v-for="group in phaseGroups" :key="group.label" class="phase-group">
+      <div v-for="(group, i) in phaseGroups" :key="group.label" :id="slug(group.label)" :data-group-index="i" class="phase-group">
         <div class="group-header">
           <h3 class="group-label">{{ group.label }}</h3>
           <p class="group-tagline">{{ group.tagline }}</p>
@@ -104,9 +139,9 @@ const phaseGroups: PhaseGroup[] = [
       <div class="footer-card">
         <span class="footer-icon">🎧</span>
         <div>
-          <p>总共约 <strong>4-7 天</strong>，每天投入 1-2 小时。</p>
+          <p>总共约 <strong>7-11 天</strong>，每天投入 1-2 小时。</p>
           <p class="footer-path">
-            核心路径：<em>音频基础 → 射击音效制作 → 背景音乐 → Cocos 音频集成</em>
+            核心路径：<em>音频基础 → 射击音效制作 → 背景音乐 → Cocos 音频集成 → 自适应音乐 → 后期混音 → 空间音频</em>
           </p>
         </div>
       </div>
@@ -137,6 +172,8 @@ const phaseGroups: PhaseGroup[] = [
         </div>
       </div>
     </footer>
+
+    <HomeSidebar :groups="phaseGroups" course="audio" />
   </div>
 </template>
 

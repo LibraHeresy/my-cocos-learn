@@ -4,7 +4,7 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
 </script>
 
 <template>
-  <PhaseLayout :phase="15" title="Shader 与后处理特效" duration="2-3 天" :total="17">
+  <PhaseLayout :phase="15" title="Shader 与后处理特效" duration="2-3 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
         <li>理解 <strong>Cocos Effect</strong> 语法体系，能独立编写简单 Shader</li>
