@@ -139,10 +139,10 @@ export class SkillBar extends Component {
 
     <ConceptBlock icon="📜" title="ScrollView——滚动的世界">
       <p>
-        ScrollView 是游戏中最常用的 UI 组件之一。它的核心结构是一组<strong>节点嵌套关系</strong>，理解这个结构是实现一切滚动功能的前提。
+        在 Phase 2 中你学会了 ScrollView 的基本使用（创建步骤、核心属性、Mask 裁剪）。本节聚焦<strong>节点结构</strong>和<strong>高级特性</strong>——事件回调、Grid Layout 组合、虚拟滚动优化。
       </p>
 
-      <h3>ScrollView 的节点结构</h3>
+      <h3>ScrollView 的节点结构（Phase 2 未深入的部分）</h3>
       <table>
         <thead>
           <tr>
@@ -170,32 +170,21 @@ export class SkillBar extends Component {
         </tbody>
       </table>
 
-      <h3>关键属性</h3>
+      <h3>Phase 2 未覆盖的属性与事件</h3>
       <pre><code>import { ScrollView } from 'cc'
 
-// 获取 ScrollView 组件
 const scrollView = this.node.getComponent(ScrollView)
 
-// 滚动方向
-scrollView.horizontal = false  // 垂直列表（如背包）
-scrollView.vertical = true
+// 基础属性（horizontal / vertical / inertia / elastic / bounceDuration）见 Phase 2
 
-scrollView.horizontal = true   // 水平列表（如技能轮盘）
-scrollView.vertical = false
+// 新增：减速系数 —— 控制松手后继续滑动的距离
+scrollView.brake = 0.75        // 0-1，越大减速越快（0="冰面"，1="立刻停"）
 
-// 惯性——松手后是否继续滑
-scrollView.inertia = true
-scrollView.brake = 0.75        // 减速系数（0-1，越大减速越快）
-
-// 弹性效果——滚到边界后是否"弹一下"
-scrollView.elastic = true
-scrollView.bounceDuration = 0.3  // 弹性动画时长（秒）
-
-// 滚动条
-scrollView.horizontalScrollBar = scrollBarNode // 拖入滚动条节点
+// 新增：滚动条节点绑定
+scrollView.horizontalScrollBar = scrollBarNode
 scrollView.verticalScrollBar = scrollBarNode
 
-// 事件回调
+// 新增：滚动事件回调（Phase 2 未涉及）
 scrollView.node.on('scrolling', () => {
   // 滚动中——持续触发，可以做视差效果、懒加载
 })
@@ -357,34 +346,26 @@ export class ShopUI extends Component {
 
     <ConceptBlock icon="🏊" title="对象池优化——ScrollView 性能进阶">
       <p>
-        当背包/商店可能有数百个物品时，一次性创建数百个节点会严重影响性能——特别是滚动时每帧都在渲染所有节点。解决方案是<strong>对象池（Object Pool）</strong>——只创建<strong>可见区域</strong>内的节点，滚出视野的节点回收复用。
+        当背包/商店可能有数百个物品时，一次性创建数百个节点会严重影响性能。<strong>Phase 6 中你已经学过对象池模式</strong>（通用版本使用工厂函数创建任意对象）。这里给出针对 <strong>UI Prefab</strong> 的变体——使用 <code>instantiate(prefab)</code> 替代工厂函数，专门优化 ScrollView 列表性能。思想一致：<strong>只创建可见区域内的节点，滚出视野的回收复用</strong>——这就是前端虚拟列表（react-window）的原理。
       </p>
 
-      <h3>对象池的核心思想</h3>
-      <p>
-        这就像前端虚拟列表（Virtual Scroll / react-window）的原理——渲染一个 1000 行的表格，绝不是创建 1000 个 DOM 元素。你只渲染可见的那 10-20 行，滚出视野的 DOM 复用给新进入视野的行。
-      </p>
-
-      <pre><code>// ObjectPool.ts —— 通用对象池
+      <pre><code>// ObjectPool.ts —— UI Prefab 专用对象池（Phase 6 通用版的变体）
 export class ObjectPool&lt;T extends Node&gt; {
   private _pool: T[] = []
   private _prefab: Prefab
 
   constructor(prefab: Prefab, initialSize: number = 10) {
     this._prefab = prefab
-    // 预热——预先创建一批对象
     for (let i = 0; i < initialSize; i++) {
       const obj = instantiate(prefab) as T
-      obj.active = false  // 放入池中时设为非激活
+      obj.active = false
       this._pool.push(obj)
     }
   }
 
-  /** 从池中获取一个对象 */
   get(): T {
     let obj = this._pool.find(o => !o.active)
     if (!obj) {
-      // 池子空了——创建新的
       obj = instantiate(this._prefab) as T
       this._pool.push(obj)
     }
@@ -392,13 +373,10 @@ export class ObjectPool&lt;T extends Node&gt; {
     return obj
   }
 
-  /** 回收对象 */
   put(obj: T) {
     obj.active = false
-    // 不销毁，留着下次复用
   }
 
-  /** 清空池 */
   clear() {
     this._pool.forEach(obj => obj.destroy())
     this._pool = []

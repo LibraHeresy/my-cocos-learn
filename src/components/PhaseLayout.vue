@@ -16,7 +16,7 @@ const route = useRoute()
 const router = useRouter()
 
 const course = computed(() => {
-  const m = (route.name as string)?.match(/^(cocos|art|audio)-phase\d+$/)
+  const m = (route.name as string)?.match(/^(cocos|art|audio|engineering)-phase\d+$/)
   return m ? m[1] : 'cocos'
 })
 

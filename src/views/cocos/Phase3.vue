@@ -471,6 +471,8 @@ lateUpdate() {
         <strong>像素飞机大战最佳实践：</strong>把所有飞机、子弹、道具、爆炸帧分别放在各自的 Atlas
         中。像素素材通常很小，一个 1024×1024 的 Atlas 可以塞很多帧。像素风格记得把 Filter Mode 设为
         <strong>Point</strong>，否则会模糊。
+        <br /><br />
+        这里只讲了 Auto Atlas 的基础创建。多 Atlas 分组策略、Trim Whitespace、纹理压缩格式选型等进阶内容见 <strong>Phase 25（纹理压缩与内存优化）</strong>。
       </div>
     </ConceptBlock>
 

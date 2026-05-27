@@ -16,12 +16,12 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
       </ul>
     </ConceptBlock>
 
-    <ConceptBlock icon="👆" title="单点触摸基础——从点击到滑动">
+    <ConceptBlock icon="👆" title="单点触摸进阶——从点击到手势识别">
       <p>
-        Cocos 的触摸事件系统基于<strong>事件冒泡模型</strong>——和前端 DOM 事件模型几乎一致。一个触摸从屏幕开始，经过<strong>捕获 → 目标 → 冒泡</strong>三个阶段。你可以选择在哪个阶段处理事件。
+        Phase 4 中你学会了基本的 TOUCH_START / MOVE / END 三事件模式。这里做两件事：(1) 改用 <code>input.on()</code> 全局监听替代 <code>node.on()</code> 节点监听；(2) 基于触摸数据识别 <strong>Tap（点击）</strong>和 <strong>Swipe（滑动）</strong>手势。
       </p>
 
-      <h3>触摸事件类型</h3>
+      <h3>触摸事件类型（含 Phase 4 未涉及的 TOUCH_CANCEL）</h3>
       <table>
         <thead>
           <tr>

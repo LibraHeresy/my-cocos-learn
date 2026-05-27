@@ -4,7 +4,7 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
 </script>
 
 <template>
-  <PhaseLayout :phase="8" title="微信小游戏适配与发布" duration="2-3 天">
+  <PhaseLayout :phase="1" title="微信小游戏适配与发布" duration="2-3 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
         <li>理解<strong>微信小游戏</strong> JS 运行环境和浏览器的核心差异</li>

@@ -132,6 +132,8 @@ export class TouchInput extends Component {
       <div class="warn-box">
         <strong>注意：</strong>要让触摸生效，节点必须有 <code>UITransform</code> 组件（大部分 UI
         节点默认就有）。如果触摸不响应，先检查节点尺寸是否 > 0。
+        <br /><br />
+        本节只涉及<strong>单点触摸</strong>的基础操作。多点触控、双指缩放、手势识别、虚拟摇杆等进阶话题见 <strong>Phase 21（多点触控与手势）</strong>。
       </div>
     </ConceptBlock>
 

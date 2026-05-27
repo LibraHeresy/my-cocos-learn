@@ -563,18 +563,12 @@ playOneShotWithPitch(path: string) {
       </ul>
 
       <h4>4. 内存泄漏排查</h4>
+      <p>
+        关于 Heap Snapshot 对比分析、Retainer 链定位泄漏源、常见泄漏类型与修复方法的完整教程，见 <strong>Phase 26（内存泄漏排查实战）</strong>。这里只给出实战中最重要的两个检查点：
+      </p>
       <ol>
-        <li>切换到 <strong>Memory</strong> 标签 → 选 "Heap snapshot"</li>
-        <li>游戏开始前拍一张快照（Snapshot 1）</li>
-        <li>玩完一整局后拍第二张（Snapshot 2）</li>
-        <li>回到菜单后再拍第三张（Snapshot 3）</li>
-        <li>
-          对比 Snapshot 1 和 Snapshot 3：JS heap 应该基本一致。如果 Snapshot 3 明显更大 → 有泄漏
-        </li>
-        <li>
-          在 Comparison 视图中按 "Delta"
-          排序——找增长最多的对象类型（通常是闭包、Node、EventCallback）
-        </li>
+        <li>在 Console 中执行 <code>cc.director.getScene()!.children.length</code>——如果运行时持续增长说明对象没有回收</li>
+        <li>场景切换前后在 Memory 面板取 Heap Snapshot 对比——JS heap 应该基本一致，明显增长则有泄漏</li>
       </ol>
 
       <h4>5. 典型性能问题修复对照</h4>

@@ -9,7 +9,7 @@ const route = useRoute()
 const PHASE_COUNTS: Record<string, number> = (() => {
   const counts: Record<string, number> = {}
   for (const r of router.getRoutes()) {
-    const m = (r.name as string)?.match(/^(cocos|art|audio)-phase(\d+)$/)
+    const m = (r.name as string)?.match(/^(cocos|art|audio|engineering)-phase(\d+)$/)
     if (m) {
       const num = parseInt(m[2])
       if (num > (counts[m[1]] ?? 0)) counts[m[1]] = num
@@ -20,10 +20,10 @@ const PHASE_COUNTS: Record<string, number> = (() => {
 
 function getRouteInfo() {
   const name = route.name as string
-  if (name === 'home' || name === 'art' || name === 'audio') {
+  if (name === 'home' || name === 'art' || name === 'audio' || name === 'engineering') {
     return { course: name === 'home' ? 'cocos' : name, phase: null }
   }
-  const match = name.match(/^(cocos|art|audio)-phase(\d+)$/)
+  const match = name.match(/^(cocos|art|audio|engineering)-phase(\d+)$/)
   if (match) {
     return { course: match[1], phase: parseInt(match[2]) }
   }

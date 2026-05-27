@@ -104,80 +104,6 @@ const phaseGroups: PhaseGroup[] = [
     ],
   },
   {
-    label: '发布篇',
-    tagline: '部署上线 —— 像部署 Web 应用一样发布小游戏',
-    phases: [
-      {
-        id: 8,
-        icon: '📱',
-        title: '微信小游戏适配与发布',
-        duration: '2-3 天',
-        summary: '适配音频、分包加载、接入分享/排行榜/广告，完成审核上线全流程。',
-        concepts: ['Bundle 分包', 'InnerAudioContext', '激励视频', 'onShow/onHide'],
-      },
-    ],
-  },
-  {
-    label: '微信生态篇',
-    tagline: '接入微信开放能力 —— 登录、云开发、排行榜，让小游戏拥有完整生态',
-    phases: [
-      {
-        id: 9,
-        icon: '🔐',
-        title: '微信开放能力接入',
-        duration: '1-2 天',
-        summary: 'wx.login 静默登录、用户信息获取、开放数据域排行榜、设备信息与自适应。',
-        concepts: ['wx.login', '开放数据域', 'wx.getSystemInfoSync', 'CloudStorage'],
-      },
-      {
-        id: 10,
-        icon: '☁️',
-        title: '数据持久化与云开发',
-        duration: '1-2 天',
-        summary: '微信云开发（云数据库/云函数/云存储）、玩家进度云端同步、离线数据队列。',
-        concepts: ['云数据库', '云函数', '云存储', '进度同步', '离线队列'],
-      },
-      {
-        id: 11,
-        icon: '📲',
-        title: '真机调试与性能适配',
-        duration: '1-2 天',
-        summary: '远程调试工具链、设备分档策略、WeChat 性能面板、常见机型兼容坑。',
-        concepts: ['真机调试', '设备分档', '性能面板', '机型兼容', '自适应'],
-      },
-    ],
-  },
-  {
-    label: '运营篇',
-    tagline: '让玩家留下来 —— 数值、留存、数据，像做产品一样做游戏',
-    phases: [
-      {
-        id: 12,
-        icon: '📊',
-        title: '游戏数值设计',
-        duration: '2-3 天',
-        summary: '难度曲线设计、经济系统平衡、DPS 与血量计算、关卡节奏编排、数值调优流程。',
-        concepts: ['难度曲线', '经济平衡', 'DPS计算', '关卡节奏', '数值调优'],
-      },
-      {
-        id: 13,
-        icon: '📅',
-        title: '留存系统设计',
-        duration: '2-3 天',
-        summary: '每日签到/任务系统、成就系统、新手引导流程、七日留存活动设计。',
-        concepts: ['每日签到', '每日任务', '成就系统', '新手引导', '七日留存'],
-      },
-      {
-        id: 14,
-        icon: '📈',
-        title: '数据运营分析',
-        duration: '1-2 天',
-        summary: '微信后台数据指标、自定义打点埋点、广告收益优化、数据驱动迭代方法。',
-        concepts: ['DAU/留存', 'wx.reportMonitor', '广告优化', '漏斗分析', '隐私合规'],
-      },
-    ],
-  },
-  {
     label: '物理与关卡篇',
     tagline: '告别手写碰撞 —— 用引擎物理和 Tilemap 搭建真正的关卡',
     phases: [
@@ -200,8 +126,8 @@ const phaseGroups: PhaseGroup[] = [
     ],
   },
   {
-    label: '交互与网络篇',
-    tagline: '多点触控、复杂 UI、实时通信 —— 让游戏"连上网"',
+    label: '交互篇',
+    tagline: '复杂 UI 布局、多点触控与手势 —— 像写 Flexbox 一样搭界面',
     phases: [
       {
         id: 20,
@@ -219,87 +145,11 @@ const phaseGroups: PhaseGroup[] = [
         summary: '双指缩放、滑动方向识别、虚拟摇杆——像 Hammer.js 一样处理复杂触摸。',
         concepts: ['多点触摸', '手势识别', '虚拟摇杆', 'Touch ID 追踪'],
       },
-      {
-        id: 22,
-        icon: '🌐',
-        title: 'WebSocket 实时通信',
-        duration: '1-2 天',
-        summary: '连接管理、心跳保活、消息协议设计、简单对战同步——让游戏拥有网络能力。',
-        concepts: ['WebSocket', '心跳', '消息协议', '断线重连'],
-      },
     ],
   },
   {
-    label: '表现与优化篇',
-    tagline: '骨骼动画、手感打磨、内存与纹理——让游戏"看起来专业"',
-    phases: [
-      {
-        id: 23,
-        icon: '🦴',
-        title: 'Spine 骨骼动画',
-        duration: '1-2 天',
-        summary: 'Spine vs 序列帧选型、导入管线、运行时换皮、动画混合——像 Lottie 一样丝滑。',
-        concepts: ['Spine', '骨骼动画', '换皮', '动画混合'],
-      },
-      {
-        id: 24,
-        icon: '💫',
-        title: '游戏手感设计',
-        duration: '1 天',
-        summary: '屏幕震动、击打停顿、镜头跟随延迟、粒子爆发——游戏"手感"的量化方法。',
-        concepts: ['屏幕震动', '冻结帧', '镜头跟随', '视听同步'],
-      },
-      {
-        id: 25,
-        icon: '🗜️',
-        title: '纹理压缩与内存优化',
-        duration: '1 天',
-        summary: 'ETC2/ASTC/PVRTC 选型、Mipmap、SpriteAtlas 进阶、移动端纹理预算实战。',
-        concepts: ['纹理压缩', 'Mipmap', 'SpriteAtlas', '内存预算'],
-      },
-      {
-        id: 26,
-        icon: '🔍',
-        title: '内存泄漏排查实战',
-        duration: '1 天',
-        summary: '常见泄漏场景、Chrome Memory 面板、node.destroy 陷阱、事件清理检查清单。',
-        concepts: ['内存泄漏', 'Heap Snapshot', '事件清理', 'SafeDestroy'],
-      },
-    ],
-  },
-  {
-    label: '跨平台与模式篇',
-    tagline: '多端发布、国际化、TS 设计模式 —— 生产级项目的最后拼图',
-    phases: [
-      {
-        id: 27,
-        icon: '🌍',
-        title: '国际化 i18n',
-        duration: '1 天',
-        summary: '字符串表方案、运行时语言切换、CJK 字体裁剪——像 vue-i18n 一样做多语言。',
-        concepts: ['字符串表', '语言切换', '字体子集', 'RTL 适配'],
-      },
-      {
-        id: 28,
-        icon: '📦',
-        title: 'Web / 原生平台发布',
-        duration: '1 天',
-        summary: 'Web Mobile 部署、iOS/Android 原生构建、JSBridge、平台差异处理。',
-        concepts: ['Web Mobile', '原生构建', 'JSBridge', '平台差异'],
-      },
-      {
-        id: 29,
-        icon: '💎',
-        title: 'TypeScript 游戏模式',
-        duration: '1 天',
-        summary: 'Discriminated Union 做状态、Zod 校验配置、Branded Types——前端 TS 技巧在游戏中的落地。',
-        concepts: ['Discriminated Union', 'Zod', 'Branded Types', 'DI'],
-      },
-    ],
-  },
-  {
-    label: '工程化篇',
-    tagline: '专业级交付 —— Shader、测试、CI/CD，让游戏开发像前端工程一样可靠',
+    label: '画面与性能篇',
+    tagline: 'Shader 特效、Spine 骨骼动画、纹理压缩 —— 让游戏"好看又能跑"',
     phases: [
       {
         id: 15,
@@ -310,20 +160,34 @@ const phaseGroups: PhaseGroup[] = [
         concepts: ['Cocos Effect', 'Fragment Shader', '后处理', '溶解效果', '描边'],
       },
       {
-        id: 16,
-        icon: '🧪',
-        title: '游戏测试体系',
+        id: 23,
+        icon: '🦴',
+        title: 'Spine 骨骼动画',
         duration: '1-2 天',
-        summary: '游戏逻辑单元测试、录制回放回归测试、性能基准测试、兼容性测试矩阵。',
-        concepts: ['单元测试', '回归测试', '性能基准', '兼容性矩阵', 'Vitest'],
+        summary: 'Spine vs 序列帧选型、导入管线、运行时换皮、动画混合——像 Lottie 一样丝滑。',
+        concepts: ['Spine', '骨骼动画', '换皮', '动画混合'],
       },
       {
-        id: 17,
-        icon: '🚀',
-        title: 'CI/CD 构建流水线',
-        duration: '1-2 天',
-        summary: 'Cocos CLI 构建、GitHub Actions 自动化、多平台构建矩阵、Bundle 热更新。',
-        concepts: ['Cocos CLI', 'GitHub Actions', '热更新', '多平台构建', '发布流水线'],
+        id: 25,
+        icon: '🗜️',
+        title: '纹理压缩与内存优化',
+        duration: '1 天',
+        summary: 'ETC2/ASTC/PVRTC 选型、Mipmap、SpriteAtlas 进阶、移动端纹理预算实战。',
+        concepts: ['纹理压缩', 'Mipmap', 'SpriteAtlas', '内存预算'],
+      },
+    ],
+  },
+  {
+    label: '跨平台发布篇',
+    tagline: '多端部署 —— Web Mobile、iOS/Android 原生构建',
+    phases: [
+      {
+        id: 28,
+        icon: '📦',
+        title: 'Web / 原生平台发布',
+        duration: '1 天',
+        summary: 'Web Mobile 部署、iOS/Android 原生构建、JSBridge、平台差异处理。',
+        concepts: ['Web Mobile', '原生构建', 'JSBridge', '平台差异'],
       },
     ],
   },
@@ -356,7 +220,7 @@ const phaseGroups: PhaseGroup[] = [
             v-for="p in group.phases"
             :key="p.id"
             :to="`/cocos/phase/${p.id}`"
-            class="phase-card"
+            :id="`phase-${p.id}`" class="phase-card"
           >
             <div class="card-top">
               <span class="card-icon">{{ p.icon }}</span>
@@ -435,14 +299,12 @@ const phaseGroups: PhaseGroup[] = [
       <div class="footer-card">
         <span class="footer-icon">⏱️</span>
         <div>
-          <p>总共约 <strong>10-14 周</strong>，每天投入 2-4 小时。</p>
+          <p>总共约 <strong>6-9 周</strong>，每天投入 2-4 小时。</p>
           <p class="footer-path">
             核心路径：<em
               >入门：帧驱动+节点体系 → 核心：渲染+输入+碰撞 → 架构：对象池+状态机 → 实战：飞机大战 →
-              发布：微信小游戏 → 微信生态：登录+云开发+真机调试 → 运营：数值+留存+数据分析 →
-              物理与关卡：2D物理+Tilemap → 交互与网络：UI+触控+WebSocket →
-              表现与优化：Spine+手感+纹理+内存 → 工程化：Shader+测试+CI/CD →
-              跨平台与模式：i18n+多端发布+TS模式</em
+              物理与关卡：2D物理+Tilemap → 交互：UI+触控 → 画面与性能：Shader+Spine+纹理压缩 →
+              跨平台发布：多端构建</em
             >
           </p>
         </div>

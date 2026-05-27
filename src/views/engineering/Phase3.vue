@@ -4,7 +4,7 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
 </script>
 
 <template>
-  <PhaseLayout :phase="10" title="数据持久化与云开发" duration="1-2 天">
+  <PhaseLayout :phase="3" title="数据持久化与云开发" duration="1-2 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
         <li>了解<strong>微信云开发</strong>的三大核心能力，告别"从零搭建后端"的焦虑</li>

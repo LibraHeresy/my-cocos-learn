@@ -578,6 +578,8 @@ scrollView.scrollToPercentX(0.5)  // 滚到水平 50% 位置</code></pre>
       <div class="tip-box">
         <strong>性能注意：</strong>Mask 会触发额外的渲染步骤（Stencil Buffer）。一个场景中 Mask
         数量不要太多（建议 &lt; 5 个）。简单的裁剪场景优先考虑用代码控制 content 区域而不是堆 Mask。
+        <br /><br />
+        本节讲的是 ScrollView 的<strong>基础使用</strong>。更高级的 Grid Layout + ScrollView 背包、水平滚动商店、虚拟列表优化见 <strong>Phase 20（复杂 UI 与 ScrollView）</strong>。
       </div>
     </ConceptBlock>
 

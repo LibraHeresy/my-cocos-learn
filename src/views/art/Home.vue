@@ -148,7 +148,7 @@ const phaseGroups: PhaseGroup[] = [
           <p class="group-tagline">{{ group.tagline }}</p>
         </div>
         <div class="phases-grid">
-          <RouterLink v-for="p in group.phases" :key="p.id" :to="`/art/phase/${p.id}`" class="phase-card">
+          <RouterLink v-for="p in group.phases" :key="p.id" :to="`/art/phase/${p.id}`" :id="`phase-${p.id}`" class="phase-card">
             <div class="card-top">
               <span class="card-icon">{{ p.icon }}</span>
               <span class="card-duration">{{ p.duration }}</span>

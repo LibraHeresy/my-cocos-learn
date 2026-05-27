@@ -4,7 +4,7 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
 </script>
 
 <template>
-  <PhaseLayout :phase="14" title="数据运营分析" duration="1-2 天">
+  <PhaseLayout :phase="7" title="数据运营分析" duration="1-2 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
         <li>读懂<strong>DAU / WAU / MAU / 留存率</strong>等核心数据指标，用数据判断游戏健康状况</li>

@@ -62,6 +62,8 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
       <div class="tip-box">
         <strong>推荐：</strong
         >飞机大战中所有碰撞用手写。只有几十行代码，但性能和可控性远超物理引擎。你需要做的只是判断两个矩形是否重叠。
+        <br /><br />
+        <strong>预告：</strong>学完手写碰撞后，<strong>Phase 18（2D 物理引擎入门）</strong>会教你何时该切换到内置物理——手写碰撞不是万能的，需要物理模拟（重力、摩擦力、弹性碰撞）时就要上引擎了。
       </div>
     </ConceptBlock>
 

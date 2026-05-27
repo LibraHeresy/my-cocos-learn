@@ -114,6 +114,7 @@
     transform 0.2s;
   color: var(--color-text);
   cursor: pointer;
+  scroll-margin-top: 5rem;
 }
 
 .phase-card:hover {

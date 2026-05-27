@@ -264,12 +264,10 @@ Web Desktop:
 
     <ConceptBlock icon="🗺️" title="SpriteAtlas 进阶——合图的正确姿势">
       <p>
-        SpriteAtlas 把多张小纹理打包成一张大图，作用有两个：
-        ① <strong>减少 DrawCall</strong>（同一 Atlas 的 Sprite 可以合批渲染）；
-        ② <strong>提高纹理存储效率</strong>（减少碎片化和 GPU 纹理切换）。
+        Phase 3 中你学会了创建 Auto Atlas 的基本操作。本节聚焦<strong>生产级策略</strong>：如何分组、如何配置参数、避免常见的空间浪费。
       </p>
 
-      <h3>多 Atlas 策略</h3>
+      <h3>多 Atlas 策略（Phase 3 未涉及）</h3>
       <pre><code>不是所有纹理都塞进一个 Atlas！按"渲染批次"分组：
 
 atlas_ui.spriteAtlas       ← UI 元素（按钮、图标、面板）

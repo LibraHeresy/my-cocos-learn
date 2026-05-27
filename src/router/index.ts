@@ -253,6 +253,81 @@ const router = createRouter({
       component: () => import('@/views/audio/Home.vue'),
     },
     ...audioPhases,
+    {
+      path: '/engineering',
+      name: 'engineering',
+      component: () => import('@/views/engineering/Home.vue'),
+    },
+    {
+      path: '/engineering/phase/1',
+      name: 'engineering-phase1',
+      component: () => import('@/views/engineering/Phase1.vue'),
+    },
+    {
+      path: '/engineering/phase/2',
+      name: 'engineering-phase2',
+      component: () => import('@/views/engineering/Phase2.vue'),
+    },
+    {
+      path: '/engineering/phase/3',
+      name: 'engineering-phase3',
+      component: () => import('@/views/engineering/Phase3.vue'),
+    },
+    {
+      path: '/engineering/phase/4',
+      name: 'engineering-phase4',
+      component: () => import('@/views/engineering/Phase4.vue'),
+    },
+    {
+      path: '/engineering/phase/5',
+      name: 'engineering-phase5',
+      component: () => import('@/views/engineering/Phase5.vue'),
+    },
+    {
+      path: '/engineering/phase/6',
+      name: 'engineering-phase6',
+      component: () => import('@/views/engineering/Phase6.vue'),
+    },
+    {
+      path: '/engineering/phase/7',
+      name: 'engineering-phase7',
+      component: () => import('@/views/engineering/Phase7.vue'),
+    },
+    {
+      path: '/engineering/phase/8',
+      name: 'engineering-phase8',
+      component: () => import('@/views/engineering/Phase8.vue'),
+    },
+    {
+      path: '/engineering/phase/9',
+      name: 'engineering-phase9',
+      component: () => import('@/views/engineering/Phase9.vue'),
+    },
+    {
+      path: '/engineering/phase/10',
+      name: 'engineering-phase10',
+      component: () => import('@/views/engineering/Phase10.vue'),
+    },
+    {
+      path: '/engineering/phase/11',
+      name: 'engineering-phase11',
+      component: () => import('@/views/engineering/Phase11.vue'),
+    },
+    {
+      path: '/engineering/phase/12',
+      name: 'engineering-phase12',
+      component: () => import('@/views/engineering/Phase12.vue'),
+    },
+    {
+      path: '/engineering/phase/13',
+      name: 'engineering-phase13',
+      component: () => import('@/views/engineering/Phase13.vue'),
+    },
+    {
+      path: '/engineering/phase/14',
+      name: 'engineering-phase14',
+      component: () => import('@/views/engineering/Phase14.vue'),
+    },
   ],
   scrollBehavior() {
     return { top: 0, behavior: 'instant' }

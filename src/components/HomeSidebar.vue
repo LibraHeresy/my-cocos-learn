@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { RouterLink } from 'vue-router'
+import { ref } from 'vue'
 
 interface Phase {
   id: number
@@ -22,9 +21,8 @@ defineProps<{
   course: string
 }>()
 
-const activeIndex = ref(0)
-
-let observer: IntersectionObserver | null = null
+const activeIndex = ref(-1)
+const activePhaseId = ref(-1)
 
 function slug(text: string): string {
   return text
@@ -33,31 +31,23 @@ function slug(text: string): string {
     .replace(/^-+|-+$/g, '')
 }
 
-function scrollTo(label: string) {
+function scrollToGroup(label: string, index: number) {
+  activeIndex.value = index
+  activePhaseId.value = -1
   const el = document.getElementById(slug(label))
   if (el) {
     el.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 }
 
-onMounted(() => {
-  observer = new IntersectionObserver(
-    (entries) => {
-      for (const entry of entries) {
-        if (entry.isIntersecting) {
-          const idx = parseInt(entry.target.dataset.index || '0')
-          activeIndex.value = idx
-        }
-      }
-    },
-    { rootMargin: '-80px 0px -60% 0px' },
-  )
-  document.querySelectorAll('[data-group-index]').forEach((el) => observer!.observe(el))
-})
-
-onBeforeUnmount(() => {
-  observer?.disconnect()
-})
+function scrollToPhase(phaseId: number, groupIndex: number) {
+  activeIndex.value = groupIndex
+  activePhaseId.value = phaseId
+  const el = document.getElementById(`phase-${phaseId}`)
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+}
 </script>
 
 <template>
@@ -69,15 +59,20 @@ onBeforeUnmount(() => {
           :href="`#${slug(g.label)}`"
           class="sidebar-link sidebar-group-link"
           :class="{ active: activeIndex === i }"
-          @click.prevent="scrollTo(g.label)"
+          @click.prevent="scrollToGroup(g.label, i)"
         >
           {{ g.label }}
         </a>
         <ul class="sidebar-sub-list">
           <li v-for="p in g.phases" :key="p.id" class="sidebar-sub-item">
-            <RouterLink :to="`/${course}/phase/${p.id}`" class="sidebar-sub-link">
+            <a
+              :href="`#phase-${p.id}`"
+              class="sidebar-sub-link"
+              :class="{ active: activePhaseId === p.id }"
+              @click.prevent="scrollToPhase(p.id, i)"
+            >
               {{ p.title }}
-            </RouterLink>
+            </a>
           </li>
         </ul>
       </li>
@@ -167,7 +162,7 @@ onBeforeUnmount(() => {
   color: var(--color-primary);
 }
 
-.sidebar-sub-link.router-link-active {
+.sidebar-sub-link.active {
   color: var(--color-primary);
   font-weight: 500;
 }
