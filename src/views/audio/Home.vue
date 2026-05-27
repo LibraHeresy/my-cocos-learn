@@ -66,17 +66,17 @@ const phaseGroups: PhaseGroup[] = [
 
 <template>
   <div class="home">
-    <section class="hero">
+    <header class="hero">
       <p class="hero-eyebrow">游戏音效</p>
       <h1>从<span class="highlight">零基础</span>到完整游戏音频</h1>
       <p class="subtitle">
         使用免费工具（BFXR、Audacity、Bosca
         Ceoil），纯合成方式生成全部游戏音效和背景音乐，无需任何录音设备或音乐基础。
       </p>
-    </section>
+    </header>
 
     <section class="phases-section">
-      <h2 class="section-title">课程阶段</h2>
+      <h2 class="section-title">学习路径</h2>
 
       <div v-for="group in phaseGroups" :key="group.label" class="phase-group">
         <div class="group-header">
@@ -89,19 +89,29 @@ const phaseGroups: PhaseGroup[] = [
               <span class="card-icon">{{ p.icon }}</span>
               <span class="card-duration">{{ p.duration }}</span>
             </div>
-            <span class="card-phase">阶段 {{ p.id }}</span>
-            <strong class="card-title">{{ p.title }}</strong>
+            <span class="card-phase">第 {{ p.id }} 阶段</span>
+            <h3>{{ p.title }}</h3>
             <p class="card-summary">{{ p.summary }}</p>
-            <div class="card-concepts">
-              <span v-for="c in p.concepts" :key="c" class="concept-tag">{{ c }}</span>
+            <div class="card-tags">
+              <span v-for="c in p.concepts" :key="c" class="tag">{{ c }}</span>
             </div>
           </RouterLink>
         </div>
       </div>
     </section>
 
-    <footer class="course-footer">
+    <footer class="home-footer">
       <div class="footer-card">
+        <span class="footer-icon">🎧</span>
+        <div>
+          <p>总共约 <strong>4-7 天</strong>，每天投入 1-2 小时。</p>
+          <p class="footer-path">
+            核心路径：<em>音频基础 → 射击音效制作 → 背景音乐 → Cocos 音频集成</em>
+          </p>
+        </div>
+      </div>
+
+      <div class="tools-card">
         <h3>🛠️ 本课程使用的工具</h3>
         <div class="tool-grid">
           <div class="tool-item">
@@ -137,6 +147,7 @@ const phaseGroups: PhaseGroup[] = [
   padding: 3rem 1.5rem 2rem;
 }
 
+/* ---- Hero ---- */
 .hero {
   text-align: center;
   margin-bottom: 3.5rem;
@@ -182,6 +193,7 @@ const phaseGroups: PhaseGroup[] = [
   line-height: 1.7;
 }
 
+/* ---- Section title ---- */
 .section-title {
   font-size: 1.2rem;
   margin-bottom: 1.15rem;
@@ -189,6 +201,7 @@ const phaseGroups: PhaseGroup[] = [
   border-left: 3px solid var(--color-primary);
 }
 
+/* ---- 阶段卡片 ---- */
 .phases-section {
   margin-bottom: 3.5rem;
 }
@@ -280,46 +293,86 @@ const phaseGroups: PhaseGroup[] = [
   margin-bottom: 0.3rem;
 }
 
-.card-title {
-  font-size: 1.02rem;
-  font-weight: 600;
-  margin-bottom: 0.4rem;
+.phase-card h3 {
+  font-size: 1.08rem;
+  margin-bottom: 0.45rem;
 }
 
 .card-summary {
   font-size: 0.83rem;
   color: var(--color-text-muted);
-  line-height: 1.55;
+  line-height: 1.65;
   flex: 1;
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.85rem;
 }
 
-.card-concepts {
+.card-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
 }
 
-.concept-tag {
-  font-size: 0.7rem;
+.tag {
+  font-size: 0.68rem;
   background: var(--color-bg-soft);
-  color: var(--color-text-muted);
   padding: 0.2em 0.6em;
-  border-radius: 6px;
+  border-radius: 10px;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border-light);
 }
 
-.course-footer {
-  margin-top: 1rem;
+/* ---- Footer ---- */
+.home-footer {
+  text-align: center;
 }
 
 .footer-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  padding: 1.15rem 1.4rem;
+  text-align: left;
+  box-shadow: var(--shadow-sm);
+}
+
+.footer-card p {
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.footer-card p:last-child {
+  margin-bottom: 0;
+}
+
+.footer-icon {
+  font-size: 1.4rem;
+  line-height: 1;
+  margin-top: 0.1rem;
+}
+
+.footer-path {
+  font-size: 0.82rem;
+}
+
+.footer-path em {
+  font-style: normal;
+  color: var(--color-primary);
+}
+
+.tools-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border-light);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
+  margin-top: 1.5rem;
+  text-align: left;
 }
 
-.footer-card h3 {
+.tools-card h3 {
   margin-bottom: 1rem;
 }
 

@@ -10,6 +10,7 @@ defineProps<{
 
 <template>
   <div class="phase-layout">
+    <!-- 进度指示器 -->
     <div class="progress-bar" aria-label="学习进度">
       <div
         v-for="i in 4"

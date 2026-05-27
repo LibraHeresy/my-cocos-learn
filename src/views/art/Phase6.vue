@@ -384,7 +384,7 @@ const slice9Stretched = makeSlice9Panel(25)
         </li>
         <li>
           <strong>延迟加载、场景销毁时释放：</strong>结算界面只在过关后显示，平常不要占用内存。Cocos 场景切换时默认释放旧场景资源，但要注意
-          <code>cc.assetManager</code> 的手动管理
+          <code>import { assetManager } from 'cc'</code> 的手动管理
         </li>
       </ol>
 

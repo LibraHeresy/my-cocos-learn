@@ -10,7 +10,8 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
         <li>规范组织 <code>assets/</code> 目录结构</li>
         <li>导入图片资源，创建 <strong>SpriteFrame</strong>、<strong>Scale9Sprite</strong> 和 <strong>Atlas</strong> 图集</li>
         <li>用 <strong>Profiler</strong> 面板监控 <strong>FPS</strong>/<strong>DrawCall</strong>/渲染耗时</li>
-        <li>用 <strong>Animation</strong> Editor 制作<strong>帧动画</strong>（爆炸、行走等）</li>
+        <li>用 <strong>Animation</strong> 组件和 Editor 制作帧动画与属性动画，理解何时用内置 Animation vs 手写 vs tween</li>
+        <li>用 <strong>ParticleSystem2D</strong> 制作引擎火焰、爆炸火花、星空背景等粒子特效</li>
         <li>用 <strong><code>cc.tween</code></strong> 写 UI 动效（弹窗、按钮反馈）</li>
         <li>理解<strong>资源加载</strong> <code>resources.load()</code> 的异步流程</li>
         <li>搭建 <strong>Loading</strong> 场景预加载资源</li>
@@ -298,6 +299,113 @@ lateUpdate() {
       </div>
     </ConceptBlock>
 
+    <!-- ============ Particle ============ -->
+    <ConceptBlock icon="✨" title="ParticleSystem2D —— 2D 粒子系统">
+      <p>
+        Cocos Creator 3.x 内置了 <strong>ParticleSystem2D</strong> 组件，用于产生大量小型精灵的运动效果——
+        引擎火焰尾迹、爆炸火花、飘落的星空粒子、道具光晕等。它的工作原理和 Object Pool 很像：预创建一批粒子节点，
+        在生命周期内自动回收复用。
+      </p>
+
+      <h3>添加粒子系统</h3>
+      <ol>
+        <li>在场景中创建一个空节点</li>
+        <li>添加组件 → 2D → <strong>ParticleSystem2D</strong></li>
+        <li>将粒子贴图（.plist + .png 或单独的 .png）拖入组件的 <strong>Custom</strong> 材质贴图字段</li>
+        <li>调整参数，实时预览效果</li>
+      </ol>
+
+      <h3>核心参数速查</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>参数分类</th>
+            <th>关键字段</th>
+            <th>作用</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>发射控制</strong></td>
+            <td>TotalParticles、Duration、EmissionRate</td>
+            <td>粒子总数、发射周期、每秒发射数量</td>
+          </tr>
+          <tr>
+            <td><strong>生命周期</strong></td>
+            <td>Life、LifeVariance</td>
+            <td>每个粒子的存活时间（秒）及其随机范围</td>
+          </tr>
+          <tr>
+            <td><strong>运动</strong></td>
+            <td>Speed、SpeedVariance、Angle、AngleVariance、Gravity</td>
+            <td>初速度、发射角度、重力（X/Y 方向）</td>
+          </tr>
+          <tr>
+            <td><strong>外观</strong></td>
+            <td>StartSize、EndSize、StartColor、EndColor、StartSpin、EndSpin</td>
+            <td>粒子从出生到消亡的大小/颜色/旋转渐变</td>
+          </tr>
+          <tr>
+            <td><strong>混合模式</strong></td>
+            <td>BlendFuncSrc / BlendFuncDst</td>
+            <td>SRC_ALPHA + ONE 用于火焰（叠加变亮），SRC_ALPHA + ONE_MINUS_SRC_ALPHA 用于烟雾</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>飞机大战典型配置</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>效果</th>
+            <th>贴图</th>
+            <th>关键参数</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>引擎火焰</strong></td>
+            <td>8×8 黄色渐变点</td>
+            <td>TotalParticles=30, Speed=80~120, Life=0.3~0.5, StartSize=6 EndSize=0, Angle=90°（向下）, Gravity.y=50</td>
+          </tr>
+          <tr>
+            <td><strong>爆炸火花</strong></td>
+            <td>4×4 白色方块</td>
+            <td>TotalParticles=40, Speed=200~350, Life=0.2~0.4, StartColor=橙 EndColor=透明, Angle=0~360, Gravity=0</td>
+          </tr>
+          <tr>
+            <td><strong>星空背景</strong></td>
+            <td>2×2 白色点</td>
+            <td>TotalParticles=100, Speed=20~50, Life=5~8, StartSize=2 EndSize=0, Angle=180°（向下飘）, EmissionRate=5</td>
+          </tr>
+          <tr>
+            <td><strong>拾取光晕</strong></td>
+            <td>16×16 圆环</td>
+            <td>TotalParticles=10, Speed=30~60, Life=0.3~0.5, StartSpin=0 EndSpin=360, Blend=Additive</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>粒子 vs 帧动画：决策标准</h3>
+      <p>
+        粒子系统适合<strong>随机、非确定性</strong>的效果（火花方向不确定、火焰摇曳），帧动画适合
+        <strong>可预测、顺序播放</strong>的效果（角色行走、爆炸固定序列）。两者经常配合使用——爆炸动画的
+        主体用帧动画，周围的火花碎屑用粒子系统。
+      </p>
+
+      <div class="tip-box">
+        <strong>性能提示：</strong>粒子系统虽然自动管理节点回收，但 TotalParticles 设太高（&gt;500）
+        仍会影响性能。在移动端建议单场景粒子总数不超过 200。小游戏平台控制在 100 以内。可以在不同设备上
+        动态调整 <code>TotalParticles</code> 值。
+      </div>
+
+      <div class="warn-box">
+        <strong>常见坑：</strong>粒子贴图必须勾选 <strong>Packable</strong>（若用到 Auto Atlas），
+        否则合批后粒子会消失。另外粒子系统的 Blend 模式如果设为 Additive，在浅色背景上会"看不见"——这是正常的，
+        只需要确保粒子背后有深色内容（比如星空背景）。
+      </div>
+    </ConceptBlock>
+
     <!-- ============ Atlas ============ -->
     <ConceptBlock icon="🗂️" title="Atlas 图集 —— 性能优化的关键">
       <p>
@@ -511,6 +619,127 @@ tween(this.node)
       </div>
     </ConceptBlock>
 
+    <!-- ============ Animation 组件 ============ -->
+    <ConceptBlock icon="🎞️" title="Animation 组件 —— 内置动画系统">
+      <p>
+        上面讲的两种方式（代码帧动画 + cc.tween）适合轻量场景。但当你需要<strong>可视化编排复杂动画</strong>——比如敌人的多状态动画树（待机/追击/攻击/死亡）、UI 交互动效——就应该用 Cocos 内置的 <strong>Animation 组件</strong>。
+      </p>
+
+      <h3>核心概念</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>概念</th>
+            <th>类比</th>
+            <th>说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Animation 组件</strong></td>
+            <td>Vue <code>&lt;Transition&gt;</code></td>
+            <td>挂载到节点上的动画播放器，控制动画的播放/暂停/切换</td>
+          </tr>
+          <tr>
+            <td><strong>AnimationClip</strong></td>
+            <td>CSS <code>@keyframes</code> 动画片段</td>
+            <td>一段具体的动画数据：哪些属性在什么时间变成什么值。.anim 文件</td>
+          </tr>
+          <tr>
+            <td><strong>Animation Editor</strong></td>
+            <td>浏览器 DevTools Animations 面板</td>
+            <td>可视化编辑动画的窗口——拖拽时间轴、添加关键帧、调整曲线</td>
+          </tr>
+          <tr>
+            <td><strong>Animator</strong>（可选）</td>
+            <td>状态管理（类似 Pinia store）</td>
+            <td>管理多个 AnimationClip 之间的切换和过渡条件（适合复杂的动画状态机）</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>三种创建动画的方式</h3>
+      <ol>
+        <li>
+          <strong>属性关键帧动画：</strong>在 Animation Editor 中给节点的 position/scale/rotation/color/opacity 添加关键帧，自动生成补间。适合 UI 弹窗、角色移动、淡入淡出。
+        </li>
+        <li>
+          <strong>SpriteFrame 序列帧动画：</strong>在 Animation Editor 中逐帧指定不同的 SpriteFrame，Cocos 自动按时间轴切换。适合爆炸、角色走动、图标闪烁等逐帧动画。
+        </li>
+        <li>
+          <strong>代码控制播放：</strong>用脚本调用 <code>anim.play('clipName')</code>、<code>anim.pause()</code>、<code>anim.resume()</code>，
+          配合 <code>Animation.EventType.FINISHED</code> 监听动画结束事件。
+        </li>
+      </ol>
+
+      <h3>手写帧动画 vs 内置 Animation 组件：如何选择</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>场景</th>
+            <th>推荐方案</th>
+            <th>原因</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>简单的 SpriteFrame 循环（如火焰 4 帧）</td>
+            <td>手写 FrameAnimator</td>
+            <td>代码量少，无需额外的 .anim 资源文件</td>
+          </tr>
+          <tr>
+            <td>复杂的多属性动画（位移+缩放+淡入同时发生）</td>
+            <td>Animation 组件</td>
+            <td>可视化编辑更直观，调整曲线不必改代码</td>
+          </tr>
+          <tr>
+            <td>多状态动画切换（待机→追击→攻击→死亡）</td>
+            <td>Animation + Animator</td>
+            <td>内置过渡和条件判断，避免手写大量状态逻辑</td>
+          </tr>
+          <tr>
+            <td>UI 过渡动效（弹窗弹出、按钮 hover）</td>
+            <td>cc.tween（代码）</td>
+            <td>更灵活，可以动态计算目标值，不需要预先录制</td>
+          </tr>
+          <tr>
+            <td>运行时动态创建的动画（如道具飞向玩家）</td>
+            <td>cc.tween（代码）</td>
+            <td>目标位置依赖运行时数据，无法在编辑器中预设</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>代码示例：加载并播放 AnimationClip</h3>
+      <pre><code>import { Component, _decorator, Animation } from 'cc'
+const { ccclass, property } = _decorator
+
+@ccclass('EnemyAnimCtrl')
+export class EnemyAnimCtrl extends Component {
+
+  @property(Animation)
+  anim: Animation = null
+
+  playState(state: 'idle' | 'chase' | 'attack' | 'die') {
+    // 播放对应动画（Animation 组件会自动找到同名的 AnimationClip）
+    this.anim.play(state)
+  }
+
+  onAnimationFinished() {
+    // 死亡动画播完后销毁节点
+    this.anim.once(Animation.EventType.FINISHED, () => {
+      this.node.destroy()
+    })
+  }
+}</code></pre>
+
+      <div class="tip-box">
+        <strong>AnimationClip 的位置：</strong>AnimationClip 通常和引用它的节点放在同一目录下。
+        也可以直接嵌入 Animation 组件的 <strong>Clips</strong> 数组——在属性检查器中点击 "+" 添加。
+        每个 AnimationClip 的 <strong>WrapMode</strong> 决定播放模式：Normal（播放一次）、Loop（循环）、PingPong（来回）。
+      </div>
+    </ConceptBlock>
+
     <!-- ============ 资源加载 ============ -->
     <ConceptBlock icon="📥" title="资源动态加载">
       <p>
@@ -674,7 +903,10 @@ export class ScorePopup extends Component {
         <li>Color 有哪几种创建方式？如何在 update 中复用向量避免 GC？</li>
         <li>Graphics 组件适合什么场景？它和 Sprite 的性能差异是什么？</li>
         <li>Atlas 图集为什么能提升性能？什么情况下不需要 Atlas？</li>
-        <li>帧动画和 Tween 动画各自适合什么场景？</li>
+        <li>帧动画（手写）、内置 Animation 组件、cc.tween 各自适合什么场景？如何选择？</li>
+        <li>Animation 组件中的 AnimationClip 有哪三种 WrapMode？分别是什么行为？</li>
+        <li>ParticleSystem2D 的 TotalParticles、Life、Speed 分别控制什么？Blend 模式 Additive 适合什么效果？</li>
+        <li>什么场景用粒子系统，什么场景用帧动画？引擎火焰应该用哪个？</li>
         <li><code>resources.load()</code> 加载的路径是相对于哪个目录的？</li>
         <li>给节点挂 <code>UIOpacity</code> 组件后，如何用 tween 做淡入效果？</li>
         <li>在 <code>onDestroy</code> 中需要如何处理正在运行的 tween？</li>

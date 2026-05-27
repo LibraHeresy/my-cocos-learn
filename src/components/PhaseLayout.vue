@@ -22,7 +22,7 @@ defineProps<{
 
     <header class="phase-header">
       <RouterLink to="/" class="back-link">
-        <span class="back-arrow">&larr;</span> 返回课程总览
+        <span class="back-arrow">&larr;</span> 返回 Cocos 课程
       </RouterLink>
       <div class="header-meta">
         <span class="phase-badge">第 {{ phase }} 阶段</span>

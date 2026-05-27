@@ -78,7 +78,8 @@ const phaseGroups: PhaseGroup[] = [
         icon: '🏗️',
         title: '游戏架构模式',
         duration: '2-3 天',
-        summary: '对象池（Node Pool）、事件总线（Event Bus）、状态机——前端熟悉的设计模式在游戏中的落地。',
+        summary:
+          '对象池（Node Pool）、事件总线（Event Bus）、状态机——前端熟悉的设计模式在游戏中的落地。',
         concepts: ['Object Pool', 'Event Bus', '状态机', 'GameManager'],
       },
     ],
@@ -136,7 +137,12 @@ const phaseGroups: PhaseGroup[] = [
           <p class="group-tagline">{{ group.tagline }}</p>
         </div>
         <div class="phases-grid">
-          <RouterLink v-for="p in group.phases" :key="p.id" :to="`/cocos/phase/${p.id}`" class="phase-card">
+          <RouterLink
+            v-for="p in group.phases"
+            :key="p.id"
+            :to="`/cocos/phase/${p.id}`"
+            class="phase-card"
+          >
             <div class="card-top">
               <span class="card-icon">{{ p.icon }}</span>
               <span class="card-duration">{{ p.duration }}</span>
@@ -156,7 +162,7 @@ const phaseGroups: PhaseGroup[] = [
     <section class="mapping-section">
       <h2 class="section-title">Vue → Cocos 概念速查</h2>
       <div class="table-wrapper">
-        <table>
+        <table class="mapping-table">
           <thead>
             <tr>
               <th>Vue / 前端</th>
@@ -217,9 +223,35 @@ const phaseGroups: PhaseGroup[] = [
           <p>总共约 <strong>4-5 周</strong>，每天投入 2-4 小时。</p>
           <p class="footer-path">
             核心路径：<em
-              >入门：帧驱动+节点体系 → 核心：渲染+输入+碰撞 → 架构：对象池+状态机 → 实战：飞机大战 → 发布：微信小游戏</em
+              >入门：帧驱动+节点体系 → 核心：渲染+输入+碰撞 → 架构：对象池+状态机 → 实战：飞机大战 →
+              发布：微信小游戏</em
             >
           </p>
+        </div>
+      </div>
+
+      <div class="tools-card">
+        <h3>🛠️ 本课程使用的工具</h3>
+        <div class="tool-grid">
+          <div class="tool-item">
+            <strong>Cocos Creator</strong>
+            <span>游戏引擎（3.x）</span>
+            <span>cocos.com/creator</span>
+          </div>
+          <div class="tool-item">
+            <strong>VS Code</strong>
+            <span>代码编辑器</span>
+            <span>code.visualstudio.com</span>
+          </div>
+          <div class="tool-item">
+            <strong>Chrome DevTools</strong>
+            <span>性能分析与调试</span>
+          </div>
+          <div class="tool-item">
+            <strong>微信开发者工具</strong>
+            <span>小游戏调试与预览</span>
+            <span>developers.weixin.qq.com/minigame/dev/devtools</span>
+          </div>
         </div>
       </div>
     </footer>
@@ -418,13 +450,17 @@ const phaseGroups: PhaseGroup[] = [
   box-shadow: var(--shadow-sm);
 }
 
+.mapping-table {
+  margin-bottom: 0;
+}
+
 /* ---- Footer ---- */
 .home-footer {
   text-align: center;
 }
 
 .footer-card {
-  display: inline-flex;
+  display: flex;
   align-items: flex-start;
   gap: 0.8rem;
   background: var(--color-surface);
@@ -455,6 +491,55 @@ const phaseGroups: PhaseGroup[] = [
   font-size: 0.82rem;
 }
 
+.footer-path em {
+  font-style: normal;
+  color: var(--color-primary);
+}
+
+.tools-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  text-align: left;
+}
+
+.tools-card h3 {
+  margin-bottom: 1rem;
+}
+
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+
+.tool-item {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-soft);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+}
+
+.tool-item strong {
+  font-size: 0.9rem;
+  margin-bottom: 0.15rem;
+}
+
+.tool-item span {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.tool-item span:last-child {
+  font-family: monospace;
+  font-size: 0.7rem;
+  color: var(--color-primary);
+  margin-top: 0.15rem;
+}
+
 @media (max-width: 640px) {
   .home {
     padding: 1.5rem 1rem 2rem;
@@ -476,9 +561,21 @@ const phaseGroups: PhaseGroup[] = [
     grid-template-columns: 1fr;
   }
 
-  .footer-card {
-    flex-direction: column;
-    text-align: center;
+  .tool-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .table-wrapper {
+    width: 100%;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  table th,
+  table td {
+    padding: 0.5rem 0.75rem;
   }
 }
 </style>

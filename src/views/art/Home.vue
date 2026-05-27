@@ -151,6 +151,32 @@ const phaseGroups: PhaseGroup[] = [
           </p>
         </div>
       </div>
+
+      <div class="tools-card">
+        <h3>🛠️ 本课程使用的工具</h3>
+        <div class="tool-grid">
+          <div class="tool-item">
+            <strong>Aseprite</strong>
+            <span>像素画绘制与动画（主力工具）</span>
+            <span>aseprite.org</span>
+          </div>
+          <div class="tool-item">
+            <strong>LibreSprite</strong>
+            <span>Aseprite 的开源替代</span>
+            <span>libresprite.github.io</span>
+          </div>
+          <div class="tool-item">
+            <strong>Lospec Palette List</strong>
+            <span>经典调色板参考</span>
+            <span>lospec.com/palette-list</span>
+          </div>
+          <div class="tool-item">
+            <strong>Piskel</strong>
+            <span>浏览器端像素画编辑器（免费）</span>
+            <span>piskelapp.com</span>
+          </div>
+        </div>
+      </div>
     </footer>
   </div>
 </template>
@@ -162,6 +188,7 @@ const phaseGroups: PhaseGroup[] = [
   padding: 3rem 1.5rem 2rem;
 }
 
+/* ---- Hero ---- */
 .hero {
   text-align: center;
   margin-bottom: 3.5rem;
@@ -207,6 +234,7 @@ const phaseGroups: PhaseGroup[] = [
   line-height: 1.7;
 }
 
+/* ---- Section title ---- */
 .section-title {
   font-size: 1.2rem;
   margin-bottom: 1.15rem;
@@ -214,6 +242,7 @@ const phaseGroups: PhaseGroup[] = [
   border-left: 3px solid var(--color-primary);
 }
 
+/* ---- 阶段卡片 ---- */
 .phases-section {
   margin-bottom: 3.5rem;
 }
@@ -333,12 +362,13 @@ const phaseGroups: PhaseGroup[] = [
   border: 1px solid var(--color-border-light);
 }
 
+/* ---- Footer ---- */
 .home-footer {
   text-align: center;
 }
 
 .footer-card {
-  display: inline-flex;
+  display: flex;
   align-items: flex-start;
   gap: 0.8rem;
   background: var(--color-surface);
@@ -369,6 +399,55 @@ const phaseGroups: PhaseGroup[] = [
   font-size: 0.82rem;
 }
 
+.footer-path em {
+  font-style: normal;
+  color: var(--color-primary);
+}
+
+.tools-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  text-align: left;
+}
+
+.tools-card h3 {
+  margin-bottom: 1rem;
+}
+
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+
+.tool-item {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-soft);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+}
+
+.tool-item strong {
+  font-size: 0.9rem;
+  margin-bottom: 0.15rem;
+}
+
+.tool-item span {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.tool-item span:last-child {
+  font-family: monospace;
+  font-size: 0.7rem;
+  color: var(--color-primary);
+  margin-top: 0.15rem;
+}
+
 @media (max-width: 640px) {
   .home {
     padding: 1.5rem 1rem 2rem;
@@ -390,9 +469,8 @@ const phaseGroups: PhaseGroup[] = [
     grid-template-columns: 1fr;
   }
 
-  .footer-card {
-    flex-direction: column;
-    text-align: center;
+  .tool-grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>
