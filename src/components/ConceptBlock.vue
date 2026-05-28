@@ -1,17 +1,13 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import { slug } from '@/utils/slug'
 
 const props = defineProps<{
   title: string
   icon?: string
 }>()
 
-const slugId = computed(() =>
-  props.title
-    .toLowerCase()
-    .replace(/[^a-z0-9一-鿿]+/g, '-')
-    .replace(/^-+|-+$/g, ''),
-)
+const slugId = computed(() => slug(props.title))
 
 const blockRef = ref<HTMLElement | null>(null)
 
