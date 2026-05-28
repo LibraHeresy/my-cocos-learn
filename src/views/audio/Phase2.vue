@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import AudioPhaseLayout from '@/components/AudioPhaseLayout.vue'
+import PhaseLayout from '@/components/PhaseLayout.vue'
 import ConceptBlock from '@/components/ConceptBlock.vue'
 </script>
 
 <template>
-  <AudioPhaseLayout :phase="2" title="射击游戏音效制作" duration="1-2 天">
+  <PhaseLayout :phase="2" title="射击游戏音效制作" duration="1-2 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
         <li>为飞机大战的所有动作设计并制作完整的<strong>射击音效</strong>、<strong>爆炸音效</strong>组</li>
@@ -286,5 +286,5 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
         <li>为什么同一款游戏所有音效的风格要统一？</li>
       </ul>
     </ConceptBlock>
-  </AudioPhaseLayout>
+  </PhaseLayout>
 </template>

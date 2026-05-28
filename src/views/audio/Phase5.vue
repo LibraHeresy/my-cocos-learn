@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import AudioPhaseLayout from '@/components/AudioPhaseLayout.vue'
+import PhaseLayout from '@/components/PhaseLayout.vue'
 import ConceptBlock from '@/components/ConceptBlock.vue'
 </script>
 
 <template>
-  <AudioPhaseLayout :phase="5" title="自适应音乐系统" duration="1-2 天">
+  <PhaseLayout :phase="5" title="自适应音乐系统" duration="1-2 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
         <li>理解<strong>垂直分层</strong>概念：把 BGM 拆成多层独立音轨，按需开关</li>
@@ -392,5 +392,5 @@ onPlayerDamaged(currentHP: number, maxHP: number) {
         <li>游戏状态切换时，为什么用 tween 渐变音量而不是直接 set volume？</li>
       </ul>
     </ConceptBlock>
-  </AudioPhaseLayout>
+  </PhaseLayout>
 </template>

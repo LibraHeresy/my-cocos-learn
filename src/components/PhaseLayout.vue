@@ -34,6 +34,16 @@ const maxPhase = computed(() => {
 })
 
 const courseHome = computed(() => course.value === 'cocos' ? '/' : `/${course.value}`)
+
+const courseLabel = computed(() => {
+  const labels: Record<string, string> = {
+    cocos: '返回 cocos 课程',
+    art: '返回美术课程',
+    audio: '返回音效课程',
+    engineering: '返回工程课程',
+  }
+  return labels[course.value] ?? '返回课程首页'
+})
 </script>
 
 <template>
@@ -50,7 +60,7 @@ const courseHome = computed(() => course.value === 'cocos' ? '/' : `/${course.va
 
     <header class="phase-header">
       <RouterLink :to="courseHome" class="back-link">
-        <span class="back-arrow">&larr;</span> 返回课程首页
+        <span class="back-arrow">&larr;</span> {{ courseLabel }}
       </RouterLink>
       <div class="header-meta">
         <span class="phase-badge">第 {{ phase }} 阶段</span>

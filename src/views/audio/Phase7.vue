@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import AudioPhaseLayout from '@/components/AudioPhaseLayout.vue'
+import PhaseLayout from '@/components/PhaseLayout.vue'
 import ConceptBlock from '@/components/ConceptBlock.vue'
 </script>
 
 <template>
-  <AudioPhaseLayout :phase="7" title="空间音频" duration="1-2 天">
+  <PhaseLayout :phase="7" title="空间音频" duration="1-2 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
         <li>理解<strong>空间音频</strong>的核心原理：基于位置的声像定位和距离衰减</li>
@@ -491,5 +491,5 @@ function safePan(rawPan: number): number {
         <li>你的 SpatialAudioManager 的 update() 每帧做什么？如何避免遍历已停止的音效？</li>
       </ul>
     </ConceptBlock>
-  </AudioPhaseLayout>
+  </PhaseLayout>
 </template>

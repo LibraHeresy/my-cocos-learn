@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import AudioPhaseLayout from '@/components/AudioPhaseLayout.vue'
+import PhaseLayout from '@/components/PhaseLayout.vue'
 import ConceptBlock from '@/components/ConceptBlock.vue'
 </script>
 
 <template>
-  <AudioPhaseLayout :phase="3" title="背景音乐基础" duration="1 天">
+  <PhaseLayout :phase="3" title="背景音乐基础" duration="1 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
         <li>理解<strong>游戏背景音乐</strong>的两大模式：线性播放 vs <strong>无缝循环</strong></li>
@@ -219,5 +219,5 @@ Good Loop（无缝）：
         <li>三段 BGM（菜单、战斗、Boss）的 BPM 分别建议多少？</li>
       </ul>
     </ConceptBlock>
-  </AudioPhaseLayout>
+  </PhaseLayout>
 </template>

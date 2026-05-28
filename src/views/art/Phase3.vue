@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import ArtPhaseLayout from '@/components/ArtPhaseLayout.vue'
+import PhaseLayout from '@/components/PhaseLayout.vue'
 import ConceptBlock from '@/components/ConceptBlock.vue'
 </script>
 
 <template>
-  <ArtPhaseLayout :phase="3" title="飞机大战素材绘制" duration="2 天">
+  <PhaseLayout :phase="3" title="飞机大战素材绘制" duration="2 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
         <li>用 <strong>Aseprite</strong> 对称工具高效绘制完全对称的飞机</li>
@@ -289,5 +289,5 @@ Both    —— 两轴平铺（做静态重复背景）</code></pre>
         <li>无缝平铺背景图的关键是什么？</li>
       </ul>
     </ConceptBlock>
-  </ArtPhaseLayout>
+  </PhaseLayout>
 </template>

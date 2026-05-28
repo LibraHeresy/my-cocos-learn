@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import AudioPhaseLayout from '@/components/AudioPhaseLayout.vue'
+import PhaseLayout from '@/components/PhaseLayout.vue'
 import ConceptBlock from '@/components/ConceptBlock.vue'
 </script>
 
 <template>
-  <AudioPhaseLayout :phase="1" title="音频基础与免费工具" duration="1 天">
+  <PhaseLayout :phase="1" title="音频基础与免费工具" duration="1 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
         <li>理解游戏音频的基础概念：<strong>采样率</strong>、<strong>位深度</strong>、<strong>单声道/立体声</strong></li>
@@ -184,5 +184,5 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
         <li>淡入淡出为什么重要？一般设置多少毫秒？</li>
       </ul>
     </ConceptBlock>
-  </AudioPhaseLayout>
+  </PhaseLayout>
 </template>

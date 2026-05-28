@@ -1,25 +1,8 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
 import HomeSidebar from '@/components/HomeSidebar.vue'
-
-function slug(text: string): string {
-  return text.toLowerCase().replace(/[^a-z0-9一-鿿]+/g, '-').replace(/^-+|-+$/g, '')
-}
-
-interface Phase {
-  id: number
-  icon: string
-  title: string
-  duration: string
-  summary: string
-  concepts: string[]
-}
-
-interface PhaseGroup {
-  label: string
-  tagline: string
-  phases: Phase[]
-}
+import { slug } from '@/utils/slug'
+import type { PhaseGroup } from '@/types/phase'
 
 const phaseGroups: PhaseGroup[] = [
   {

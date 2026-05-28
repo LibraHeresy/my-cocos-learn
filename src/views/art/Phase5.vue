@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import ArtPhaseLayout from '@/components/ArtPhaseLayout.vue'
+import PhaseLayout from '@/components/PhaseLayout.vue'
 import ConceptBlock from '@/components/ConceptBlock.vue'
 import PixelCanvas from '@/components/PixelCanvas.vue'
 </script>
 
 <template>
-  <ArtPhaseLayout :phase="5" title="帧动画制作" duration="1-2 天">
+  <PhaseLayout :phase="5" title="帧动画制作" duration="1-2 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
         <li>用 <strong>Aseprite</strong> 时间轴和<strong>洋葱皮</strong>工具制作<strong>逐帧动画</strong></li>
@@ -418,5 +418,5 @@ import PixelCanvas from '@/components/PixelCanvas.vue'
         <li>导出 SpriteSheet 时，Horizontal Strip 和 Grid 布局各自适合什么场景？</li>
       </ul>
     </ConceptBlock>
-  </ArtPhaseLayout>
+  </PhaseLayout>
 </template>

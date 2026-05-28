@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import ArtPhaseLayout from '@/components/ArtPhaseLayout.vue'
+import PhaseLayout from '@/components/PhaseLayout.vue'
 import ConceptBlock from '@/components/ConceptBlock.vue'
 </script>
 
 <template>
-  <ArtPhaseLayout :phase="9" title="背景设计进阶" duration="1-2 天">
+  <PhaseLayout :phase="9" title="背景设计进阶" duration="1-2 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
         <li>掌握<strong>视差层规划方法论</strong>——不是简单地分"远中近"三层，而是根据场景需求决定层数、内容和速度比</li>
@@ -554,5 +554,5 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
         <li>你的 Phase 7 星空背景在加入了大气透视和 grid 感优化后会有什么具体变化？</li>
       </ul>
     </ConceptBlock>
-  </ArtPhaseLayout>
+  </PhaseLayout>
 </template>

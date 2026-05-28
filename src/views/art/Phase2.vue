@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import ArtPhaseLayout from '@/components/ArtPhaseLayout.vue'
+import PhaseLayout from '@/components/PhaseLayout.vue'
 import ConceptBlock from '@/components/ConceptBlock.vue'
 import PixelCanvas from '@/components/PixelCanvas.vue'
 </script>
 
 <template>
-  <ArtPhaseLayout :phase="2" title="像素画基本技法" duration="1-2 天">
+  <PhaseLayout :phase="2" title="像素画基本技法" duration="1-2 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
         <li>画出无锯齿的平滑像素线条</li>
@@ -887,5 +887,5 @@ import PixelCanvas from '@/components/PixelCanvas.vue'
         <li>为什么画完之后要在 100% 缩放检查？</li>
       </ul>
     </ConceptBlock>
-  </ArtPhaseLayout>
+  </PhaseLayout>
 </template>

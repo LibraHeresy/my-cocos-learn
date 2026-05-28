@@ -1,20 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-
-interface Phase {
-  id: number
-  icon: string
-  title: string
-  duration: string
-  summary: string
-  concepts: string[]
-}
-
-interface PhaseGroup {
-  label: string
-  tagline: string
-  phases: Phase[]
-}
+import { slug } from '@/utils/slug'
+import type { PhaseGroup } from '@/types/phase'
 
 defineProps<{
   groups: PhaseGroup[]
@@ -23,13 +10,6 @@ defineProps<{
 
 const activeIndex = ref(-1)
 const activePhaseId = ref(-1)
-
-function slug(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9一-鿿]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-}
 
 function scrollToGroup(label: string, index: number) {
   activeIndex.value = index

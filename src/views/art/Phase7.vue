@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import ArtPhaseLayout from '@/components/ArtPhaseLayout.vue'
+import PhaseLayout from '@/components/PhaseLayout.vue'
 import ConceptBlock from '@/components/ConceptBlock.vue'
 </script>
 
 <template>
-  <ArtPhaseLayout :phase="7" title="进阶像素技巧" duration="1-2 天">
+  <PhaseLayout :phase="7" title="进阶像素技巧" duration="1-2 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
         <li>用<strong>视差滚动</strong>制作有纵深感的星空背景——不用逐帧画，而是分层平移</li>
@@ -409,5 +409,5 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
         <li>画一张新的 32×32 无缝星空 Tile，能解释为什么上下左右边缘能对上吗？</li>
       </ul>
     </ConceptBlock>
-  </ArtPhaseLayout>
+  </PhaseLayout>
 </template>

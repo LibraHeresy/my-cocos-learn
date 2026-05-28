@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import ArtPhaseLayout from '@/components/ArtPhaseLayout.vue'
+import PhaseLayout from '@/components/PhaseLayout.vue'
 import ConceptBlock from '@/components/ConceptBlock.vue'
 </script>
 
 <template>
-  <ArtPhaseLayout :phase="1" title="Aseprite 工具入门" duration="1 天">
+  <PhaseLayout :phase="1" title="Aseprite 工具入门" duration="1 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
         <li>独立安装 <strong>Aseprite</strong> 并完成基础配置</li>
@@ -310,5 +310,5 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
         <li>"像素完美模式"是干什么的？在哪里开启？</li>
       </ul>
     </ConceptBlock>
-  </ArtPhaseLayout>
+  </PhaseLayout>
 </template>

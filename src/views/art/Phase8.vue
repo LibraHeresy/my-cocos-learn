@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import ArtPhaseLayout from '@/components/ArtPhaseLayout.vue'
+import PhaseLayout from '@/components/PhaseLayout.vue'
 import ConceptBlock from '@/components/ConceptBlock.vue'
 </script>
 
 <template>
-  <ArtPhaseLayout :phase="8" title="UI 与 HUD 美术" duration="1-2 天">
+  <PhaseLayout :phase="8" title="UI 与 HUD 美术" duration="1-2 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
         <li>设计像素风格的<strong>按钮四态</strong>（Normal/Hover/Pressed/Disabled）——用有限的像素表达交互状态变化</li>
@@ -536,5 +536,5 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
         <li>如何用 Aseprite 的灰度模式检查 UI 元素的可读性？3 秒测试是什么？</li>
       </ul>
     </ConceptBlock>
-  </ArtPhaseLayout>
+  </PhaseLayout>
 </template>

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import AudioPhaseLayout from '@/components/AudioPhaseLayout.vue'
+import PhaseLayout from '@/components/PhaseLayout.vue'
 import ConceptBlock from '@/components/ConceptBlock.vue'
 </script>
 
 <template>
-  <AudioPhaseLayout :phase="6" title="音频后期与混音" duration="1 天">
+  <PhaseLayout :phase="6" title="音频后期与混音" duration="1 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
         <li>理解 <strong>LUFS</strong>（响度单位）标准，为不同平台设置正确的响度目标</li>
@@ -387,5 +387,5 @@ class SimpleCompressor {
         <li>SFX 和 BGM 的导出检查清单分别有哪些关键步骤？</li>
       </ul>
     </ConceptBlock>
-  </AudioPhaseLayout>
+  </PhaseLayout>
 </template>

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import AudioPhaseLayout from '@/components/AudioPhaseLayout.vue'
+import PhaseLayout from '@/components/PhaseLayout.vue'
 import ConceptBlock from '@/components/ConceptBlock.vue'
 </script>
 
 <template>
-  <AudioPhaseLayout :phase="4" title="Cocos 音频集成" duration="1-2 天">
+  <PhaseLayout :phase="4" title="Cocos 音频集成" duration="1-2 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
         <li>理解 Cocos 的 <strong>AudioSource</strong> 组件和 <strong>AudioClip</strong> 资源</li>
@@ -401,5 +401,5 @@ lateUpdate() {
         <li>SFX 音量和 BGM 音量为什么要分开控制？</li>
       </ul>
     </ConceptBlock>
-  </AudioPhaseLayout>
+  </PhaseLayout>
 </template>

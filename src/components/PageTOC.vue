@@ -98,11 +98,7 @@ function scrollTo(id: string) {
 
 <style scoped>
 .page-toc {
-  position: fixed;
-  top: 10rem;
-  left: calc(50% + var(--max-width) / 2 + var(--toc-gap));
   width: var(--toc-width);
-  max-height: calc(100vh - 4rem);
   overflow-y: auto;
   padding-left: 1.5rem;
   border-left: 1px solid var(--color-border-light);

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ArtPhaseLayout from '@/components/ArtPhaseLayout.vue'
+import PhaseLayout from '@/components/PhaseLayout.vue'
 import ConceptBlock from '@/components/ConceptBlock.vue'
 import PixelCanvas from '@/components/PixelCanvas.vue'
 
@@ -67,7 +67,7 @@ const slice9Stretched = makeSlice9Panel(25)
 </script>
 
 <template>
-  <ArtPhaseLayout :phase="6" title="Cocos 导入管线与性能优化" duration="1 天">
+  <PhaseLayout :phase="6" title="Cocos 导入管线与性能优化" duration="1 天">
     <ConceptBlock icon="🎯" title="学完本节你能做什么">
       <ul>
         <li>在 <strong>Cocos</strong> 中正确配置纹理导入参数，避免常见的"画面变糊"问题</li>
@@ -589,7 +589,7 @@ const slice9Stretched = makeSlice9Panel(25)
         <li>Sprite 的 Sliced 模式生效的前提是什么（提示：需要先在纹理上做什么）？</li>
       </ul>
     </ConceptBlock>
-  </ArtPhaseLayout>
+  </PhaseLayout>
 </template>
 
 <style scoped>
