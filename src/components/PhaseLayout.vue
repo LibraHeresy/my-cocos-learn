@@ -69,12 +69,10 @@ const courseLabel = computed(() => {
       <h1>{{ title }}</h1>
     </header>
 
-    <div class="phase-content-row">
-      <main class="phase-body">
-        <slot />
-      </main>
-      <PageTOC />
-    </div>
+    <main class="phase-body">
+      <slot />
+    </main>
+    <PageTOC />
 
     <nav class="phase-nav">
       <RouterLink v-if="phase > 1" :to="`/${course}/phase/${phase - 1}`" class="nav-btn prev">

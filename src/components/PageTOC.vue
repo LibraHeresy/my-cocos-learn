@@ -98,10 +98,19 @@ function scrollTo(id: string) {
 
 <style scoped>
 .page-toc {
+  position: fixed;
+  top: 10rem;
+  right: max(1.5rem, calc((100vw - var(--max-width)) / 2 - var(--toc-width) - 2rem));
   width: var(--toc-width);
+  max-height: calc(100vh - 12rem);
   overflow-y: auto;
   padding-left: 1.5rem;
   border-left: 1px solid var(--color-border-light);
+  scrollbar-width: none;
+}
+
+.page-toc::-webkit-scrollbar {
+  display: none;
 }
 
 @media (max-width: 1200px) {

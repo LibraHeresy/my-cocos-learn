@@ -336,29 +336,3 @@ tr:last-child td {
   align-items: flex-end;
 }
 
-/* ---- 阶段内容 + TOC 侧边栏 ---- */
-.phase-content-row {
-  display: flex;
-  gap: var(--toc-gap);
-  align-items: flex-start;
-}
-
-.phase-content-row > .phase-body {
-  flex: 1;
-  min-width: 0;
-}
-
-.phase-content-row > .page-toc {
-  width: var(--toc-width);
-  flex-shrink: 0;
-  position: sticky;
-  top: 1.5rem;
-  max-height: calc(100vh - 3rem);
-  overflow-y: auto;
-}
-
-@media (max-width: 900px) {
-  .phase-content-row > .page-toc {
-    display: none;
-  }
-}
