@@ -1,8 +1,21 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
 import HomeSidebar from '@/components/HomeSidebar.vue'
+import FlowChart from '@/components/FlowChart.vue'
 import { slug } from '@/utils/slug'
 import type { PhaseGroup } from '@/types/phase'
+
+const pathSteps = [
+  'Aseprite 工具',
+  '基本技法',
+  '飞机大战素材',
+  '运动规律',
+  '帧动画制作',
+  '导入管线',
+  '进阶技巧',
+  'UI/HUD 设计',
+  '背景设计进阶',
+]
 
 const phaseGroups: PhaseGroup[] = [
   {
@@ -152,9 +165,8 @@ const phaseGroups: PhaseGroup[] = [
         <span class="footer-icon">🎨</span>
         <div>
           <p>总共约 <strong>10-14 天</strong>，每天投入 1-2 小时。</p>
-          <p class="footer-path">
-            核心路径：<em>Aseprite 工具 → 基本技法 → 飞机大战素材 → 运动规律 → 帧动画制作 → 导入管线 → 进阶技巧 → UI/HUD 设计 → 背景设计进阶</em>
-          </p>
+          <p class="footer-path">核心路径：</p>
+          <FlowChart :steps="pathSteps" />
         </div>
       </div>
 

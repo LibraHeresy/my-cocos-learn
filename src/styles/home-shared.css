@@ -197,6 +197,11 @@
   box-shadow: var(--shadow-sm);
 }
 
+.footer-card > div {
+  flex: 1;
+  min-width: 0;
+}
+
 .footer-icon {
   font-size: 1.4rem;
   line-height: 1;
@@ -217,9 +222,20 @@
   font-size: 0.82rem;
 }
 
-.footer-path em {
-  font-style: normal;
+.path-list {
+  margin: 0.35rem 0 0;
+  padding-left: 1.25em;
+  font-size: 0.82rem;
+  display: block;
+}
+
+.path-list li {
   color: var(--color-primary);
+}
+
+.path-list li::marker {
+  color: var(--color-text-muted);
+  font-weight: 600;
 }
 
 .tools-card {

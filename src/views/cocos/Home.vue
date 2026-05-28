@@ -1,8 +1,20 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
 import HomeSidebar from '@/components/HomeSidebar.vue'
+import FlowChart from '@/components/FlowChart.vue'
 import { slug } from '@/utils/slug'
 import type { PhaseGroup } from '@/types/phase'
+
+const pathSteps = [
+  '入门：帧驱动+节点体系',
+  '核心：渲染+输入+碰撞',
+  '架构：对象池+状态机',
+  '实战：飞机大战',
+  '物理与关卡：2D物理+Tilemap',
+  '交互：UI+触控',
+  '画面与性能：Shader+Spine+纹理压缩',
+  '跨平台发布：多端构建',
+]
 
 const phaseGroups: PhaseGroup[] = [
   {
@@ -283,13 +295,8 @@ const phaseGroups: PhaseGroup[] = [
         <span class="footer-icon">⏱️</span>
         <div>
           <p>总共约 <strong>6-9 周</strong>，每天投入 2-4 小时。</p>
-          <p class="footer-path">
-            核心路径：<em
-              >入门：帧驱动+节点体系 → 核心：渲染+输入+碰撞 → 架构：对象池+状态机 → 实战：飞机大战 →
-              物理与关卡：2D物理+Tilemap → 交互：UI+触控 → 画面与性能：Shader+Spine+纹理压缩 →
-              跨平台发布：多端构建</em
-            >
-          </p>
+          <p class="footer-path">核心路径：</p>
+          <FlowChart :steps="pathSteps" />
         </div>
       </div>
 

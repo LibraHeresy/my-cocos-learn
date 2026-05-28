@@ -1,8 +1,16 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
 import HomeSidebar from '@/components/HomeSidebar.vue'
+import FlowChart from '@/components/FlowChart.vue'
 import { slug } from '@/utils/slug'
 import type { PhaseGroup } from '@/types/phase'
+
+const pathSteps = [
+  '微信小游戏：发布+开放能力+云开发+真机调试',
+  '运营：数值+留存+数据分析',
+  '工程质量：测试+CI/CD+WebSocket+手感+内存',
+  '多端适配：i18n+TS模式',
+]
 
 const phaseGroups: PhaseGroup[] = [
   {
@@ -185,12 +193,8 @@ const phaseGroups: PhaseGroup[] = [
         <span class="footer-icon">⚙️</span>
         <div>
           <p>总共约 <strong>6-10 周</strong>，每天投入 2-4 小时。</p>
-          <p class="footer-path">
-            核心路径：<em
-              >微信小游戏：发布+开放能力+云开发+真机调试 → 运营：数值+留存+数据分析 →
-              工程质量：测试+CI/CD+WebSocket+手感+内存 → 多端适配：i18n+TS模式</em
-            >
-          </p>
+          <p class="footer-path">核心路径：</p>
+          <FlowChart :steps="pathSteps" />
         </div>
       </div>
 

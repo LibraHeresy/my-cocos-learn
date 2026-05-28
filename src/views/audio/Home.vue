@@ -1,8 +1,19 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
 import HomeSidebar from '@/components/HomeSidebar.vue'
+import FlowChart from '@/components/FlowChart.vue'
 import { slug } from '@/utils/slug'
 import type { PhaseGroup } from '@/types/phase'
+
+const pathSteps = [
+  '音频基础',
+  '射击音效制作',
+  '背景音乐',
+  'Cocos 音频集成',
+  '自适应音乐',
+  '后期混音',
+  '空间音频',
+]
 
 const phaseGroups: PhaseGroup[] = [
   {
@@ -123,9 +134,8 @@ const phaseGroups: PhaseGroup[] = [
         <span class="footer-icon">🎧</span>
         <div>
           <p>总共约 <strong>7-11 天</strong>，每天投入 1-2 小时。</p>
-          <p class="footer-path">
-            核心路径：<em>音频基础 → 射击音效制作 → 背景音乐 → Cocos 音频集成 → 自适应音乐 → 后期混音 → 空间音频</em>
-          </p>
+          <p class="footer-path">核心路径：</p>
+          <FlowChart :steps="pathSteps" />
         </div>
       </div>
 
