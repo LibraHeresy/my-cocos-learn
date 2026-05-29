@@ -101,6 +101,19 @@
   gap: 1.15rem;
 }
 
+@keyframes group-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+
+.phase-group {
+  animation: group-reveal 0.45s ease-out both;
+  animation-delay: calc(var(--s, 0) * 100ms);
+  scroll-margin-top: 5rem;
+}
+
 .phase-card {
   display: flex;
   flex-direction: column;
@@ -112,6 +125,7 @@
     border-color 0.25s,
     box-shadow 0.25s,
     transform 0.2s;
+  transform-origin: center;
   color: var(--color-text);
   cursor: pointer;
   scroll-margin-top: 5rem;
@@ -121,6 +135,10 @@
   border-color: var(--color-primary);
   box-shadow: var(--shadow-md);
   transform: translateY(-3px);
+}
+
+.phase-card:active {
+  transform: scale(0.98);
 }
 
 .card-top {
@@ -192,7 +210,7 @@
   background: var(--color-surface);
   border: 1px solid var(--color-border-light);
   border-radius: var(--radius-lg);
-  padding: 1.15rem 1.4rem;
+  padding: 1.4rem 1.4rem 2rem 1.4rem;
   text-align: left;
   box-shadow: var(--shadow-sm);
 }

@@ -205,7 +205,7 @@ const phaseGroups: PhaseGroup[] = [
     <section class="phases-section">
       <h2 class="section-title">学习路径</h2>
 
-      <div v-for="(group, i) in phaseGroups" :key="group.label" :id="slug(group.label)" :data-group-index="i" class="phase-group">
+      <div v-for="(group, i) in phaseGroups" :key="group.label" :id="slug(group.label)" :data-group-index="i" class="phase-group" :style="{ '--s': i }">
         <div class="group-header">
           <h3 class="group-label">{{ group.label }}</h3>
           <p class="group-tagline">{{ group.tagline }}</p>
@@ -291,7 +291,7 @@ const phaseGroups: PhaseGroup[] = [
 
     <!-- Footer -->
     <footer class="home-footer">
-      <div class="footer-card">
+      <div class="footer-card" id="path-section">
         <span class="footer-icon">⏱️</span>
         <div>
           <p>总共约 <strong>6-9 周</strong>，每天投入 2-4 小时。</p>
@@ -300,7 +300,7 @@ const phaseGroups: PhaseGroup[] = [
         </div>
       </div>
 
-      <div class="tools-card">
+      <div class="tools-card" id="tools-section">
         <h3>🛠️ 本课程使用的工具</h3>
         <div class="tool-grid">
           <div class="tool-item">

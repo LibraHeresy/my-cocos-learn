@@ -92,7 +92,9 @@ const activeCourse = computed(() => {
   color: var(--color-text-muted);
   transition:
     background 0.2s,
-    color 0.2s;
+    color 0.2s,
+    transform 0.3s;
+  transform-origin: center;
   cursor: pointer;
 }
 
@@ -100,6 +102,7 @@ const activeCourse = computed(() => {
   background: var(--color-primary-soft);
   color: var(--color-primary);
 }
+
 
 .nav-tab.active {
   background: var(--color-primary-soft);

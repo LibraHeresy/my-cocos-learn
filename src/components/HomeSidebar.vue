@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { slug } from '@/utils/slug'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import type { PhaseGroup } from '@/types/phase'
 
 defineProps<{
@@ -8,51 +7,92 @@ defineProps<{
   course: string
 }>()
 
-const activeIndex = ref(-1)
 const activePhaseId = ref(-1)
+const scrollSeq = ref(0)
 
-function scrollToGroup(label: string, index: number) {
-  activeIndex.value = index
-  activePhaseId.value = -1
-  const el = document.getElementById(slug(label))
-  if (el) {
-    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
+let observer: IntersectionObserver | null = null
+
+function blockWheel(e: WheelEvent) {
+  if (scrollSeq.value > 0) e.preventDefault()
 }
 
-function scrollToPhase(phaseId: number, groupIndex: number) {
-  activeIndex.value = groupIndex
+function lockScroll() {
+  scrollSeq.value++
+  document.addEventListener('scrollend', () => { scrollSeq.value = 0 }, { once: true })
+  setTimeout(() => { if (scrollSeq.value > 0) scrollSeq.value = 0 }, 1000)
+}
+
+function scrollToPhase(phaseId: number) {
   activePhaseId.value = phaseId
+  lockScroll()
   const el = document.getElementById(`phase-${phaseId}`)
-  if (el) {
-    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
+
+function scrollToExtra(id: string) {
+  activePhaseId.value = -1
+  lockScroll()
+  const el = document.getElementById(id)
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+onMounted(() => {
+  document.addEventListener('wheel', blockWheel, { capture: true, passive: false })
+
+  observer = new IntersectionObserver(
+    (entries) => {
+      if (scrollSeq.value > 0) return
+      let best = -1
+      let bestY = Infinity
+      for (const entry of entries) {
+        if (entry.isIntersecting && entry.target.id.startsWith('phase-')) {
+          const id = parseInt(entry.target.id.replace('phase-', ''))
+          if (entry.boundingClientRect.top < bestY) {
+            bestY = entry.boundingClientRect.top
+            best = id
+          }
+        }
+      }
+      if (best >= 0) activePhaseId.value = best
+    },
+    { rootMargin: '-80px 0px -60% 0px' },
+  )
+  document.querySelectorAll('[id^="phase-"]').forEach((el) => observer!.observe(el))
+})
+
+onBeforeUnmount(() => {
+  observer?.disconnect()
+  document.removeEventListener('wheel', blockWheel, { capture: true } as any)
+})
 </script>
 
 <template>
   <nav v-if="groups.length" class="home-sidebar" aria-label="课程导航">
     <h4 class="sidebar-title">课程目录</h4>
     <ul class="sidebar-list">
-      <li v-for="(g, i) in groups" :key="g.label" class="sidebar-group">
-        <a
-          :href="`#${slug(g.label)}`"
-          class="sidebar-link sidebar-group-link"
-          :class="{ active: activeIndex === i }"
-          @click.prevent="scrollToGroup(g.label, i)"
-        >
-          {{ g.label }}
-        </a>
+      <li v-for="g in groups" :key="g.label" class="sidebar-group">
+        <span class="sidebar-group-label">{{ g.label }}</span>
         <ul class="sidebar-sub-list">
           <li v-for="p in g.phases" :key="p.id" class="sidebar-sub-item">
             <a
               :href="`#phase-${p.id}`"
               class="sidebar-sub-link"
               :class="{ active: activePhaseId === p.id }"
-              @click.prevent="scrollToPhase(p.id, i)"
+              @click.prevent="scrollToPhase(p.id)"
             >
               {{ p.title }}
             </a>
+          </li>
+        </ul>
+      </li>
+      <li class="sidebar-group">
+        <span class="sidebar-group-label">其他</span>
+        <ul class="sidebar-sub-list">
+          <li class="sidebar-sub-item">
+            <a href="#path-section" class="sidebar-sub-link" @click.prevent="scrollToExtra('path-section')">核心路径</a>
+          </li>
+          <li class="sidebar-sub-item">
+            <a href="#tools-section" class="sidebar-sub-link" @click.prevent="scrollToExtra('tools-section')">使用工具</a>
           </li>
         </ul>
       </li>
@@ -101,28 +141,21 @@ function scrollToPhase(phaseId: number, groupIndex: number) {
   margin-bottom: 0.6rem;
 }
 
-.sidebar-group-link {
+.sidebar-group-label {
   display: block;
-  font-size: 0.82rem;
-  color: var(--color-text-muted);
-  padding: 0.3em 0;
-  transition: color 0.2s;
-  border-radius: 4px;
-}
-
-.sidebar-group-link:hover {
-  color: var(--color-primary);
-}
-
-.sidebar-group-link.active {
-  color: var(--color-primary);
+  font-size: 0.7rem;
   font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.2em 0;
+  margin-bottom: 0.15rem;
 }
 
 .sidebar-sub-list {
   list-style: none;
   padding: 0;
-  margin: 0.15rem 0 0 0;
+  margin: 0;
 }
 
 .sidebar-sub-item {
@@ -131,11 +164,14 @@ function scrollToPhase(phaseId: number, groupIndex: number) {
 
 .sidebar-sub-link {
   display: block;
+  width: max-content;
   font-size: 0.76rem;
   color: var(--color-text-muted);
-  padding: 0.2em 0 0.2em 0.75rem;
-  transition: color 0.2s;
-  border-radius: 4px;
+  padding: 0.2em 0.25em 0.2em 0.5em;
+  margin-left: -0.5em;
+  border-left: 2px solid transparent;
+  transition: color 0.3s, border-color 0.3s;
+  border-radius: 0 4px 4px 0;
 }
 
 .sidebar-sub-link:hover {
@@ -144,6 +180,6 @@ function scrollToPhase(phaseId: number, groupIndex: number) {
 
 .sidebar-sub-link.active {
   color: var(--color-primary);
-  font-weight: 500;
+  border-left-color: var(--color-primary);
 }
 </style>

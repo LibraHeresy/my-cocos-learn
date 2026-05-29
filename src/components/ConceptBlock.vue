@@ -76,12 +76,22 @@ onMounted(() => {
   padding: 1.5rem 1.65rem;
   margin-bottom: 1.5rem;
   box-shadow: var(--shadow-sm);
-  transition: box-shadow 0.25s;
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    box-shadow 0.25s,
+    opacity 0.4s ease-out,
+    transform 0.4s ease-out;
   scroll-margin-top: 4.5rem;
 }
 
 .concept-block:hover {
   box-shadow: var(--shadow-md);
+}
+
+.concept-block.revealed {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .block-title {

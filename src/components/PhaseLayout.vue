@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import PageTOC from '@/components/PageTOC.vue'
 
@@ -20,18 +20,21 @@ const course = computed(() => {
   return m ? m[1] : 'cocos'
 })
 
-const maxPhase = computed(() => {
-  if (props.total > 0) return props.total
-  let max = 0
+const phaseCounts = computed(() => {
+  const counts: Record<string, number> = {}
   for (const r of router.getRoutes()) {
-    const m = (r.name as string)?.match(new RegExp(`^${course.value}-phase(\\d+)$`))
+    const m = (r.name as string)?.match(/^(cocos|art|audio|engineering)-phase(\d+)$/)
     if (m) {
-      const n = parseInt(m[1])
-      if (n > max) max = n
+      const n = parseInt(m[2])
+      if (n > (counts[m[1]] ?? 0)) counts[m[1]] = n
     }
   }
-  return max
+  return counts
 })
+
+const maxPhase = computed(() =>
+  props.total > 0 ? props.total : phaseCounts.value[course.value] ?? 0,
+)
 
 const courseHome = computed(() => course.value === 'cocos' ? '/' : `/${course.value}`)
 
@@ -43,6 +46,27 @@ const courseLabel = computed(() => {
     engineering: '返回工程课程',
   }
   return labels[course.value] ?? '返回课程首页'
+})
+
+let revealObserver: IntersectionObserver | null = null
+
+onMounted(() => {
+  revealObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add('revealed')
+          revealObserver?.unobserve(e.target)
+        }
+      })
+    },
+    { rootMargin: '0px 0px -60px 0px' },
+  )
+  document.querySelectorAll('.concept-block').forEach((el) => revealObserver!.observe(el))
+})
+
+onBeforeUnmount(() => {
+  revealObserver?.disconnect()
 })
 </script>
 

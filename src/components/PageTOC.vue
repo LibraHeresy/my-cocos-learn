@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 interface TocItem {
@@ -9,16 +9,14 @@ interface TocItem {
 
 const items = ref<TocItem[]>([])
 const activeId = ref('')
+const scrollSeq = ref(0)
 const route = useRoute()
 
 function extractTitle(el: Element): string {
   const h2 = el.querySelector('h2')
   if (!h2) return ''
-  // Remove icon span text, keep the rest
-  const clone = h2.cloneNode(true) as HTMLElement
-  const iconClone = clone.querySelector('.block-icon')
-  if (iconClone) iconClone.remove()
-  return (clone.textContent || '').trim()
+  const icon = h2.querySelector('.block-icon')
+  return icon ? h2.textContent!.replace(icon.textContent!, '').trim() : (h2.textContent || '').trim()
 }
 
 function buildToc() {
@@ -34,6 +32,7 @@ let observer: IntersectionObserver | null = null
 function setupObserver() {
   observer = new IntersectionObserver(
     (entries) => {
+      if (scrollSeq.value > 0) return
       for (const entry of entries) {
         if (entry.isIntersecting) {
           activeId.value = entry.target.id
@@ -47,7 +46,8 @@ function setupObserver() {
 }
 
 onMounted(() => {
-  nextTick(() => {
+  document.addEventListener('wheel', blockWheel, { capture: true, passive: false })
+  requestAnimationFrame(() => {
     buildToc()
     setupObserver()
   })
@@ -55,26 +55,32 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   observer?.disconnect()
+  document.removeEventListener('wheel', blockWheel, { capture: true } as any)
 })
 
 watch(
   () => route.path,
   () => {
-    nextTick(() => {
+    requestAnimationFrame(() => {
       buildToc()
-      // re-observe new sections
       observer?.disconnect()
       setupObserver()
     })
   },
 )
 
+function blockWheel(e: WheelEvent) {
+  if (scrollSeq.value > 0) e.preventDefault()
+}
+
 function scrollTo(id: string) {
   const el = document.getElementById(id)
-  if (el) {
-    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    activeId.value = id
-  }
+  if (!el) return
+  activeId.value = id
+  scrollSeq.value++
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  document.addEventListener('scrollend', () => { scrollSeq.value = 0 }, { once: true })
+  setTimeout(() => { if (scrollSeq.value > 0) scrollSeq.value = 0 }, 1000)
 }
 </script>
 
@@ -139,11 +145,14 @@ function scrollTo(id: string) {
 
 .toc-link {
   display: block;
+  width: max-content;
   font-size: 0.82rem;
   color: var(--color-text-muted);
-  padding: 0.3em 0;
-  transition: color 0.2s;
-  border-radius: 4px;
+  padding: 0.3em 0.3em 0.3em 0.5em;
+  margin-left: -0.5em;
+  border-left: 2px solid transparent;
+  transition: color 0.3s, border-color 0.3s;
+  border-radius: 0 4px 4px 0;
 }
 
 .toc-link:hover {
@@ -152,6 +161,6 @@ function scrollTo(id: string) {
 
 .toc-link.active {
   color: var(--color-primary);
-  font-weight: 600;
+  border-left-color: var(--color-primary);
 }
 </style>

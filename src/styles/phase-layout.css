@@ -127,7 +127,8 @@
   transition:
     border-color 0.2s,
     box-shadow 0.2s,
-    transform 0.15s;
+    transform 0.2s;
+  transform-origin: center;
   color: var(--color-text);
   cursor: pointer;
 }
@@ -137,6 +138,10 @@
   box-shadow: var(--shadow-sm);
   transform: translateY(-1px);
   color: var(--color-text);
+}
+
+.nav-btn:active {
+  transform: scale(0.98);
 }
 
 .nav-label {
