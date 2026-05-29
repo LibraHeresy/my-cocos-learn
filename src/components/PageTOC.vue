@@ -78,9 +78,10 @@ function scrollTo(id: string) {
   if (!el) return
   activeId.value = id
   scrollSeq.value++
+  const seq = scrollSeq.value
   el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  document.addEventListener('scrollend', () => { scrollSeq.value = 0 }, { once: true })
-  setTimeout(() => { if (scrollSeq.value > 0) scrollSeq.value = 0 }, 1000)
+  document.addEventListener('scrollend', () => { if (scrollSeq.value === seq) scrollSeq.value = 0 }, { once: true })
+  setTimeout(() => { if (scrollSeq.value === seq) scrollSeq.value = 0 }, 1000)
 }
 </script>
 

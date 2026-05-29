@@ -18,8 +18,9 @@ function blockWheel(e: WheelEvent) {
 
 function lockScroll() {
   scrollSeq.value++
-  document.addEventListener('scrollend', () => { scrollSeq.value = 0 }, { once: true })
-  setTimeout(() => { if (scrollSeq.value > 0) scrollSeq.value = 0 }, 1000)
+  const seq = scrollSeq.value
+  document.addEventListener('scrollend', () => { if (scrollSeq.value === seq) scrollSeq.value = 0 }, { once: true })
+  setTimeout(() => { if (scrollSeq.value === seq) scrollSeq.value = 0 }, 1000)
 }
 
 function scrollToPhase(phaseId: number) {
