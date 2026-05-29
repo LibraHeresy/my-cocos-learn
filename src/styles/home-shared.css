@@ -63,11 +63,6 @@
   margin-bottom: 3.5rem;
 }
 
-.phase-group {
-  margin-bottom: 2rem;
-  scroll-margin-top: 5rem;
-}
-
 .phase-group:last-child {
   margin-bottom: 0;
 }
@@ -109,6 +104,7 @@
 }
 
 .phase-group {
+  margin-bottom: 2rem;
   animation: group-reveal 0.45s ease-out both;
   animation-delay: calc(var(--s, 0) * 100ms);
   scroll-margin-top: 5rem;
@@ -238,22 +234,6 @@
 
 .footer-path {
   font-size: 0.82rem;
-}
-
-.path-list {
-  margin: 0.35rem 0 0;
-  padding-left: 1.25em;
-  font-size: 0.82rem;
-  display: block;
-}
-
-.path-list li {
-  color: var(--color-primary);
-}
-
-.path-list li::marker {
-  color: var(--color-text-muted);
-  font-weight: 600;
 }
 
 .tools-card {

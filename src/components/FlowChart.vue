@@ -1,5 +1,7 @@
 <script setup lang="ts">
-defineProps<{
+import { computed } from 'vue'
+
+const props = defineProps<{
   steps: string[]
 }>()
 
@@ -8,19 +10,21 @@ function splitStep(text: string): { title: string; sub: string } {
   if (i === -1) return { title: text, sub: '' }
   return { title: text.slice(0, i), sub: text.slice(i + 1) }
 }
+
+const items = computed(() => props.steps.map((text, i) => ({ index: i, text, ...splitStep(text) })))
 </script>
 
 <template>
   <div class="stepper" v-if="steps.length">
-    <template v-for="(step, i) in steps" :key="i">
+    <template v-for="item in items" :key="item.index">
       <div class="step-node">
-        <span class="step-num">{{ i + 1 }}</span>
+        <span class="step-num">{{ item.index + 1 }}</span>
         <div class="step-text">
-          <span class="step-title">{{ splitStep(step).title }}</span>
-          <span v-if="splitStep(step).sub" class="step-sub">{{ splitStep(step).sub }}</span>
+          <span class="step-title">{{ item.title }}</span>
+          <span v-if="item.sub" class="step-sub">{{ item.sub }}</span>
         </div>
       </div>
-      <div v-if="i < steps.length - 1" class="step-arrow">👇</div>
+      <div v-if="item.index < steps.length - 1" class="step-arrow">👇</div>
     </template>
   </div>
 </template>

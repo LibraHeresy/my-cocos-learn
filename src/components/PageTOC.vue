@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { useScrollLock } from '@/composables/useScrollLock'
 
 interface TocItem {
   id: string
@@ -9,7 +10,7 @@ interface TocItem {
 
 const items = ref<TocItem[]>([])
 const activeId = ref('')
-const scrollSeq = ref(0)
+const { scrollSeq, lockScroll } = useScrollLock()
 const route = useRoute()
 
 function extractTitle(el: Element): string {
@@ -46,7 +47,6 @@ function setupObserver() {
 }
 
 onMounted(() => {
-  document.addEventListener('wheel', blockWheel, { capture: true, passive: false })
   requestAnimationFrame(() => {
     buildToc()
     setupObserver()
@@ -55,7 +55,6 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   observer?.disconnect()
-  document.removeEventListener('wheel', blockWheel, { capture: true } as any)
 })
 
 watch(
@@ -69,19 +68,12 @@ watch(
   },
 )
 
-function blockWheel(e: WheelEvent) {
-  if (scrollSeq.value > 0) e.preventDefault()
-}
-
 function scrollTo(id: string) {
   const el = document.getElementById(id)
   if (!el) return
   activeId.value = id
-  scrollSeq.value++
-  const seq = scrollSeq.value
+  lockScroll()
   el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  document.addEventListener('scrollend', () => { if (scrollSeq.value === seq) scrollSeq.value = 0 }, { once: true })
-  setTimeout(() => { if (scrollSeq.value === seq) scrollSeq.value = 0 }, 1000)
 }
 </script>
 

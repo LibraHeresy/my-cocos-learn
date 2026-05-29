@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, onBeforeUnmount } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import PageTOC from '@/components/PageTOC.vue'
+import { usePhaseCounts } from '@/composables/usePhaseCounts'
 
 const props = withDefaults(defineProps<{
   phase: number
@@ -13,27 +14,15 @@ const props = withDefaults(defineProps<{
 })
 
 const route = useRoute()
-const router = useRouter()
+const phaseCounts = usePhaseCounts()
 
 const course = computed(() => {
   const m = (route.name as string)?.match(/^(cocos|art|audio|engineering)-phase\d+$/)
   return m ? m[1] : 'cocos'
 })
 
-const phaseCounts = computed(() => {
-  const counts: Record<string, number> = {}
-  for (const r of router.getRoutes()) {
-    const m = (r.name as string)?.match(/^(cocos|art|audio|engineering)-phase(\d+)$/)
-    if (m) {
-      const n = parseInt(m[2])
-      if (n > (counts[m[1]] ?? 0)) counts[m[1]] = n
-    }
-  }
-  return counts
-})
-
 const maxPhase = computed(() =>
-  props.total > 0 ? props.total : phaseCounts.value[course.value] ?? 0,
+  props.total > 0 ? props.total : phaseCounts[course.value] ?? 0,
 )
 
 const courseHome = computed(() => course.value === 'cocos' ? '/' : `/${course.value}`)

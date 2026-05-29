@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import type { PhaseGroup } from '@/types/phase'
+import { useScrollLock } from '@/composables/useScrollLock'
 
 defineProps<{
   groups: PhaseGroup[]
@@ -8,20 +9,9 @@ defineProps<{
 }>()
 
 const activePhaseId = ref(-1)
-const scrollSeq = ref(0)
+const { scrollSeq, lockScroll } = useScrollLock()
 
 let observer: IntersectionObserver | null = null
-
-function blockWheel(e: WheelEvent) {
-  if (scrollSeq.value > 0) e.preventDefault()
-}
-
-function lockScroll() {
-  scrollSeq.value++
-  const seq = scrollSeq.value
-  document.addEventListener('scrollend', () => { if (scrollSeq.value === seq) scrollSeq.value = 0 }, { once: true })
-  setTimeout(() => { if (scrollSeq.value === seq) scrollSeq.value = 0 }, 1000)
-}
 
 function scrollToPhase(phaseId: number) {
   activePhaseId.value = phaseId
@@ -38,8 +28,6 @@ function scrollToExtra(id: string) {
 }
 
 onMounted(() => {
-  document.addEventListener('wheel', blockWheel, { capture: true, passive: false })
-
   observer = new IntersectionObserver(
     (entries) => {
       if (scrollSeq.value > 0) return
@@ -63,7 +51,6 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   observer?.disconnect()
-  document.removeEventListener('wheel', blockWheel, { capture: true } as any)
 })
 </script>
 

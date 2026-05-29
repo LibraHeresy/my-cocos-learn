@@ -2,21 +2,11 @@
 import { onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute, RouterView } from 'vue-router'
 import NavBar from '@/components/NavBar.vue'
+import { usePhaseCounts } from '@/composables/usePhaseCounts'
 
 const router = useRouter()
 const route = useRoute()
-
-const PHASE_COUNTS: Record<string, number> = (() => {
-  const counts: Record<string, number> = {}
-  for (const r of router.getRoutes()) {
-    const m = (r.name as string)?.match(/^(cocos|art|audio|engineering)-phase(\d+)$/)
-    if (m) {
-      const num = parseInt(m[2])
-      if (num > (counts[m[1]] ?? 0)) counts[m[1]] = num
-    }
-  }
-  return counts
-})()
+const PHASE_COUNTS = usePhaseCounts()
 
 function getRouteInfo() {
   const name = route.name as string
