@@ -144,7 +144,7 @@ onBeforeUnmount(() => {
 
 .sidebar-group-label {
   display: block;
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   font-weight: 600;
   color: var(--color-text-muted);
   text-transform: uppercase;
@@ -166,7 +166,7 @@ onBeforeUnmount(() => {
 .sidebar-sub-link {
   display: block;
   width: max-content;
-  font-size: 0.76rem;
+  font-size: 0.78rem;
   color: var(--color-text-muted);
   padding: 0.2em 0.25em 0.2em 0.5em;
   margin-left: -0.5em;

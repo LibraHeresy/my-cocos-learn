@@ -146,14 +146,15 @@ function scrollTo(id: string) {
 
 .toc-link {
   display: block;
-  width: max-content;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   color: var(--color-text-muted);
   padding: 0.3em 0.3em 0.3em 0.5em;
   margin-left: -0.5em;
   border-left: 2px solid transparent;
   transition: color 0.3s, border-color 0.3s;
   border-radius: 0 4px 4px 0;
+  line-height: 1.45;
+  overflow-wrap: break-word;
 }
 
 .toc-link:hover {
