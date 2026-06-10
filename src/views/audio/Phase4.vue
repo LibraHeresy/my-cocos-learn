@@ -4,402 +4,93 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
 </script>
 
 <template>
-  <PhaseLayout :phase="4" title="Cocos 音频集成" duration="1-2 天">
-    <ConceptBlock icon="🎯" title="学完本节你能做什么">
-      <ul>
-        <li>理解 Cocos 的 <strong>AudioSource</strong> 组件和 <strong>AudioClip</strong> 资源</li>
-        <li>编写 <strong>AudioManager</strong> <strong>单例</strong>脚本，统一管理所有游戏音效</li>
-        <li>用 <strong>resources.load</strong> 动态加载和播放音频</li>
-        <li>实现场景切换时的 <strong>BGM</strong> 过渡（<strong>淡入淡出</strong> + 跨场景播放）</li>
-        <li>添加<strong>音量控制</strong>和静音开关</li>
-      </ul>
+  <PhaseLayout :phase="4" title="BFXR 音效实战（上）" duration="1-2 天">
+    <ConceptBlock icon="🧭" title="本节定位"><p>打开 bfxr.net，从预设出发，调参数，Mutate 几次，导出 WAV。不需要音乐背景，不需要数学——你只需要耳朵和鼠标。这一节做出飞机大战的前 3 个核心音效：射击、爆炸、拾取。</p></ConceptBlock>
+
+    <ConceptBlock icon="💡" title="故事：48 小时创造的工具，影响了一个时代">
+      <p>2007 年，独立游戏开发者 Tomas Pettersson（网名 DrPetter）参加了一场 Ludum Dare——48 小时游戏创作大赛。他的游戏需要一个复古音效，但他不会做。于是他花了几个小时，用 C 语言写了一个极小的音效生成器，只有 200 行代码。</p>
+      <p>他叫它 <strong>SFXR</strong>。提交游戏的同时，他把这个工具也放到了网上。</p>
+      <p>今天，SFXR 和它的 Web 版衍生品 BFXR 成了<strong>独立游戏开发中最常用的音效工具</strong>。成千上万的游戏——从 Ludum Dare 作品到 Steam 上的商业独立游戏——用这个 200 行 C 代码的工具做音效。DrPetter 的故事是一个工程师能听到的最好的故事：<strong>解决一个自己的真实问题，然后把它分享出去。好工具不必复杂——够用就行。</strong></p>
+      <p>这就像你 npm install 一个 50 行的库，结果发现全世界的项目都在用它。质量不是用代码行数衡量的。</p>
     </ConceptBlock>
 
-    <ConceptBlock icon="🔌" title="Cocos 音频架构速览">
-      <p>Cocos Creator 的音频系统由两个核心类组成：</p>
+    <ConceptBlock icon="🎛️" title="原理：BFXR 工作流——从预设到成品">
+      <p>BFXR 的界面看起来像一个仪表盘——十几个滑块、几个下拉框、一个播放按钮。不要被吓到。你只需要理解它的工作流：</p>
 
-      <table>
-        <thead>
-          <tr>
-            <th>概念</th>
-            <th>类型</th>
-            <th>作用</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>AudioClip</strong></td>
-            <td>资源（Asset）</td>
-            <td>音频文件本身——WAV / OGG 导入 Cocos 后变成 AudioClip</td>
-          </tr>
-          <tr>
-            <td><strong>AudioSource</strong></td>
-            <td>组件（Component）</td>
-            <td>挂载在节点上的播放器——控制播放/停止、音量、循环</td>
-          </tr>
-        </tbody>
-      </table>
+      <p><strong>第一步：选预设（Generator Panel）</strong></p>
+      <p>BFXR 左侧的 Generator 面板有 9 个预设按钮：Pickup/Coin、Laser/Shoot、Explosion、Powerup、Hit/Hurt、Jump、Blip/Select、Random、Mutate。这些预设是 DrPetter 根据经验调好的"参数配方"。<strong>永远从预设出发，不要从空白开始。</strong>预设 = 脚手架，你在上面改参数。就像你不会从零写 Webpack 配置——你一定从 create-vue 的模板出发。</p>
 
-      <p>类比（Vue 开发者的视角）：</p>
-      <pre><code>AudioClip   =  static asset（类似 import 一张图片）
-AudioSource = &lt;audio&gt; 标签（控制播放、暂停、音量）
-AudioManager = 你封装的 audioService.ts（统一管理所有音频播放）</code></pre>
-
-      <h3>导入音频到 Cocos</h3>
+      <p><strong>第二步：调参数（右侧面板）</strong></p>
+      <p>四个最常用的滑块，按优先级排列：</p>
       <ol>
-        <li>
-          把 WAV / OGG 文件拖入 <code>assets/resources/sfx/</code> 和
-          <code>assets/resources/bgm/</code>
-        </li>
-        <li>Cocos 资源管理器会自动识别——右键文件 → 检查导入设置</li>
-        <li>
-          AudioClip 导入设置：<strong>Audio Load Mode</strong> 选 Deferred（延迟加载）或 Web
-          Audio（即时加载）
-        </li>
-        <li>小 SFX（&lt;100KB）选 Web Audio 减少延迟；大 BGM 选 Deferred</li>
+        <li><strong>Waveform（波形）：</strong>方波 = 电子感，锯齿波 = 锋利，正弦波 = 纯净，噪声 = 爆炸/粗糙。这是"声音的颜色"。</li>
+        <li><strong>Attack Time / Sustain Time / Decay Time / Release Time：</strong>这就是 Phase 3 讲的 ADSR。Attack=0 是枪声，Attack=0.5s 是风声。</li>
+        <li><strong>Frequency / Frequency Slide：</strong>频率决定音高。Frequency Slide > 0 = 声音从低到高（"拾取"感），< 0 = 声音从高到低（"失落"感）。</li>
+        <li><strong>Master Volume：</strong>默认 0.5（-6dB），不要提高到超过 0.7——留出 headroom 给后续混音。</li>
       </ol>
 
-      <div class="warn-box">
-        <strong>路径限制：</strong>使用 <code>resources.load</code> 动态加载时，音频必须放在
-        <code>assets/resources/</code> 目录下（或子目录）。否则运行时找不到文件。
-      </div>
+      <p><strong>第三步：Mutate（变异）</strong></p>
+      <p>选好预设后，点击 Mutate 按钮。BFXR 会<strong>微调所有参数</strong>，产生一个和当前音效类似但又不同的版本。点一下 → 听听 → 不满意再点 → 直到满意。这不是玄学——Mutate 的本质是对所有参数做小幅随机扰动，相当于"在当前音效的邻域搜索"。你大部分时候 3-5 次 Mutate 就能找到满意的效果。这比从头调参数快 10 倍。</p>
+
+      <p><strong>第四步：导出</strong></p>
+      <p>点 Save WAV 按钮，下载为 16-bit 44100Hz WAV 文件。保存到你的项目 <code>assets/audio/sfx/</code> 目录下。WAV 是源文件格式——后面在 Audacity 中编辑后，再导出为 OGG 给 Cocos 使用。</p>
     </ConceptBlock>
 
-    <ConceptBlock icon="🧠" title="AudioManager 单例脚本">
-      <p>这是一个最小可用的 AudioManager——你可以在所有游戏脚本中通过它播放任何音效：</p>
+    <ConceptBlock icon="🔧" title="动手：制作飞机大战前 3 个音效">
+      <p>现在打开 <a href="https://www.bfxr.net" target="_blank">bfxr.net</a>，我们为飞机大战制作三枚核心音效。请戴耳机——笔记本电脑的外放会漏掉低频，影响判断。</p>
 
-      <pre><code>// AudioManager.ts —— 挂载在场景根节点（不销毁）上
-import { AudioClip, AudioSource, Node, director, resources } from 'cc'
-
-class AudioManager {
-  private static _instance: AudioManager
-
-  static get instance(): AudioManager {
-    if (!this._instance) {
-      this._instance = new AudioManager()
-    }
-    return this._instance
-  }
-
-  private _audioSource!: AudioSource
-  private _bgmSource!: AudioSource
-  private _clipCache = new Map&lt;string, AudioClip&gt;()
-
-  /** 初始化：建两个 AudioSource——一个放 SFX，一个放 BGM */
-  init(node: Node) {
-    this._audioSource = node.addComponent(AudioSource)
-    this._bgmSource = node.addComponent(AudioSource)
-  }
-
-  /** 播放一次短音效 */
-  playOneShot(path: string) {
-    const clip = this._clipCache.get(path)
-    if (clip) {
-      this._audioSource.playOneShot(clip, 1)
-      return
-    }
-    resources.load(path, AudioClip, (err, clip) => {
-      if (!err) {
-        this._clipCache.set(path, clip)
-        this._audioSource.playOneShot(clip, 1)
-      }
-    })
-  }
-
-  /** 播放/切换 BGM（带淡入） */
-  playBGM(path: string) {
-    resources.load(path, AudioClip, (err, clip) => {
-      if (!err) {
-        this._bgmSource.clip = clip
-        this._bgmSource.loop = true
-        this._bgmSource.volume = 0
-        this._bgmSource.play()
-        // 淡入 BGM（Cocos 的 cc.tween 可以 tween AudioSource.volume）
-      }
-    })
-  }
-
-  /** 停止 BGM */
-  stopBGM() {
-    this._bgmSource.stop()
-  }
-
-  /** 设置 SFX 全局音量（0-1） */
-  setSFXVolume(vol: number) {
-    this._audioSource.volume = vol
-  }
-
-  /** 设置 BGM 全局音量（0-1） */
-  setBGMVolume(vol: number) {
-    this._bgmSource.volume = vol
-  }
-}
-
-export const audioManager = AudioManager.instance</code></pre>
-
-      <h3>使用方式</h3>
-      <pre><code>// 在任何脚本中
-import { audioManager } from './AudioManager'
-
-// 播放射击音效
-audioManager.playOneShot('sfx/player_shoot')
-
-// 播放爆炸音效
-audioManager.playOneShot('sfx/explosion_small')
-
-// 切换 BGM
-audioManager.playBGM('bgm/bgm_battle')</code></pre>
-
-      <div class="tip-box">
-        <strong>为什么用 Map 缓存：</strong><code>AudioClip</code>
-        加载一次后缓存起来，下次播放同路径音效直接复用——避免每次射击触发都重新加载（会卡顿）。缓存策略对频繁播放的音效尤其重要。
-      </div>
-
-      <div class="warn-box">
-        <strong>Autoplay Policy（自动播放限制）：</strong>和 Web 端的
-        <code>&lt;audio&gt;</code> 一样，Cocos
-        在浏览器中运行时受自动播放策略限制——用户必须有过交互（点击/触摸）后音频才能播放。解决方案：在主菜单的"开始游戏"按钮点击中调用
-        <code>audioManager.init()</code> + 播放一个静音 BGM 来"解锁"
-        AudioContext。小游戏没有此限制。
-      </div>
-    </ConceptBlock>
-
-    <ConceptBlock icon="🎚️" title="BGM 淡入淡出与场景切换">
-      <p>BGM 切换生硬地从一首歌直接切成另一首非常刺耳——应该做平滑的过渡：</p>
-
-      <pre><code>import { tween } from 'cc'
-
-// 淡出当前 BGM → 切换 → 淡入新 BGM
-async switchBGM(newPath: string) {
-  // 先淡出
-  tween(this._bgmSource)
-    .to(1, { volume: 0 })   // 1 秒淡出
-    .call(() => {
-      this._bgmSource.stop()  // 停止旧 BGM
-      this.playBGM(newPath)   // 播放新 BGM
-    })
-    .start()
-}
-
-// 暂停/恢复 BGM（切到设置页面时）
-pauseBGM() {
-  this._bgmSource.pause()
-}
-
-resumeBGM() {
-  this._bgmSource.play()
-}</code></pre>
-
-      <h3>跨场景 BGM 持久化</h3>
-      <p>AudioManager 所在节点需要设为<strong>不销毁节点</strong>——切换场景时 BGM 不中断：</p>
-      <pre><code>// 在初始化场景的 onLoad 中
-director.addPersistRootNode(this.node)  // 该节点（和它的 AudioSource）跨越场景不销毁</code></pre>
-
-      <div class="warn-box">
-        <strong>场景过渡监听：</strong>在 Cocos 的场景切换回调中调用
-        <code>switchBGM</code>——不要依赖场景的 <code>onLoad</code> 自动触发 BGM
-        切换，容易被多次加载打乱。
-      </div>
-    </ConceptBlock>
-
-    <ConceptBlock icon="🔊" title="Audio Ducking（音频闪避）">
-      <p>
-        Audio Ducking 是指<strong>在播放重要音效时短暂降低 BGM 音量</strong
-        >，让玩家能听清关键反馈——就像电台 DJ 说话时背景音乐自动变小：
-      </p>
-
-      <pre><code>// AudioManager.ts —— 播放重要 SFX 时闪避 BGM
-playOneShotDuck(path: string, duckVolume = 0.3, duckDuration = 0.5) {
-  const originalVol = this._bgmSource.volume
-
-  // 降低 BGM 音量
-  tween(this._bgmSource)
-    .to(0.1, { volume: originalVol * duckVolume })
-    .delay(duckDuration)
-    .to(0.2, { volume: originalVol })
-    .start()
-
-  // 同时播放音效
-  this.playOneShot(path)
-}</code></pre>
-
-      <h3>哪些音效值得用 Ducking？</h3>
-      <ul>
-        <li>Boss 登场音效 / 警告音效——需要玩家立即注意</li>
-        <li>全屏炸弹爆炸——视觉和听觉都需要冲击力</li>
-        <li>游戏结束 / 过关——叙事性时刻</li>
-        <li>普通射击和拾取道具不需要——太频繁的 Ducking 反而让 BGM 听起来像在抽搐</li>
-      </ul>
-    </ConceptBlock>
-
-    <ConceptBlock icon="🔨" title="动手练习：集成全部音频到游戏">
+      <p><strong>音效 1：射击声（Shoot）</strong></p>
       <ol>
-        <li>将 Phase 2 制作的所有 12 个 SFX 放入 <code>assets/resources/sfx/</code></li>
-        <li>将 Phase 3 制作的 BGM 放入 <code>assets/resources/bgm/</code></li>
-        <li>创建 <code>AudioManager.ts</code> 脚本并挂载到场景根节点</li>
-        <li>在玩家射击逻辑中调用 <code>audioManager.playOneShot('sfx/player_shoot')</code></li>
-        <li>在敌机死亡逻辑中调用 <code>audioManager.playOneShot('sfx/explosion_small')</code></li>
-        <li>在道具拾取、受击、UI 点击等所有事件点接入对应音效</li>
-        <li>主菜单 → 起 <code>bgm_menu</code>；战斗开始 → 切换到 <code>bgm_battle</code></li>
-        <li>添加音量滑块（UI 控件 + <code>setSFXVolume</code> / <code>setBGMVolume</code>）</li>
-        <li>添加静音开关</li>
+        <li>点击 <strong>Laser/Shoot</strong> 预设。</li>
+        <li>Waveform 选 <strong>Square</strong>（方波 = 经典 8-bit 射击感）。</li>
+        <li>Attack Time → <strong>0</strong>（按键瞬间就要响，不能有延迟感）。</li>
+        <li>Sustain Time → <strong>0</strong>（不需要持续，一枪一声）。</li>
+        <li>Decay Time → <strong>0.05s</strong>（快速衰减，干净利落）。</li>
+        <li>Frequency → <strong>1500Hz</strong> 左右（高频 = 清脆射击感）。Frequency Slide → <strong>-0.3</strong>（声音稍微向下滑，"biu↘"而不是平平的"beep"）。</li>
+        <li>点 Mutate 3-5 次，每次点 Play 试听。找一个"不过分刺耳、但有存在感"的版本。</li>
+        <li>点 Save WAV 保存为 <code>shoot.wav</code>。</li>
       </ol>
 
-      <div class="tip-box">
-        <strong>完成标准：</strong>游戏中每一个游戏事件都有对应的音效反馈。BGM
-        在菜单和战斗之间平滑切换、无缝循环。音量滑块可以独立调节 SFX 和 BGM。
-      </div>
+      <p><strong>音效 2：爆炸声（Explosion）</strong></p>
+      <ol>
+        <li>点击 <strong>Explosion</strong> 预设。</li>
+        <li>Waveform 保持 <strong>Noise</strong>（爆炸的"轰"靠的就是噪声 + 低频共振）。</li>
+        <li>Attack Time → <strong>0</strong>（爆炸是瞬间事件）。</li>
+        <li>Sustain Time → <strong>0.1s</strong>（留一点余响）。</li>
+        <li>Decay Time → <strong>0.3s</strong>（衰减慢一些，让"轰"的尾音有存在感）。</li>
+        <li>Frequency → <strong>200Hz</strong>（低频 = 沉重感）。Frequency Slide → <strong>-0.5</strong>（向下沉的轰声，像真正的爆炸冲击波余波散去）。</li>
+        <li>Mutate 3-5 次，找到"有分量但不拖沓"的版本。太快了像放屁，太慢了像雷声。</li>
+        <li>保存为 <code>explosion.wav</code>。</li>
+      </ol>
 
-      <div class="warn-box">
-        <strong>SFX 并发数限制：</strong>Cocos Web 端
-        <code>AudioSource</code> 同时播放数量有限（浏览器通常 6-8
-        个音频通道）。如果同一帧有太多音效（爆炸 + 射击 + 拾取 +
-        敌机死亡同时发生），后面的音效可能被静默丢弃。解决方案：<br /><br />
-        <ol>
-          <li>
-            <strong>优先级队列：</strong
-            >重要音效（爆炸、受击）优先播放，次要音效（拾取道具）可被挤掉
-          </li>
-          <li><strong>合并同类：</strong>同一帧内多次射击只播一次</li>
-          <li>
-            <strong>小游戏更严：</strong>微信小游戏 <code>InnerAudioContext</code> 最多同时 10
-            个——超出后创建失败。需要用对象池管理 AudioContext 实例（参见 Cocos 课程阶段 8 的
-            WechatBGMPlayer + SFXPool）
-          </li>
-        </ol>
-      </div>
+      <p><strong>音效 3：拾取声（Pickup）</strong></p>
+      <ol>
+        <li>点击 <strong>Pickup/Coin</strong> 预设。这个预设已经包含了一个经典的上行频率滑动。</li>
+        <li>Waveform 选 <strong>Square</strong>（或 Sine——更纯净的"叮"声）。</li>
+        <li>Frequency Slide → <strong>+0.6 ~ +0.8</strong>（强烈的向上滑动，"biu↑"让人愉悦）。</li>
+        <li>Attack Time → <strong>0</strong>，Sustain Time → <strong>0</strong>，整体 <strong>100-200ms</strong>（短促清脆，不拖沓）。</li>
+        <li>Frequency 区间 → <strong>800-2000Hz</strong>（清脆不刺耳）。</li>
+        <li>Master Volume → <strong>0.6</strong>（拾取声可以比射击声稍微大一点——积极的反馈值得突出）。</li>
+        <li>Mutate 3-5 次，找那个让你"听了想再捡一个"的版本。</li>
+        <li>保存为 <code>pickup.wav</code>。</li>
+      </ol>
+
+      <p>做完这 3 个音效后，把它们放在一个文件夹里。打开文件夹，双击每个 WAV 文件听一遍——你刚刚从零创造了三个游戏音效。这和写了一个跑通的 Vue 组件的感觉一样。</p>
     </ConceptBlock>
 
-    <ConceptBlock icon="🏊" title="SFX 音效池——突破音频通道限制">
-      <p>
-        前面 warn-box 提到浏览器通常只有 6-8 个音频通道。当爆炸、射击、拾取、UI
-        点击在同一帧发生时，后面的音效会被静默丢弃。解决方案是<strong
-          >用对象池管理 AudioSource 实例</strong
-        >：
-      </p>
-
-      <h3>Web 端：AudioSource 池</h3>
-      <pre><code>// SFXPool.ts —— 预创建 N 个 AudioSource，用完了"借"不到就降级
-import { AudioSource, Node, AudioClip } from 'cc'
-
-class SFXPool {
-  private _pool: AudioSource[] = []
-  private _busy: Set&lt;AudioSource&gt; = new Set()
-  private _container: Node
-
-  constructor(container: Node, size: number) {
-    this._container = container
-    for (let i = 0; i < size; i++) {
-      this._pool.push(container.addComponent(AudioSource))
-    }
-  }
-
-  /** 借一个空闲的 AudioSource，没有就返回 null */
-  acquire(): AudioSource | null {
-    const src = this._pool.find(s => !this._busy.has(s))
-    if (src) {
-      this._busy.add(src)
-      // 播放结束后自动归还
-      src.clip?.once?.('ended', () => this.release(src))
-    }
-    return src
-  }
-
-  release(src: AudioSource) {
-    src.stop()
-    this._busy.delete(src)
-  }
-}</code></pre>
-
-      <h3>带优先级的播放接口</h3>
-      <pre><code>// AudioManager.ts 中集成优先级
-private _sfxPool = new SFXPool(this.node, 8)
-
-// 优先级：爆炸（3）> 受击（2）> 射击（1）> 拾取（0）
-playSfxWithPriority(clip: AudioClip, priority: number) {
-  const src = this._sfxPool.acquire()
-  if (src) {
-    // 有空闲通道，直接播放
-    src.playOneShot(clip, 1)
-    return
-  }
-
-  // 所有通道忙——检查有没有低优先级音效在播
-  // 简化版：直接丢弃（Web Audio API 本身会排队）
-  // 正式版：遍历 _busy 集，如果有优先级低于当前的，stop 它再播放
-}</code></pre>
-
-      <h3>小游戏端：InnerAudioContext 池</h3>
-      <p>
-        微信小游戏的 <code>wx.createInnerAudioContext()</code> 最多同时 10 个，超出后直接返回 null。
-        处理方式和 Web 端一致——管理一个上限为 10 的池子：
-      </p>
-      <pre><code>// WechatSFXPool.ts
-class WechatSFXPool {
-  private _pool: WechatMinigame.InnerAudioContext[] = []
-  private _busy = new Set&lt;WechatMinigame.InnerAudioContext&gt;()
-  private _maxSize = 10
-
-  constructor(size: number) {
-    this._maxSize = Math.min(size, 10)
-    for (let i = 0; i < this._maxSize; i++) {
-      this._pool.push(wx.createInnerAudioContext())
-    }
-  }
-
-  acquire(): WechatMinigame.InnerAudioContext | null {
-    const ctx = this._pool.find(c => !this._busy.has(c))
-    if (ctx) {
-      this._busy.add(ctx)
-      ctx.onEnded(() => { this._busy.delete(ctx) })
-    }
-    return ctx ?? null
-  }
-
-  // 所有实例用完销毁（切场景时调用）
-  destroyAll() {
-    for (const ctx of this._pool) {
-      ctx.destroy()
-    }
-    this._pool.length = 0
-    this._busy.clear()
-  }
-}</code></pre>
-
-      <h3>降级策略：帧内去重</h3>
-      <p>同一帧内同一音效只播一次——这是最简单的优化，不需要池也能生效：</p>
-      <pre><code>// AudioManager.ts —— 帧内去重
-private _playedThisFrame = new Set&lt;string&gt;()
-
-playOneShot(path: string) {
-  if (this._playedThisFrame.has(path)) return  // 本帧已播过
-  this._playedThisFrame.add(path)
-
-  const clip = this._clipCache.get(path)
-  if (clip) this._sfxPool.acquire()?.playOneShot(clip, 1)
-}
-
-lateUpdate() {
-  this._playedThisFrame.clear()  // 每帧结束时清空
-}</code></pre>
-
-      <div class="warn-box">
-        <strong>注意：</strong>小游戏的 <code>InnerAudioContext</code> 在 iOS 上同时播放超过 4-5
-        个时会出现严重延迟，比 Android 更敏感。如果目标用户主要是 iOS 微信用户，池子大小建议设为 6
-        而非 10。
-      </div>
-    </ConceptBlock>
-
-    <ConceptBlock icon="✅" title="自检清单">
+    <ConceptBlock icon="🔗" title="课外延伸">
       <ul>
-        <li>AudioClip 和 AudioSource 的关系是什么？</li>
-        <li>为什么 SFX 必须放在 <code>resources/</code> 目录下？</li>
-        <li><code>playOneShot</code> 和直接 <code>play()</code> 有什么区别？</li>
-        <li>AudioManager 为什么用 Map 缓存 AudioClip？频繁加载会有什么问题？</li>
-        <li>跨场景切换 BGM 时，如何保证音频不中断？</li>
-        <li>淡入淡出的 tween 怎么实现？为什么不能直接 <code>clip=新BGM</code>？</li>
-        <li>SFX 音量和 BGM 音量为什么要分开控制？</li>
+        <li><strong>SFXR/BFXR 为什么能"永生"：</strong>DrPetter 的 SFXR 写于 2007 年，用 C 语言 + SDL 库。后来有人把它移植到了 Flash（BFXR 的第一版），又移植到了 Web Audio API（现在的 bfxr.net）。一个 200 行 C 代码的工具，穿越了 3 个技术时代依然在使用。这不是因为代码写得多好——是因为它<strong>解决了正确的需求，并且给出了正确的抽象</strong>：9 种预设 + 参数直观 = 0 学习成本。你不需要懂音效合成也能用——但懂了之后能用到极致。</li>
+        <li><strong>Ludum Dare 与独立游戏文化：</strong>Ludum Dare 是全球最大的游戏创作大赛，每届都有上千人参加，规则是<strong>48 小时内从零做出一款游戏</strong>。SFXR、BFXR、Bosca Ceoil（Phase 7）——这些独立游戏开发者最常用的工具都诞生于 Ludum Dare。这不是巧合：48 小时的时间压力迫使你只做"够用"的工具，不做"完美"的工具。够用比完美重要。</li>
       </ul>
+    </ConceptBlock>
+
+    <ConceptBlock icon="✅" title="自测清单">
+      <ol>
+        <li>在 BFXR 中，射击声的 Attack Time 为什么必须接近 0？如果 Attack Time 设为 0.5 秒会有什么听感问题？</li>
+        <li>爆炸声使用 Noise 波形而非 Square 波形——为什么？Noise 波形的物理特性（全频率随机分布）如何对应爆炸的物理特性（空气分子剧烈无序振动）？</li>
+        <li>BFXR 的 Mutate 功能的本质是什么？它和机器学习中的"随机梯度下降"在思路上有什么相似之处？</li>
+      </ol>
     </ConceptBlock>
   </PhaseLayout>
 </template>

@@ -147,11 +147,13 @@ pre {
   line-height: 1.75;
   margin-bottom: 1rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  color: #faf3e8;
+  font-family: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', 'Consolas', monospace;
 }
 
 pre code {
   background: none;
-  color: #e8dcc8;
+  color: #faf3e8;
   padding: 0;
   font-size: inherit;
   white-space: pre;
@@ -160,7 +162,7 @@ pre code {
 
 /* 代码块内保留 strong 高亮 */
 pre code strong {
-  color: #f0c060;
+  color: #ffb347;
 }
 
 /* ---- 复制按钮 ---- */

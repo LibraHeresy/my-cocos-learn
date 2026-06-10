@@ -1,685 +1,80 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import PhaseLayout from '@/components/PhaseLayout.vue'
 import ConceptBlock from '@/components/ConceptBlock.vue'
 </script>
 
 <template>
-  <PhaseLayout :phase="3" title="数据持久化与云开发" duration="1-2 天">
-    <ConceptBlock icon="🎯" title="学完本节你能做什么">
+  <PhaseLayout :phase="3" title="微信小游戏适配" duration="1-2 天">
+    <ConceptBlock icon="🧭" title="本节定位"><p>你的 Cocos Web 项目在浏览器跑得好好的——但扔进微信小游戏，一切都不一样了。这一节讲清楚"改了啥"和"为什么改"。</p></ConceptBlock>
+
+    <ConceptBlock icon="📖" title="当你的游戏第一次“踩进”微信小游戏">
+      <p>你可能经历过这种感觉：你在本地开发了一个 Vue 应用，npm run dev 一切正常。然后 npm run build，把 dist/ 扔到 Nginx 上——白屏。你打开 Console，看到一堆 404 和报错。你花了一下午发现是路由用的 history 模式而 Nginx 没配 fallback。</p>
+      <p>Cocos Web 版到微信小游戏版的迁移，就是这个感觉——但放大 10 倍。你的游戏逻辑代码没变，但它的"生存环境"换了：</p>
       <ul>
-        <li>了解<strong>微信云开发</strong>的三大核心能力，告别"从零搭建后端"的焦虑</li>
-        <li>用<strong>云数据库</strong>存储玩家档案、装备、进度——像用 Firestore 一样简单</li>
-        <li>用<strong>云函数</strong>实现游戏逻辑校验（排行榜反作弊、每日奖励计算）</li>
-        <li>实现<strong>多端进度同步</strong>——换手机/换 iPad 都能读到同一份存档</li>
-        <li>用<strong>云存储</strong>托管玩家上传的自定义内容（头像、关卡等）</li>
+        <li>浏览器里你用 fetch() 从 CDN 下载图片——微信小游戏没有 HTTP 下载的概念，资源在本地包里</li>
+        <li>浏览器里 Canvas 渲染走 GPU 加速的浏览器引擎——微信小游戏里渲染走的是微信自研的渲染层</li>
+        <li>浏览器里触摸事件是 addEventListener('touchstart')——微信小游戏里 wx.onTouchStart() 有自己的事件坐标系</li>
+        <li>浏览器里背景音乐用 Web Audio API context.createBufferSource()——微信小游戏用 wx.createInnerAudioContext()</li>
       </ul>
+      <p>好消息是：Cocos 引擎团队已经帮你处理了<strong>大部分</strong>适配工作。你不需要知道 wx.* API 的每一个细节——Cocos 的"构建微信小游戏"功能在底层做了 JSB→wx.* 的映射。但"大部分"不是"全部"——有一些坑你必须亲自踩过才真正理解。</p>
     </ConceptBlock>
 
-    <ConceptBlock icon="☁️" title='微信云开发概览——你的第一个"后端"'>
-      <p>
-        作为前端工程师，我们习惯了写界面但不太想管服务器。微信云开发就是你的"零运维后端"——它把数据库、计算、文件存储打包成了一个开箱即用的 BaaS（Backend as a Service），和前端熟悉的 <strong>Firebase</strong> 或 <strong>Supabase</strong> 是同一类产品。
-      </p>
+    <ConceptBlock icon="🔍" title="适配层在做什么？——三条主线">
+      <p>当你点击 Cocos Creator 菜单栏的"项目→构建发布"并选择"微信小游戏"，引擎在背后做了三件事：</p>
 
-      <h3>三大能力</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>能力</th>
-            <th>做什么</th>
-            <th>前端类比</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>云数据库</strong></td>
-            <td>一个 MongoDB-like 文档数据库，无需安装、不用写 SQL</td>
-            <td>Firestore / MongoDB</td>
-          </tr>
-          <tr>
-            <td><strong>云函数</strong></td>
-            <td>在微信服务器上运行的 Node.js 函数，天然免鉴权</td>
-            <td>AWS Lambda / Vercel Serverless Functions</td>
-          </tr>
-          <tr>
-            <td><strong>云存储</strong></td>
-            <td>文件上传/下载 + CDN 加速，托管图片、存档等</td>
-            <td>AWS S3 + CloudFront / Firebase Storage</td>
-          </tr>
-        </tbody>
-      </table>
+      <p><strong>1. 渲染适配：Canvas 2D/WebGL → 微信双线程渲染。</strong>在浏览器里，Cocos 直接操作 Canvas 的 WebGL 上下文——创建纹理、绑定帧缓冲、执行绘制调用。但在微信小游戏里，逻辑线程不能直接操作渲染。Cocos 的适配层会拦截所有 WebGL 调用，把它们转换成微信渲染指令，通过 JS Bridge 发送到渲染线程执行。这个转换过程叫"命令缓冲"（Command Buffer）——类似 Vue 的虚拟 DOM diff 之后生成 patch 指令再应用到真实 DOM。</p>
 
-      <h3>对比：自建后端 vs 云开发</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>维度</th>
-            <th>自建后端</th>
-            <th>微信云开发</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>服务器</td>
-            <td>买云服务器、配置 Nginx、搞 SSL 证书</td>
-            <td><strong>零配置</strong>——微信帮你管</td>
-          </tr>
-          <tr>
-            <td>鉴权</td>
-            <td>自己实现 JWT / session 校验</td>
-            <td><strong>天然免鉴权</strong>——微信自动注入 openid</td>
-          </tr>
-          <tr>
-            <td>数据库</td>
-            <td>装 MySQL/PostgreSQL，写 Schema，做迁移</td>
-            <td>自动创建，Mongo-like，无需 Schema 预设</td>
-          </tr>
-          <tr>
-            <td>扩容</td>
-            <td>手动加机器或配置 Auto Scaling</td>
-            <td><strong>自动弹性伸缩</strong></td>
-          </tr>
-          <tr>
-            <td>费用</td>
-            <td>服务器月租 + 数据库 + 带宽</td>
-            <td>免费额度充足（详见下文），个人开发者几乎不花钱</td>
-          </tr>
-        </tbody>
-      </table>
+      <p><strong>2. 资源加载适配：HTTP 下载 → 本地包管理。</strong>在浏览器里，一张图片的加载路径是 https://cdn.example.com/sprites/player.png。但在微信小游戏里，资源在你的包文件里——<code>wx.env.USER_DATA_PATH</code> 指向的本地目录。Cocos 把 assetManager 的加载流程适配到了微信的文件系统 API。关键限制：<strong>主包不能超过 4MB</strong>。这意味着你不能像写 Web 项目那样"所有图片都放 assets/ 里"。</p>
 
-      <h3>免费额度</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>资源</th>
-            <th>免费额度</th>
-            <th>适合什么规模</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>云数据库容量</td>
-            <td>2 GB</td>
-            <td>万级 DAU 足够</td>
-          </tr>
-          <tr>
-            <td>云数据库读次数</td>
-            <td>5 万次/天</td>
-            <td>5000 玩家 × 10 次读取</td>
-          </tr>
-          <tr>
-            <td>云函数调用</td>
-            <td>20 万次/月</td>
-            <td>DAU 2000 × 3 次调用</td>
-          </tr>
-          <tr>
-            <td>云存储容量</td>
-            <td>5 GB</td>
-            <td>数千张头像/截图</td>
-          </tr>
-        </tbody>
-      </table>
+      <p><strong>3. 输入适配：DOM 触摸事件 → wx 触摸事件。</strong>浏览器的 touchstart/touchmove/touchend 事件给你的是 clientX/clientY，坐标系是视口。微信小游戏的 wx.onTouchStart 给你的是 x/y，坐标系是 Canvas 的画布坐标系（需要考虑 devicePixelRatio 缩放）。Cocos 的适配层把这些差异统一成了引擎内部的 InputManager，你写的飞机移动代码不需要改——但如果你之前手动用 addEventListener 处理了触摸事件，就需要换成 Cocos 的输入系统。</p>
 
-      <div class="tip-box">
-        <strong>决策参考：</strong>如果你的小游戏不需要排行榜反作弊、不需要跨设备进度同步，用 Phase 9 的云存储托管排行榜（<code>setUserCloudStorage</code>）就够了，<strong>不需要开通云开发</strong>。一旦你需要"自己的数据库、自己的计算逻辑、自己的文件存储"，云开发就是最佳选择。
+      <p>这和前端领域"一套前端代码跑在 Web/iOS/Android 三端"的跨平台框架（React Native、Flutter）面临的问题本质相同：<strong>平台差异总是在"你以为没问题"的地方咬你一口</strong>。</p>
+    </ConceptBlock>
+
+    <ConceptBlock icon="📦" title="4MB 的紧箍咒——分包策略">
+      <p>微信小游戏的主包（代码 + 启动资源）不能超过 4MB。这个数字从 2017 年上线到现在没变过。为什么？因为微信希望你的游戏<strong>秒开</strong>——用户点分享卡片到进入游戏，主包下载时间要控制在 3 秒以内。</p>
+      <p>你可以用<strong>分包（Subpackage）</strong>来突破限制。分包总大小不超过 20MB（2023 年后提升到了 30MB）。分包的加载策略如下：</p>
+      <div style="background:var(--color-surface);padding:16px;border-radius:8px;margin:12px 0;font-family:monospace;font-size:0.9em;">
+<strong>主包</strong>（&lt; 4MB）：Core 脚本 + 启动场景 + 核心 UI 素材<br/>
+├── <strong>bundle-art</strong>（美术资源——精灵帧、动画、像素画图集）<br/>
+├── <strong>bundle-audio</strong>（音频资源——SFX 音效 + BGM 背景音乐）<br/>
+└── <strong>bundle-levels</strong>（关卡数据——波次配置、敌机参数）
       </div>
+      <p>在 Cocos 资源管理器中，右键点击文件夹 → "配置为 Bundle"即可。主包只放游戏启动必须的资源（Logo 场景、加载动画、主菜单 UI），其他资源放到分包。<strong>用户不一定会玩到你所有的内容，所以不要一开始就把所有资源都下载</strong>——这和 Webpack 的 code splitting 通过 import() 懒加载组件是同一逻辑。</p>
+      <p>一个实际数字参考：一张 2048×2048 的 RGBA 纹理占用约 16MB 显存，但 PNG 压缩后只有几百 KB。你的分包体积压力通常不在代码上——<strong>在纹理和音频上</strong>。</p>
     </ConceptBlock>
 
-    <ConceptBlock icon="🗄️" title="云数据库——像操作 JSON 一样操作数据库">
-      <p>
-        微信云数据库是一个<strong>文档型数据库</strong>，它和传统 SQL 数据库最大区别是：不需要预定义表结构（Schema），直接存 JSON 对象。前端工程师天然亲切——这和操作 <code>localStorage</code> 里的 JSON 几乎是同一种心智模型。
-      </p>
-
-      <h3>数据模型</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>云数据库概念</th>
-            <th>说明</th>
-            <th>前端类比</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>集合 Collection</strong></td>
-            <td>一组文档的容器，如 <code>players</code>、<code>levels</code></td>
-            <td>一个 JSON 数组 / NoSQL 表</td>
-          </tr>
-          <tr>
-            <td><strong>文档 Document</strong></td>
-            <td>一条记录，JSON 格式，有唯一 <code>_id</code></td>
-            <td>数组中的一个对象</td>
-          </tr>
-          <tr>
-            <td><strong>字段 Field</strong></td>
-            <td>文档中的一个属性，如 <code>highScore</code></td>
-            <td>对象的 key</td>
-          </tr>
-          <tr>
-            <td><strong>_openid</strong></td>
-            <td>每个文档自动绑定创建者的 openid</td>
-            <td>内建的"用户归属"字段（零配置）</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h3>初始化与 CRUD</h3>
-      <pre><code>// 初始化云开发（在小游戏入口调用一次）
-wx.cloud.init({
-  env: 'your-env-id',  // 云开发环境 ID，在微信开发者工具中创建
-  traceUser: true,     // 记录用户访问
-})
-
-const db = wx.cloud.database()
-
-// ==================== 创建（Create）====================
-async function createPlayer(profile: { nickName: string; avatarUrl: string }) {
-  const result = await db.collection('players').add({
-    data: {
-      nickName: profile.nickName,
-      avatarUrl: profile.avatarUrl,
-      highScore: 0,
-      totalGames: 0,
-      level: 1,
-      coins: 0,
-      createdAt: db.serverDate(),  // 使用服务端时间（防作弊）
-      updatedAt: db.serverDate(),
-    },
-  })
-  // result._id → 新文档的自动 ID
-  console.log('玩家档案创建成功:', result._id)
-}
-
-// ==================== 查询（Read）====================
-async function getMyProfile() {
-  const result = await db.collection('players')
-    .where({
-      _openid: '{openid}',  // 微信自动替换为当前用户的 openid
-    })
-    .limit(1)
-    .get()
-
-  return result.data[0] || null
-}
-
-// ==================== 更新（Update）====================
-async function updateHighScore(newScore: number) {
-  // 先查出当前最高分
-  const profile = await getMyProfile()
-  if (!profile || newScore <= profile.highScore) {
-    return  // 不是新纪录，不做无意义写操作
-  }
-
-  await db.collection('players')
-    .doc(profile._id)        // 通过 _id 定位文档
-    .update({
-      data: {
-        highScore: newScore,
-        updatedAt: db.serverDate(),
-      },
-    })
-  console.log('最高分已更新为:', newScore)
-}
-
-// ==================== 删除（Delete）====================
-async function deletePlayer() {
-  const profile = await getMyProfile()
-  if (profile) {
-    await db.collection('players').doc(profile._id).remove()
-  }
-}</code></pre>
-
-      <h3>安全规则</h3>
-      <p>和 Firestore 一样，你需要设置数据访问权限。在微信云开发控制台 → 数据库 → 权限设置中配置：</p>
-      <table>
-        <thead>
-          <tr>
-            <th>权限模式</th>
-            <th>含义</th>
-            <th>适用场景</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>仅创建者可读写</td>
-            <td>只有文档的创建者（_openid 匹配）才能读写</td>
-            <td>玩家个人数据（profile、背包）</td>
-          </tr>
-          <tr>
-            <td>所有用户可读，仅创建者可写</td>
-            <td>谁都能看，但只有作者能改</td>
-            <td>排行榜（只读）、自定义关卡分享</td>
-          </tr>
-          <tr>
-            <td>所有用户可读（管理端写）</td>
-            <td>前端能看不能改，只有云函数能写</td>
-            <td>全局配置表（活动、商品价格）</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="warn-box">
-        <strong>安全告警：</strong>不要把敏感操作放在客户端。比如给玩家加金币的逻辑<strong>不要在前端直接写数据库</strong>——懂技术的玩家可以抓包改请求。正确的做法是：前端发请求 → 云函数做校验 → 云函数写数据库。云函数是不可篡改的服务端逻辑。
-      </div>
-    </ConceptBlock>
-
-    <ConceptBlock icon="⚡" title="云函数——Serverless 计算">
-      <p>
-        云函数就是在微信服务器上跑的 <strong>Node.js 函数</strong>。它最核心的价值：<strong>前端改不了服务端逻辑</strong>。你在前端如果是调用 <code>localStorage.setItem('coins', 9999)</code>——玩家可以直接改。但如果你用云函数去计算和发放金币，前端只负责调用——安全边界就这样建立起来了。
-      </p>
-
-      <h3>常见云函数用例</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>场景</th>
-            <th>为什么需要云函数（而不是前端直接操作）</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>排行榜提交验证</td>
-            <td>防止玩家伪造分数提交（如直接修改内存值 999999）</td>
-          </tr>
-          <tr>
-            <td>每日登录奖励</td>
-            <td>确保一天只发一次奖励——前端无法保证"时间不可回拨"</td>
-          </tr>
-          <tr>
-            <td>战斗回放验证</td>
-            <td>校验操作序列的合法性——防止加速/穿墙外挂</td>
-          </tr>
-          <tr>
-            <td>抽卡/开箱概率</td>
-            <td>概率逻辑必须跑在服务端——客户端概率可以被反复读取和利用</td>
-          </tr>
-          <tr>
-            <td>敏感数据聚合</td>
-            <td>如果一个查询需要访问所有玩家的数据，不能从前端发起</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h3>创建和调用</h3>
-      <p><strong>第 1 步：创建云函数</strong></p>
-      <p>在微信开发者工具中，右键 <code>cloudfunctions/</code> 目录 → 新建 Node.js 云函数：</p>
-      <pre><code>// cloudfunctions/submitScore/index.js
-const cloud = require('wx-server-sdk')
-cloud.init()
-
-exports.main = async (event, context) => {
-  // event 是前端传来的参数
-  // context 中包含调用者的 OPENID（自动注入，无需前端传）
-  const { score, level, checksum } = event
-  const wxContext = cloud.getWXContext()
-  const openid = wxContext.OPENID
-
-  // ===== 反作弊校验 =====
-  // 1. 分数合理性：单局最高不超过 99999
-  if (score > 99999) {
-    return { success: false, reason: '分数异常' }
-  }
-
-  // 2. 校验和：前端传一个 checksum，后端用 session_key 验证
-  //    （实际实现需要更复杂的签名算法，这里简化示意）
-  if (!verifyChecksum(score, level, checksum)) {
-    return { success: false, reason: '数据校验失败' }
-  }
-
-  // 3. 功率验证：前后两次提交间隔是否合理（防速刷）
-  //    （需要查数据库中的上次提交时间）
-
-  const db = cloud.database()
-
-  // 切换到服务端数据库操作（权限最高）
-  const player = await db.collection('players')
-    .where({ _openid: openid })
-    .limit(1)
-    .get()
-
-  if (player.data.length === 0) {
-    return { success: false, reason: '玩家不存在' }
-  }
-
-  // 更新最高分（如果超过记录）
-  const current = player.data[0]
-  if (score > (current.highScore || 0)) {
-    await db.collection('players').doc(current._id).update({
-      data: {
-        highScore: score,
-        updatedAt: db.serverDate(),
-      },
-    })
-  }
-
-  return { success: true, newHighScore: Math.max(score, current.highScore || 0) }
-}
-
-function verifyChecksum(score, level, checksum) {
-  // 实际项目中应使用 session_key 做 HMAC
-  // 这里是示意——真做反作弊不要只用简单的拼接
-  return true
-}</code></pre>
-
-      <p><strong>第 2 步：前端调用</strong></p>
-      <pre><code>// ScoreManager.ts —— 前端提交分数的正确方式
-async function submitScore(score: number, level: number) {
-  const result = await wx.cloud.callFunction({
-    name: 'submitScore',           // 云函数名称
-    data: {
-      score,
-      level,
-      checksum: generateChecksum(score, level),  // 简单的防篡改签名
-    },
-  })
-
-  if (result.result.success) {
-    console.log('成绩验证通过，最高分:', result.result.newHighScore)
-  } else {
-    console.warn('成绩被拒绝:', result.result.reason)
-  }
-}</code></pre>
-
-      <div class="tip-box">
-        <strong>前置条件：</strong>云函数需要先在微信开发者工具中<strong>上传并部署</strong>才能调用（右键云函数目录 → "上传并部署：云端安装依赖"）。开发阶段可以用<strong>本地调试</strong>模式来节省部署时间。
-      </div>
-    </ConceptBlock>
-
-    <ConceptBlock icon="💾" title="玩家进度同步——跨设备玩同一份存档">
-      <p>
-        玩家在手机上打了 100 关，换了 iPad 后希望进度还在——这就是<strong>云存档</strong>的价值。实现上，核心就是前端里<strong>自动保存</strong>的逻辑 + 云端 <strong>last-write-wins</strong> 的合并策略。
-      </p>
-
-      <h3>存档数据结构设计</h3>
-      <pre><code>// 玩家云存档文档结构
-interface GameSave {
-  _id: string
-  _openid: string
-  highScore: number
-  level: number
-  unlockedPlanes: string[]     // 已解锁的飞机皮肤 ID 列表
-  coins: number
-  inventory: {                 // 道具库存
-    bomb: number
-    shield: number
-    revive: number
-  }
-  settings: {                  // 玩家设置
-    bgmVolume: number
-    sfxVolume: number
-    vibration: boolean
-  }
-  version: number              // 存档版本号（用于冲突检测）
-  updatedAt: Date
-}</code></pre>
-
-      <h3>自动保存策略</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>触发时机</th>
-            <th>策略</th>
-            <th>前端类比</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>关卡通关时</td>
-            <td>立即保存进度（最高优先级）</td>
-            <td>表单提交后保存</td>
-          </tr>
-          <tr>
-            <td>游戏暂停时</td>
-            <td>保存临时状态</td>
-            <td>草稿自动保存</td>
-          </tr>
-          <tr>
-            <td>定时保存（每 60 秒）</td>
-            <td>仅保存变化过的数据（脏标记 dirty flag）</td>
-            <td>Debounce + 脏检查</td>
-          </tr>
-          <tr>
-            <td><code>wx.onHide</code></td>
-            <td>保存临时进度 + 数据（游戏可能被杀死）</td>
-            <td><code>beforeunload</code> 事件</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h3>冲突解决</h3>
-      <p>
-        如果玩家在手机上打了一关，又在平板上打了一关，两个设备的数据不一致——这就是分布式系统里的经典 <strong>conflict resolution</strong> 问题。对于小游戏存档，最简单的方案是 <strong>last-write-wins（最后一次写入胜出）</strong> + <strong>版本号</strong>。具体做法：
-      </p>
-      <ul>
-        <li>每次写入时带上版本号，更新条件设为 <code>version === 当前版本</code>（乐观锁）</li>
-        <li>如果更新失败（版本号不匹配），说明有并发写入——下拉最新数据，本地做合并</li>
-        <li>合并策略：<strong>数字类型取 max</strong>（如最高分、关卡）、<strong>数组类型取并集</strong>（如已解锁飞机）</li>
-      </ul>
-
-      <h3>离线队列</h3>
-      <pre><code>// OfflineQueue.ts —— 网络断开时排队，恢复后批量上传
-class OfflineQueue {
-  private static QUEUE_KEY = 'offline_sync_queue'
-
-  /** 添加一条待同步的操作 */
-  static enqueue(operation: { type: string; data: any }) {
-    const queue = this._getQueue()
-    queue.push({
-      ...operation,
-      timestamp: Date.now(),
-    })
-    wx.setStorageSync(this.QUEUE_KEY, JSON.stringify(queue))
-  }
-
-  /** 网络恢复时批量执行 */
-  static async flush() {
-    const queue = this._getQueue()
-    if (queue.length === 0) return
-
-    console.log(`[OfflineQueue] 开始同步 ${queue.length} 条操作`)
-
-    for (const op of queue) {
-      try {
-        await this._execute(op)
-      } catch (err) {
-        console.warn('[OfflineQueue] 操作失败，保留在队列:', op.type)
-        return  // 失败则保留，等下次网络恢复
-      }
-    }
-
-    // 全部成功——清空队列
-    wx.removeStorageSync(this.QUEUE_KEY)
-    console.log('[OfflineQueue] 全部同步完成')
-  }
-
-  private static _getQueue(): any[] {
-    try {
-      return JSON.parse(wx.getStorageSync(this.QUEUE_KEY) || '[]')
-    } catch {
-      return []
-    }
-  }
-
-  private static async _execute(op: { type: string; data: any }) {
-    switch (op.type) {
-      case 'saveScore':
-        await ScoreManager.uploadHighScore(op.data.score)
-        break
-      case 'saveProgress':
-        await db.collection('players').doc(op.data.id).update({
-          data: { level: op.data.level, updatedAt: db.serverDate() }
-        })
-        break
-      // 更多操作类型...
-    }
-  }
-}
-
-// 在 onLoad 中监听网络变化
-wx.onNetworkStatusChange((res) => {
-  if (res.isConnected) {
-    OfflineQueue.flush()  // 网络恢复 → 尝试同步离线队列
-  }
-})</code></pre>
-
-      <div class="tip-box">
-        <strong>存储分层策略：</strong>敏感/付费数据 → 云数据库（<code>wx.cloud.database()</code>）；好友可见数据 → 云存储托管排行榜（<code>setUserCloudStorage</code>）；临时/非关键数据 → 本地 Storage（<code>wx.setStorageSync</code>）。不要所有数据都往云端写——每次写操作都计费。
-        <br /><br />
-        同样的批量缓冲+网络恢复上传模式也用在 <strong>Phase 14（数据运营分析）</strong>的埋点数据上报中——离线队列是可复用的架构模式。
-      </div>
-    </ConceptBlock>
-
-    <ConceptBlock icon="📁" title="云存储——文件上传与 CDN 分发">
-      <p>
-        云存储是微信提供的<strong>文件存储 + CDN</strong>服务，类似 <strong>AWS S3 + CloudFront 一体化</strong>。适合存放玩家头像、游戏截图、自定义关卡、战斗回放文件等。
-      </p>
-
-      <h3>上传文件</h3>
-      <pre><code>// 上传玩家自定义关卡截图
-async function uploadLevelSnapshot(filePath: string): Promise&lt;string&gt; {
-  try {
-    const result = await wx.cloud.uploadFile({
-      cloudPath: `snapshots/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.png`,
-      filePath,  // 本地临时文件路径
-    })
-
-    // result.fileID → 云文件 ID（cloud://xxx 格式）
-    // result.fileID 可以直接存入云数据库，用于后续读取
-    console.log('截图上传成功:', result.fileID)
-    return result.fileID
-  } catch (err) {
-    console.error('截图上传失败:', err)
-    return ''
-  }
-}</code></pre>
-
-      <h3>下载/显示文件</h3>
-      <pre><code>// 将云文件 ID 转为临时 HTTPS 链接（有有效期）
-async function getTempUrl(fileID: string): Promise&lt;string&gt; {
-  const result = await wx.cloud.getTempFileURL({
-    fileList: [fileID],
-  })
-  return result.fileList[0]?.tempFileURL || ''
-}</code></pre>
-
-      <h3>常用场景</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>场景</th>
-            <th>说明</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>玩家头像</td>
-            <td>上传到云存储 → fileID 写入玩家文档 → 任何地方都能显示</td>
-          </tr>
-          <tr>
-            <td>自定义关卡</td>
-            <td>关卡数据 JSON → 上传为文件 → 其他玩家通过 fileID 下载</td>
-          </tr>
-          <tr>
-            <td>战斗回放</td>
-            <td>操作序列数组 → 上传 → 分享给好友回看</td>
-          </tr>
-          <tr>
-            <td>游戏截图分享</td>
-            <td>Canvas 导出图片 → 上传 → 生成分享链接</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="warn-box">
-        <strong>费用提醒：</strong>云存储免费额度 5GB / 月 CDN 流量 5GB。如果你的游戏截图分享很频繁，注意监控流量消耗。<strong>不要用云存储托管游戏资源包</strong>（音频、图片 Bundle）——那些应该走 Cocos 的远程资源加载通道，更便宜且支持断点续传。
-      </div>
-    </ConceptBlock>
-
-    <ConceptBlock icon="⚠️" title="常见问题">
-      <h3>Q1: 云开发需要付费吗？</h3>
-      <p>
-        免费额度足够个人开发者验证产品和初期运营。配额见上方免费额度表格。超出后按量付费，价格很低——云数据库超出后约 0.07 元/万次读。对于大部分 independent 小游戏来说，<strong>上线前期基本不花钱</strong>。
-      </p>
-
-      <h3>Q2: 我不写后端，云函数能跳过吗？只用云数据库行不行？</h3>
-      <p>
-        能，但不安全。直接从客户端写数据库相当于把数据库密码放在前端 JS 里——抓包就能看到你的数据结构和 API 地址。如果只存不敏感数据（如非排行榜的游戏设置），可以客户端直连。但凡涉及分数、金币、道具<strong>一定</strong>要走云函数校验。
-      </p>
-
-      <h3>Q3: 云数据库和 <code>wx.setUserCloudStorage</code> 有什么区别？</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>特性</th>
-            <th>云存储托管排行榜</th>
-            <th>云数据库</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>数据结构</td>
-            <td>固定 KV（key-value）</td>
-            <td>完整 JSON 文档</td>
-          </tr>
-          <tr>
-            <td>查询能力</td>
-            <td>只能按 key 查</td>
-            <td>支持条件查询、排序、分页</td>
-          </tr>
-          <tr>
-            <td>数据范围</td>
-            <td>仅好友</td>
-            <td>全部玩家（取决于权限）</td>
-          </tr>
-          <tr>
-            <td>需要开通云开发？</td>
-            <td>不需要</td>
-            <td>需要</td>
-          </tr>
-          <tr>
-            <td>适合场景</td>
-            <td>好友排行榜</td>
-            <td>全服排行榜、玩家档案、物品系统</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h3>Q4: 云函数冷启动慢怎么办？</h3>
-      <p>
-        首次调用或长时间不调用后，云函数需要冷启动（几百毫秒 ~ 2 秒）。优化方法：
-      </p>
-      <ul>
-        <li>在 <code>onLoad</code> 时用一个小 ping 调用"预热"云函数</li>
-        <li>合理设置云函数的内存大小（默认 256MB，可调到 512MB 减少启动时间）</li>
-        <li>把多个小逻辑合并到一个云函数中（减少冷启动次数）</li>
-      </ul>
-
-      <h3>Q5: 云数据库的查询有哪几种方式？</h3>
-      <p>
-        支持 <code>where()</code>、<code>orderBy()</code>、<code>limit()</code>、<code>skip()</code>、<code>field()</code>。
-        这些操作可以链式调用——和 Lodash 的链式操作或 MongoDB 的查询语法基本一致。举例：
-      </p>
-      <pre><code>// 查询关卡 > 10 的玩家，按最高分降序，取前 20 条
-const result = await db.collection('players')
-  .where({ level: db.command.gt(10) })  // greater than 10
-  .orderBy('highScore', 'desc')
-  .limit(20)
-  .field({ nickName: true, highScore: true, level: true })  // 只取这三列
-  .get()</code></pre>
-    </ConceptBlock>
-
-    <ConceptBlock icon="✅" title="自检清单">
+    <ConceptBlock icon="🔧" title="动手：做一次完整的微信小游戏构建">
       <ol>
-        <li>微信云开发的三大能力是什么？各自对应什么前端/后端概念？</li>
-        <li>云数据库是关系型数据库还是文档型数据库？和 SQL 数据库的核心差异是什么？</li>
-        <li><code>db.serverDate()</code> 的作用是什么？为什么不能用客户端的 <code>Date.now()</code>？</li>
-        <li>云函数和客户端直接操作数据库的区别是什么？什么场景<strong>必须</strong>用云函数？</li>
-        <li>玩家存档的冲突解决有哪几种策略？小游戏推荐哪种？为什么？</li>
-        <li>离线队列的实现思路是什么？网络恢复后如何触发同步？</li>
-        <li>云存储适合存放什么内容？不适合存放什么内容？</li>
-        <li>云数据库的安全规则有哪几种模式？各适用于什么数据？</li>
-        <li><code>wx.cloud.uploadFile</code> 返回的 <code>fileID</code> 格式是什么？如何转成可访问的 URL？</li>
-        <li>云开发的免费额度是多少？超出的部分贵吗？</li>
-        <li>如果玩家分数被云函数拒绝（反作弊），前端应该如何告知玩家？</li>
+        <li><strong>构建：</strong>在 Cocos Creator 菜单栏选择"项目 → 构建发布"。发布平台选"微信小游戏"。填写你的 AppID（Phase 2 注册时拿到的那个）。其他设置保持默认，点击"构建"。等待 1-3 分钟，Cocos 会在 build/ 目录下生成一个 wechatgame 文件夹。</li>
+        <li><strong>打开：</strong>用微信开发者工具打开 build/wechatgame 目录。你会看到一个项目列表——点击"导入"，选择这个目录。点击"预览"，微信开发者工具会在内置模拟器中运行你的游戏。</li>
+        <li><strong>逐项对比 Web 版差异：</strong>打开两个窗口——一个是你 Cocos 编辑器里的浏览器预览，一个是微信开发者工具的模拟器。对比以下项目，记下每个差异：
+          <ul>
+            <li>资源加载方式变了（Network 面板看不到 HTTP 请求了——资源从本地包直接读取）</li>
+            <li>Canvas 渲染方式变了（Performance 面板的 FPS 曲线可能不一样）</li>
+            <li>触摸事件映射变了（触摸灵敏度和 Web 版不同——注意滑动是否跟手）</li>
+            <li>音频播放方式变了（如果之前用了 Web Audio API 的自定义效果，可能不生效）</li>
+            <li>包体大小——在开发者工具里看主包大小，如果在 4MB 附近就要考虑分包</li>
+          </ul>
+        </li>
+        <li><strong>记录解决方案：</strong>每发现一个差异，在笔记里写下来：差异是什么？原因是什么？怎么解决？比如"音频播放延迟比 Web 版高 200ms——因为 InnerAudioContext 初始化解码需要时间——解决方案：在 onLoad 时预创建 Audio 实例但暂不播放"。</li>
+        <li><strong>分包验证：</strong>如果你已经在 Cocos 里设置了 Bundle，在微信开发者工具的"代码质量"面板中能看到主包和各分包的大小。确认主包 &lt; 4MB。</li>
+      </ol>
+    </ConceptBlock>
+
+    <ConceptBlock icon="🔗" title="课外延伸">
+      <ul>
+        <li><strong>Cocos 是微信小游戏的"一等公民"——但一等公民也有代价：</strong>Unity 至今没有官方的微信小游戏导出方案（有第三方方案但不够稳定）。Unreal 在移动端小游戏上完全不适用。Cocos 从 2016 年起就和微信小游戏团队深度合作——你在 Cocos 构建面板选"微信小游戏"那一刻，引擎帮你做了上百个适配点的自动转换。这是效率上的明智选择。但同时，你的游戏性能上限受限于 Cocos 适配层的实现质量——部分高开销操作（大量粒子、全屏后期特效）可能需要你绕过引擎直接调 wx API 来优化。就像你用 Vue 开发时，大部分场景用 template + v-bind 就够了，但极致性能场景（虚拟滚动列表）需要你手动操作真实 DOM。</li>
+        <li><strong>4MB 不是微信独有的限制：</strong>Google Play Instant（安卓免安装应用）的 APK 上限是 15MB。Apple 的 App Clips 上限是 15MB。所有平台都在追求"点击即玩"——下载体积越小，转化率越高。微信的 4MB 是最激进的——它对应的不是"快速"，是"瞬间"。这也解释了为什么微信小游戏大多数是"轻量休闲"类型——《羊了个羊》的整个游戏包不到 2MB。</li>
+        <li><strong>音频适配的坑比渲染更深：</strong>Web Audio API 的 AudioContext 支持 createBufferSource() 精确控制播放时间（你可以把两个 buffer 无缝拼接）。但微信的 InnerAudioContext 是"黑盒"——你只能 play()、pause()、stop()，没有 buffer 级别的控制。这意味着在 Web 版上做了复杂音频逻辑（BGM 无缝循环、音效叠加）的游戏在微信小游戏上可能需要重写音频系统。这和前端开发中"Chrome 支持的 API Safari 不支持"是一个性质——提前知道差异比上线后 debug 高效得多。</li>
+      </ul>
+    </ConceptBlock>
+
+    <ConceptBlock icon="✅" title="自测清单">
+      <ol>
+        <li>Cocos Web 版到微信小游戏版，哪三个方面的变化最大？每个变化背后的原因是什么？</li>
+        <li>微信小游戏的 4MB 主包限制为了什么设计目标？分包策略和 Webpack 的 code splitting 有什么相似之处？</li>
+        <li>为什么 Cocos 引擎会帮你做"JSB → wx.* API"的映射？如果没有这个映射层，你需要自己处理什么？</li>
       </ol>
     </ConceptBlock>
   </PhaseLayout>

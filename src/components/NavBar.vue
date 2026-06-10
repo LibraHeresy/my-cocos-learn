@@ -5,8 +5,9 @@ import { useRoute, RouterLink } from 'vue-router'
 const route = useRoute()
 
 const courses = [
-  { id: 'art', label: '像素美术', icon: '🎨', path: '/art' },
+  { id: 'speedrun', label: '30天速通', icon: '⏱️', path: '/speedrun' },
   { id: 'cocos', label: 'Cocos 引擎', icon: '🎮', path: '/cocos' },
+  { id: 'art', label: '像素美术', icon: '🎨', path: '/art' },
   { id: 'audio', label: '游戏音效', icon: '🔊', path: '/audio' },
   { id: 'engineering', label: '工程化与运营', icon: '⚙️', path: '/engineering' },
 ]
@@ -15,7 +16,8 @@ const activeCourse = computed(() => {
   const name = route.name
   if (!name) return 'cocos'
   const nameStr = name as string
-  if (nameStr === 'home') return 'cocos'
+  if (nameStr === 'home') return 'speedrun'
+  if (nameStr.startsWith('speedrun')) return 'speedrun'
   if (nameStr.startsWith('engineering')) return 'engineering'
   if (nameStr.startsWith('cocos')) return 'cocos'
   if (nameStr.startsWith('art')) return 'art'

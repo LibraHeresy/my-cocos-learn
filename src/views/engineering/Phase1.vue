@@ -4,513 +4,69 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
 </script>
 
 <template>
-  <PhaseLayout :phase="1" title="微信小游戏适配与发布" duration="2-3 天">
-    <ConceptBlock icon="🎯" title="学完本节你能做什么">
+  <PhaseLayout :phase="1" title="从 Demo 到产品" duration="1 天">
+    <ConceptBlock icon="🧭" title="本节定位"><p>你的游戏能跑了——但离"有人愿意玩"还有一道鸿沟。这道鸿沟不靠写更多代码填，靠<strong>产品思维</strong>。</p></ConceptBlock>
+
+    <ConceptBlock icon="📖" title="一个 6 天原型卖了 25 亿美元">
+      <p>2009 年 5 月，Markus Persson——圈内叫他 Notch——花 6 天时间写了一个小游戏。没有生存模式，没有合成系统，没有红石电路，甚至没有敌人。<strong>只有放置和破坏方块</strong>。他在 TIGSource 论坛上贴了截图，有人留言："我愿意付 10 欧元玩这个。"Notch 犹豫了一下，开了预购。结果：第一周卖了 800 份。</p>
+      <p>他和玩家聊天，看论坛反馈。大家说"想和朋友一起建东西"——他加了多人模式。大家说"晚上太黑了看不见"——他加了火把。大家说"只有建造没意思"——他加了生存模式。每一个功能都来自玩家的真实需求，不是他闭门造车想出来的。</p>
+      <p>4 年后，2014 年 9 月 15 日，微软以 25 亿美元收购 Mojang。《我的世界》不是一出生就是个完美的游戏——它是一颗种子。种子不漂亮，但<strong>能让玩家一眼看出"这会长成一棵大树"</strong>。</p>
+      <p>你的飞机大战现在也是这样一颗种子。</p>
+    </ConceptBlock>
+
+    <ConceptBlock icon="🔍" title="Demo 和产品到底差在哪里？">
+      <p>你现在打开飞机大战，飞机能飞、能射击、能击杀敌机、能显示分数。这 4 个功能做出来，你会有一种"完成了"的错觉——就像写完一个 Vue 组件的 v1，跑通了，就想 push 了。但 Demo 到产品，差的是这 5 个维度：</p>
+      <table><thead><tr><th>维度</th><th>Demo（现在）</th><th>产品（目标）</th></tr></thead><tbody>
+        <tr><td><strong>功能完整度</strong></td><td>核心玩法能跑</td><td>菜单→开始→游玩→死亡→结算→重开，每个分支覆盖</td></tr>
+        <tr><td><strong>稳定性</strong></td><td>偶尔闪退，无所谓</td><td>3 台真机连续跑 30 分钟不 crash</td></tr>
+        <tr><td><strong>体验</strong></td><td>你知道怎么玩就行</td><td>第一次打开的人前 5 秒就知道要做什么</td></tr>
+        <tr><td><strong>变现</strong></td><td>不考虑</td><td>有广告展示、有内购设计、有经济循环</td></tr>
+        <tr><td><strong>数据</strong></td><td>不清楚玩家行为</td><td>知道每天多少人玩、在第几波流失、广告谁点了</td></tr></tbody></table>
+      <p>你可能觉得"这不就是多写几个 UI 和多测几台手机吗？"不是。Demo 和产品之间隔的不是代码量，是<strong>视角切换</strong>——从"我写的我懂"切换到"我不需要懂，打开就能玩"。</p>
+    </ConceptBlock>
+
+    <ConceptBlock icon="💡" title="MVP——产品思维的第一个关键词">
+      <p>MVP（Minimum Viable Product，最小可行产品）是硅谷创业圈最被滥用的词——但它对独立游戏开发者来说是救命稻草。</p>
+      <p>MVP 不是"偷懒少做功能"。MVP 是：<strong>只做能让玩家觉得"好玩"的那几个功能，剩下的全都砍掉</strong>。</p>
+      <p>试想一下：如果你花了 3 个月给飞机大战加了 30 种敌机、10 种道具、5 种皮肤——然后发给朋友玩。朋友玩了 2 分钟说"好像挺无聊的"。你怎么办？你花了 3 个月却不知道核心玩法有没有吸引力。</p>
+      <p>MVP 的工作流程是反过来的：</p>
+      <ol>
+        <li>先做"飞机能飞、能射击、敌机会死、能看到分数"——这是你现在的版本</li>
+        <li>发给 5 个人玩，站在他们背后看。不说话，只观察。</li>
+        <li>记下他们笑/皱眉/困惑的瞬间。他们认为"爽"的地方加倍投入。他们认为"无聊/困惑"的地方砍掉或重做。</li>
+        <li>再加一个功能，重复第 2 步。</li>
+      </ol>
+      <p>这和前端开发中的"渐进增强"是同一套逻辑——先做出能用的 HTML，再加 CSS，最后加 JS。你不可能一开始就写出完美的组件架构——你是先写个能跑的，然后根据需求重构。</p>
+      <p><strong>产品的定义不是"功能齐全"，而是"有人愿意用"。</strong>如果你的飞机大战只有一个敌人、一种子弹、一个场景——但 5 个测试者都说不舍得关——那它就是产品。如果你的游戏有 30 种敌人、10 种道具、5 种皮肤——但没人玩到第 3 分钟——那它连 Demo 都不算，它是一个"功能堆砌物"。</p>
+    </ConceptBlock>
+
+    <ConceptBlock icon="🔧" title="动手：给你的飞机大战打分">
+      <p>打开一个笔记软件或一张纸，对照下面的维度，给你的飞机大战逐项打分（0 = 完全没有，5 = 已经是产品级）：</p>
+      <ol>
+        <li><strong>核心玩法：</strong>飞机能飞、能射击、能击杀、能计分——这 4 个闭环完整吗？有没有"打不死的敌机"或"分数不动"的 bug？</li>
+        <li><strong>边界处理：</strong>死了之后能重开吗？分数归零了吗？暂停后再返回状态对吗？连续快速点击开始按钮会 crash 吗？游戏过程中切到后台再回来画面正常吗？</li>
+        <li><strong>新手引导：</strong>一个陌生人打开你的游戏，第一秒知道要做什么吗？还是需要你在旁边解释"这个按钮是开始、这里是分数、你要躲开红色的子弹"？</li>
+        <li><strong>难度曲线：</strong>第一波和第二波有区别吗？还是换个背景色就算新波次了？第 5 波和第 1 波的体验有本质不同吗？</li>
+        <li><strong>变现设计：</strong>你的游戏怎么产生收入？没有考虑——没关系，这本身就是发现。记下来。</li>
+        <li><strong>性能基线：</strong>在你的手机上跑 5 分钟——有没有掉帧？有没有越来越卡？内存占多少？</li>
+      </ol>
+      <p>每项打完分后，圈出分数最低的 3 项。这 3 项就是你接下来最需要解决的问题。这份打分表就是你从"能玩"到"能发布"的路线图。</p>
+    </ConceptBlock>
+
+    <ConceptBlock icon="🔗" title="课外延伸">
       <ul>
-        <li>理解<strong>微信小游戏</strong> JS 运行环境和浏览器的核心差异</li>
-        <li>适配音频系统——小游戏中最容易出问题的模块</li>
-        <li>用 <strong>Bundle 分包</strong>突破 <strong>4MB</strong> 主包限制</li>
-        <li>接入微信分享、排行榜、<strong>激励视频</strong>广告</li>
-        <li>处理 <strong>onShow/onHide</strong> 生命周期</li>
-        <li>完成审核上线全流程</li>
+        <li><strong>独立游戏的时间尺度：</strong>Flappy Bird 是越南开发者 Dong Nguyen 3 天做出来的——玩法简单到只有"点击→跳→不撞管道"。但他花了几个月反复微调物理参数（重力、跳跃力度、管道间距），直到"任何时候失败都让你觉得是<strong>自己的失误</strong>而不是游戏不公平"。3 天写代码，几个月调手感。反面的例子是 Stardew Valley——Eric Barone 一个人花 4 年打磨，把种田/钓鱼/挖矿/社交/结婚/生子每一个系统都做到极致。两款游戏都是杰作，只是 MVP 的"V"不同。</li>
+        <li><strong>Notch 的另一个教训：</strong>《我的世界》成功后 Notch 本可以做任何事。但他试图同时开发多款游戏（0x10c、Scrolls），精力分散，最终都没做完。他把 Mojang 卖给微软后选择了"退出"。你不需要做到 25 亿美元——你只需要把<strong>一个</strong>游戏做好。专注于你的飞机大战，把它打磨到"你的朋友会主动推荐给他们的朋友"——这就是成功。</li>
+        <li><strong>空洞骑士的 3 人 3 年：</strong>Team Cherry 只有 3 个人，在南澳大利亚的一个小办公室里做了 3 年。他们没有一开始就设计 150 个敌人——他们先做了一只小虫子、一个能跳能砍的骑士、一个废弃的十字路口场景。这个 MVP 只有 10 分钟内容，但每个玩过的人都说"手感对了"。3 年后《空洞骑士》卖了 280 万份。不是因为内容多——是因为那个 10 分钟的 MVP 就证明了这个游戏"应该存在"。</li>
       </ul>
     </ConceptBlock>
 
-    <ConceptBlock icon="🧠" title="JS Core ≠ 浏览器 —— 小游戏运行环境本质">
-      <p>
-        你在浏览器里开发调试，但微信小游戏的 JS 运行环境<strong>不是浏览器</strong>。iOS 上是
-        JavaScriptCore，Android 上是 V8。Web 版能跑的代码 ≠ 小游戏能跑的代码：
-      </p>
-
-      <table>
-        <thead>
-          <tr>
-            <th>特性</th>
-            <th>Web 版</th>
-            <th>小游戏版</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>JS 引擎</td>
-            <td>V8（Chrome）</td>
-            <td>JSCore（iOS）/ V8（Android）</td>
-          </tr>
-          <tr>
-            <td>DOM API</td>
-            <td><code>window</code> / <code>document</code> / <code>navigator</code></td>
-            <td>全部不存在——不能碰任何 DOM API</td>
-          </tr>
-          <tr>
-            <td>Canvas</td>
-            <td>可创建多个 <code>HTMLCanvasElement</code></td>
-            <td><code>wx.createCanvas()</code> 返回唯一主画布</td>
-          </tr>
-          <tr>
-            <td>音频</td>
-            <td>Web Audio API（<code>AudioContext</code>）</td>
-            <td><code>wx.createInnerAudioContext()</code></td>
-          </tr>
-          <tr>
-            <td>网络</td>
-            <td>任意域名</td>
-            <td>必须 HTTPS + 后台域名白名单</td>
-          </tr>
-          <tr>
-            <td>localStorage</td>
-            <td><code>window.localStorage</code>（5-10MB）</td>
-            <td><code>wx.setStorageSync</code>（Cocos 已适配，上限 10MB）</td>
-          </tr>
-          <tr>
-            <td>字体</td>
-            <td>系统字体库直接使用</td>
-            <td>必须内嵌字体文件或使用位图字体</td>
-          </tr>
-          <tr>
-            <td>包体积</td>
-            <td>无硬性限制</td>
-            <td>主包 ≤ 4MB，总包 ≤ 20MB</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="warn-box">
-        <strong>核心认知：</strong>Chrome DevTools 里正常运行 ≠ 微信里能跑。很多浏览器 API
-        在小游戏环境直接 <code>undefined</code>。每改完一个功能，必须在真机上跑一次。
-      </div>
-    </ConceptBlock>
-
-    <ConceptBlock icon="🔄" title="生命周期 —— onShow / onHide">
-      <p>
-        微信小游戏在用户切后台（聊天、锁屏）时会挂起，切回来时恢复。这和前端熟悉的
-        <code>Page Visibility API</code> 完全一样——你应该在 GameManager 中监听：
-      </p>
-
-      <pre><code>// GameManager.ts —— onLoad 中注册
-wx.onShow(() => {
-  if (GameManager.instance.state === GameState.PAUSED) {
-    GameManager.instance.resumeGame()
-    AudioManager.instance.resumeBGM()
-  }
-})
-
-wx.onHide(() => {
-  if (GameManager.instance.state === GameState.PLAYING) {
-    GameManager.instance.pauseGame()
-    AudioManager.instance.pauseBGM()
-    // 保存临时进度——小游戏有可能被系统杀掉
-    sys.localStorage.setItem('tempScore', String(this._score))
-  }
-})</code></pre>
-
-      <table>
-        <thead>
-          <tr>
-            <th>微信事件</th>
-            <th>前端类比</th>
-            <th>游戏该做什么</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><code>wx.onShow</code></td>
-            <td>
-              <code
-                >document.addEventListener('visibilitychange', () => document.hidden ===
-                false)</code
-              >
-            </td>
-            <td>恢复游戏、恢复 BGM、检查临时存档</td>
-          </tr>
-          <tr>
-            <td><code>wx.onHide</code></td>
-            <td>
-              <code
-                >document.addEventListener('visibilitychange', () => document.hidden === true)</code
-              >
-            </td>
-            <td>暂停游戏、暂停 BGM、保存临时进度</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="warn-box">
-        <strong>注意：</strong>Cocos 的 <code>director.pause()</code> 和
-        <code>director.resume()</code>
-        会暂停/恢复所有节点的 update。但如果你的定时器用的是
-        <code>setTimeout</code> 而不是
-        <code>scheduleOnce</code>，切后台时它仍然在滴答——回来后可能触发意外行为。
-      </div>
-    </ConceptBlock>
-
-    <ConceptBlock icon="🔊" title="音频适配 —— 和 Web 版差异最大的模块">
-      <p>
-        音频是小游戏适配的<strong>P0 级别重灾区</strong>。音频课程阶段 4 的 AudioManager 在 Web
-        端完美运行，到了小游戏可能完全无声。
-      </p>
-
-      <h3>① 格式：全部用 MP3</h3>
-      <p>
-        OGG 在部分 Android 小游戏中完全无声（引擎调用链不支持）。构建前把音频课程阶段 2/3
-        制作的所有音效和 BGM 统一转 MP3。
-      </p>
-
-      <h3>② 无缝 BGM 循环 —— 双 Context 交替播放</h3>
-      <p>
-        <code>InnerAudioContext.loop = true</code> 在循环末尾有一个微小间隙。标准解法是<strong
-          >两个 InnerAudioContext 交替播放</strong
-        >：
-      </p>
-      <pre><code>// WechatBGMPlayer.ts —— 小游戏专用 BGM 播放器
-class WechatBGMPlayer {
-  private _ctxA = wx.createInnerAudioContext()
-  private _ctxB = wx.createInnerAudioContext()
-  private _current: 'A' | 'B' = 'A'
-  private _bgmPath = ''
-
-  init(path: string) {
-    this._bgmPath = path
-    this._ctxA.src = path
-    this._ctxB.src = path
-
-    // 监听：当前 Context 快播完时，启动备用 Context
-    this._ctxA.onTimeUpdate(() => {
-      const remain = this._ctxA.duration - this._ctxA.currentTime
-      if (this._current === 'A' && remain < 0.5) {
-        this._ctxB.seek(0)
-        this._ctxB.play()
-        this._current = 'B'
-      }
-    })
-    this._ctxB.onTimeUpdate(() => {
-      const remain = this._ctxB.duration - this._ctxB.currentTime
-      if (this._current === 'B' && remain < 0.5) {
-        this._ctxA.seek(0)
-        this._ctxA.play()
-        this._current = 'A'
-      }
-    })
-  }
-
-  play() {
-    this._ctxA.play()
-    this._current = 'A'
-  }
-
-  stop() {
-    this._ctxA.stop()
-    this._ctxB.stop()
-  }
-}</code></pre>
-
-      <h3>③ SFX 的 InnerAudioContext 池</h3>
-      <p>
-        小游戏中同时存在的 InnerAudioContext <strong>上限约 10 个</strong>。射击 + 爆炸 + 道具 + UI
-        音效很容易超出——需要做<strong>音频 Context 池</strong>（和 Phase 6 对象池一个思路）：
-      </p>
-      <pre><code>// SFXPool.ts —— 预创建 8 个 Context，用完回收
-class SFXPool {
-  private _pool: InnerAudioContext[] = []
-  private _index = 0
-
-  constructor(size: number = 8) {
-    for (let i = 0; i < size; i++) {
-      this._pool.push(wx.createInnerAudioContext())
-    }
-  }
-
-  play(path: string, volume: number = 1) {
-    const ctx = this._pool[this._index]
-    this._index = (this._index + 1) % this._pool.length
-    ctx.src = path
-    ctx.volume = volume
-    ctx.play()
-  }
-}</code></pre>
-
-      <div class="tip-box">
-        <strong>池子耗尽怎么办：</strong>超过上限时，低优先级的音效（拾取、UI
-        点击）直接丢弃，保射击和爆炸。可以用优先级队列实现，也可以用最简单的"循环覆盖"——最新音效覆盖最老的
-        Context。
-      </div>
-
-      <h3>④ 自动播放限制</h3>
-      <p>
-        浏览器和微信都禁止在用户交互前播放音频。务必把
-        <code>playBGM</code> 放在菜单"开始游戏"按钮的<strong>触摸回调</strong>中，而不是
-        <code>onLoad</code> 中。
-      </p>
-    </ConceptBlock>
-
-    <ConceptBlock icon="📦" title="分包 —— 突破 4MB 主包限制">
-      <p>
-        微信小游戏主包硬性限制 4MB。Cocos 的
-        <strong>Bundle</strong> 自动映射为小游戏分包——前端直觉直接平移：这就是
-        <strong>Webpack 的 Code Splitting</strong>。
-      </p>
-
-      <h3>分包方案</h3>
-      <pre><code>主包（≤ 4MB）：               分包 game（子包）：
-├── 引擎核心                   ├── Game.scene
-├── Menu.scene                 ├── 飞机/敌机/子弹 Sprite
-├── Result.scene               ├── 爆炸帧动画 SpriteSheet
-├── UI Sprite（按钮/数字）       ├── 道具 Sprite
-├── 核心脚本                    └── 星空背景图
-│   ├── GameManager.ts
-│   ├── EventBus.ts            分包 audio（远程）：
-│   ├── ObjectPool.ts          ├── bgm_battle.mp3
-│   └── AudioManager.ts       ├── bgm_menu.mp3
-└── 启动加载脚本                ├── bgm_boss.mp3
-    └── 所有 SFX.mp3</code></pre>
-
-      <h3>Cocos 操作</h3>
+    <ConceptBlock icon="✅" title="自测清单">
       <ol>
-        <li>在资源管理器中，右键对应文件夹 → <strong>配置为 Bundle</strong></li>
-        <li>设置 Bundle 名称和优先级</li>
-        <li>构建面板中，把 Bundle 设为<strong>子包</strong>类型</li>
-        <li>远程资源：把大体积的音频 Bundle 设为<strong>远程包</strong>（构建时填 CDN 地址）</li>
+        <li>Demo 和产品之间最大的 3 个差距是什么？你的飞机大战在这 3 个维度上各自多少分？</li>
+        <li>为什么 MVP 的核心是"先做出可玩的核心再围绕它生长"而不是"先想清楚所有功能再开始做"？这和前端开发中的什么原则类似？</li>
+        <li>如果只让你保留飞机大战的 3 个功能就发给 5 个人测试，你会保留哪 3 个？砍掉所有"你觉得很重要但玩家可能不觉得"的功能。</li>
       </ol>
-
-      <h3>运行时加载子包</h3>
-      <pre><code>import { assetManager } from 'cc'
-
-// 加载子包（类比 import() 动态加载）
-assetManager.loadBundle('game', (err, bundle) => {
-  if (err) { console.error('分包加载失败:', err); return }
-  // 分包加载完成后，才能使用其中的场景和资源
-  bundle.loadScene('GameScene')
-})</code></pre>
-
-      <div class="tip-box">
-        <strong>验证方法：</strong>构建后在微信开发者工具 → 代码质量 →
-        拆包分析，查看每个包的体积。主包超过 4MB 时，先从音频 Bundle 拆起——音频总是最大的。
-      </div>
-    </ConceptBlock>
-
-    <ConceptBlock icon="📤" title="分享 —— 小游戏的核心获客渠道">
-      <p>小游戏没有应用商店，分享是最主要的传播方式。飞机大战天然适合"炫耀分数"这个社交场景：</p>
-
-      <h3>分享给好友</h3>
-      <pre><code>// ResultUI.ts —— 结算场景中绑定"炫耀一下"按钮
-wx.shareAppMessage({
-  title: '我在像素飞机大战打了 9999 分！来挑战我 🚀',
-  imageUrl: '',  // 分享图（5:4 比例），用 Aseprite 画一张游戏截图拼贴
-  query: '',     // 可带参数，如 'inviter=xxx'
-})
-
-// 显示分享按钮（需要在游戏启动时调用）
-wx.showShareMenu({
-  menus: ['shareAppMessage', 'shareTimeline'],
-})</code></pre>
-
-      <h3>好友排行榜</h3>
-      <p>微信云开发提供了免费的托管排行榜，<strong>不需要自建后端</strong>：</p>
-      <pre><code>// 游戏结束时上传分数
-wx.setUserCloudStorage({
-  KVDataList: [{
-    key: 'highScore',
-    value: String(score),
-  }],
-})
-
-// 获取好友排名（在排行榜 UI 中调用）
-wx.getFriendCloudStorage({
-  keyList: ['highScore'],
-  success: (res) => {
-    // res.data = [{ openid, nickname, avatarUrl, KVDataList }]
-    // 按 highScore 降序排列 → 渲染排行榜
-  },
-})</code></pre>
-
-      <div class="tip-box">
-        <strong>体验原则：</strong>排行榜不要强制弹窗。放在结算页底部一个独立的"好友排行"Tab
-        里——想看就点，不想看完全不干扰游戏。
-      </div>
-    </ConceptBlock>
-
-    <ConceptBlock icon="📢" title="激励视频广告 —— 看广告复活一次">
-      <p>
-        激励视频是唯一<strong>不打断游戏体验</strong>的广告形式——用户主动选择看广告来获取奖励。对飞机大战来说，最自然的接入点是<strong>死亡后复活</strong>：
-      </p>
-
-      <h3>① 申请广告位</h3>
-      <ol>
-        <li>微信公众平台 → 流量主 → 广告管理 → 新建激励视频广告位</li>
-        <li>获得 <code>adUnitId</code>（形如 <code>adunit-xxxxxxxxx</code>）</li>
-      </ol>
-
-      <h3>② 预加载</h3>
-      <pre><code>// 在 GameManager.onLoad 中预加载
-const videoAd = wx.createRewardedVideoAd({
-  adUnitId: 'adunit-xxxxxxxxx',
-})
-
-videoAd.load()  // 提前加载，玩家点击时秒开
-videoAd.onError(() => {
-  // 无广告填充 → 降级方案：直接给复活
-  videoAd.load()  // 重新尝试加载
-})</code></pre>
-
-      <h3>③ 死亡后触发</h3>
-      <pre><code>// Player.ts → onDeath
-onDeath() {
-  // 弹出选择：看广告复活 / 直接结算
-  videoAd.show()
-    .then(() => {
-      // 看完了 → 复活 + 2 秒无敌
-      this._lives = 1
-      this._invincible = true
-      this.scheduleOnce(() => this._invincible = false, 2)
-      videoAd.load()  // 预加载下一条
-    })
-    .catch(() => {
-      // 没看完或没广告填充 → 不复活
-      GameManager.instance.gameOver()
-    })
-}</code></pre>
-
-      <h3>④ 投放节奏</h3>
-      <ul>
-        <li>每局最多给 <strong>2 次</strong>复活机会（不是每次死亡都弹）</li>
-        <li>两次广告之间至少间隔 <strong>60 秒</strong></li>
-        <li>第 1 次死亡就给广告（不要等玩到后面才给——用户留存最佳）</li>
-      </ul>
-
-      <h3>⑤ 其他广告形式——不推荐</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>类型</th>
-            <th>为什么飞机大战不推荐</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Banner 广告</td>
-            <td>竖屏 480×800 空间紧张，Banner 会遮挡游戏/UI</td>
-          </tr>
-          <tr>
-            <td>插屏广告</td>
-            <td>战斗中弹出 = 直接打断操作 = 玩家怒卸</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="warn-box">
-        <strong>红线：</strong>不要每死一次就弹一次广告——那是逼用户卸载。2 次复活机会 + 60
-        秒间隔是最低底线。另外必须提供"不看广告直接结算"的按钮——不能强制看广告。
-      </div>
-    </ConceptBlock>
-
-    <ConceptBlock icon="🛠️" title="调试与常见问题速查">
-      <p>
-        这里给出发布阶段<strong>最常用</strong>的调试工具概览。更详细的真机调试、设备分档、性能面板分析见 <strong>Phase 11（真机调试与性能适配）</strong>。
-      </p>
-
-      <h3>调试工具链</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>工具</th>
-            <th>用途</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>微信开发者工具</td>
-            <td>模拟器调试、查看 wx API 调用、断点调试</td>
-          </tr>
-          <tr>
-            <td>真机调试（扫码）</td>
-            <td>音频和性能必须真机测——模拟器音频实现和真机不同</td>
-          </tr>
-          <tr>
-            <td>vConsole</td>
-            <td>在真机上内嵌控制台，查看 log 和报错</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h3>常见问题速查</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>现象</th>
-            <th>最可能的原因</th>
-            <th>解法</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>BGM 无声</td>
-            <td>OGG 格式在 Android 小游戏中无声</td>
-            <td>全部换 MP3</td>
-          </tr>
-          <tr>
-            <td>SFX 播放几个后全哑</td>
-            <td>InnerAudioContext 超过 10 个上限</td>
-            <td>实现 AudioContext 池</td>
-          </tr>
-          <tr>
-            <td>远程资源加载失败</td>
-            <td>域名不在微信白名单</td>
-            <td>加白名单或开发期"跳过校验"</td>
-          </tr>
-          <tr>
-            <td>切后台回来崩溃</td>
-            <td>onHide 时没停止 update 循环</td>
-            <td>监听 onShow/onHide，正确暂停/恢复</td>
-          </tr>
-          <tr>
-            <td>首场景启动超 5 秒</td>
-            <td>主包太大</td>
-            <td>Bundle 分包 + 音频上 CDN</td>
-          </tr>
-          <tr>
-            <td>iOS 音频延迟 200ms+</td>
-            <td>iOS AudioContext 冷启动延迟</td>
-            <td>用一个空音频文件预热 AudioContext</td>
-          </tr>
-          <tr>
-            <td>超过 4MB 无法上传</td>
-            <td>主包体积超标</td>
-            <td>拆分 Bundle 子包</td>
-          </tr>
-        </tbody>
-      </table>
-    </ConceptBlock>
-
-    <ConceptBlock icon="✅" title="提审前自检清单">
-      <ol>
-        <li>所有音频转为 MP3（无 OGG 残留）</li>
-        <li>主包 &lt; 4MB（微信开发者工具 → 代码质量查看）</li>
-        <li>真机测试过 iOS + Android 各一台</li>
-        <li>onShow/onHide 生命周期正确：切后台暂停，切回来恢复</li>
-        <li>HTTPS 域名白名单已配置（生产环境）</li>
-        <li>激励视频广告位已申请 + 填充率测试通过</li>
-        <li>分享文案和图片配置正确</li>
-        <li>
-          游戏内有"退出"功能（微信审核强制要求——Cocos 中调用 <code>wx.exitMiniProgram()</code>）
-        </li>
-        <li>隐私协议弹窗已接入（2024+ 微信审核要求）</li>
-        <li>无强制登录/授权逻辑（审核红线——进游戏不能先弹授权）</li>
-        <li>包名 → 版本号 → 小游戏分类 → 内容介绍在微信后台填写完整</li>
-      </ol>
-    </ConceptBlock>
-
-    <ConceptBlock icon="✅" title="自检清单">
-      <ul>
-        <li>小游戏 JS 环境和浏览器有哪些核心差异？（至少说出 4 个）</li>
-        <li>为什么小游戏音频要用 MP3 而不是 OGG？</li>
-        <li>InnerAudioContext 并发上限是多少？超出后怎么处理？</li>
-        <li>双 Context 交替播放 BGM 的原理是什么？什么阶段切换播放？</li>
-        <li>onShow / onHide 生命周期在游戏中应该做什么？前端对应的是什么 API？</li>
-        <li>主包 4MB 限制如何突破？Cocos 中怎么配置？</li>
-        <li>Bundle 分包和 Webpack Code Splitting 的类比是什么？</li>
-        <li>激励视频广告的最佳触发时机是什么？有什么限制？</li>
-        <li>为什么飞机大战只推荐激励视频，不推荐 Banner 和插屏？</li>
-        <li>提审前最重要的 4 个检查项是什么？</li>
-      </ul>
     </ConceptBlock>
   </PhaseLayout>
 </template>

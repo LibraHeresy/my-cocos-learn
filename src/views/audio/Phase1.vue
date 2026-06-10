@@ -4,185 +4,68 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
 </script>
 
 <template>
-  <PhaseLayout :phase="1" title="音频基础与免费工具" duration="1 天">
-    <ConceptBlock icon="🎯" title="学完本节你能做什么">
-      <ul>
-        <li>理解游戏音频的基础概念：<strong>采样率</strong>、<strong>位深度</strong>、<strong>单声道/立体声</strong></li>
-        <li>区分 <strong>WAV</strong>、<strong>MP3</strong>、<strong>OGG</strong> 格式，知道各自适合什么场景</li>
-        <li>使用 <strong>BFXR</strong> 合成器从零生成像素风音效</li>
-        <li>使用 <strong>Audacity</strong> 对音频做基础编辑（裁剪、标准化、导出）</li>
-      </ul>
+  <PhaseLayout :phase="1" title="游戏音频导论" duration="1 天">
+    <ConceptBlock icon="🧭" title="本节定位"><p>打开任何一款好游戏然后关掉声音——你会立刻感觉少了什么。音频不是附属品，它是<strong>游戏体验的三分之一</strong>（视觉 + 交互 + 音频）。这一节帮你建立完整的音频设计思维框架。</p></ConceptBlock>
+
+    <ConceptBlock icon="🎬" title="故事：一个被忽略的维度">
+      <p>1980 年，南梦宫的《吃豆人》首次在街机厅里发出"waka-waka"的咀嚼声。在此之前，街机游戏只有零星的蜂鸣。玩家们惊讶地发现——有了声音的吃豆人，追和被追都变得更紧张了。那个简单的循环音效，让吃豆人从"一个黄色圆点"变成了"一个饥饿的生命"。</p>
+      <p>四十年后的今天，音频设计已经成为游戏开发中<strong>最被低估的专业技能</strong>。你会花三天调一个按钮的圆角和阴影，但可能从来没想过：为什么这个按钮按下时的声音是"咔嗒"而不是"噗嗤"？为什么击杀敌人的音效让你感到满足？为什么某些 BGM 你听了 50 遍也不烦？</p>
+      <p>答案在音频设计里。它不靠直觉——它靠原理。</p>
     </ConceptBlock>
 
-    <ConceptBlock icon="🔊" title="游戏音频基本概念">
-      <p>在动手制作之前，先理解几个会在每个工具里遇到的核心概念：</p>
+    <ConceptBlock icon="🎯" title="原理：游戏音频的三根支柱">
+      <p>游戏音频不是"放个声音"，它是<strong>精确的信息传递工程</strong>。所有游戏音频可以分为三类，每一类在玩家的信息层级中占据不同位置：</p>
+
+      <p><strong>音效（SFX — Sound Effects）—— 反馈层，优先级最高</strong></p>
+      <p>音效是游戏对你操作的<strong>即时回应</strong>。你按下射击键 → 听到"biu"声 → 大脑确认"子弹已发射"。这个循环必须在 <strong>50ms 以内</strong>完成，否则你会感觉操作"不跟手"。这和 Web 前端的交互反馈完全一样——按钮点击后的微动画必须在 100ms 内出现，否则用户会重复点击。音效设计师的核心工作之一就是：确保每个音效的 Attack 时间足够短，短到玩家感觉不到延迟。</p>
+
+      <p><strong>音乐（BGM — Background Music）—— 氛围层，优先级最低</strong></p>
+      <p>BGM 定情绪的基调。它不传递即时信息，但它决定了"你现在处于什么样的世界里"。好的 BGM 你会忽略它——但你关掉它之后立刻觉得不对劲。这就像 CSS 的 <code>background-color</code>：你平时不会注意到它是 #fdf6ee 还是 #ffffff，但如果突然变成 #ff0000，你一定会警觉。</p>
+
+      <p><strong>语音（VO — Voice Over）—— 叙事层，间歇性最高优先级</strong></p>
+      <p>角色对话、旁白、系统提示音。语音的特点是：播放时它必须是<strong>最清晰的</strong>，其他声音要主动"让路"。这就像 Web 的 <code>&lt;dialog&gt;</code> 弹出时，背景内容被 overlay 遮住——语音就是音频层的 modal。</p>
 
       <table>
-        <thead>
-          <tr>
-            <th>概念</th>
-            <th>说明</th>
-            <th>推荐值（飞机大战）</th>
-          </tr>
-        </thead>
+        <thead><tr><th>类型</th><th>信息层级</th><th>响应要求</th><th>Web 比喻</th></tr></thead>
         <tbody>
-          <tr>
-            <td><strong>采样率 (Sample Rate)</strong></td>
-            <td>每秒采集的声音样本数。越高越清晰，但文件越大</td>
-            <td><strong>44100 Hz</strong>（CD 品质，够用）</td>
-          </tr>
-          <tr>
-            <td><strong>位深度 (Bit Depth)</strong></td>
-            <td>每个样本的精度。16-bit 是游戏音效标准</td>
-            <td><strong>16-bit</strong></td>
-          </tr>
-          <tr>
-            <td><strong>单声道 vs 立体声</strong></td>
-            <td>音效用单声道（位置定位），音乐用立体声</td>
-            <td>SFX → <strong>Mono</strong>，BGM → <strong>Stereo</strong></td>
-          </tr>
-          <tr>
-            <td><strong>WAV</strong></td>
-            <td>无损、文件大、即用即播，适合短音效</td>
-            <td>射击/爆炸/拾取等短 SFX</td>
-          </tr>
-          <tr>
-            <td><strong>MP3</strong></td>
-            <td>有损压缩、文件小，但循环可能有间隙</td>
-            <td>不推荐用于游戏（循环问题）</td>
-          </tr>
-          <tr>
-            <td><strong>OGG</strong></td>
-            <td>有损但比 MP3 好，支持无缝循环，开源</td>
-            <td><strong>首选</strong>——BGM 和长音效</td>
-          </tr>
+          <tr><td>SFX</td><td>反馈层（即时）</td><td>≤50ms</td><td>按钮 :active 伪类反馈</td></tr>
+          <tr><td>BGM</td><td>氛围层（持续）</td><td>无要求</td><td>页面 background-color</td></tr>
+          <tr><td>VO</td><td>叙事层（间歇）</td><td>独占播放</td><td>&lt;dialog&gt; modal overlay</td></tr>
         </tbody>
       </table>
 
-      <div class="tip-box">
-        <strong>像素游戏的特殊性：</strong>8-bit 风格音效不需要高保真——22kHz、8-bit
-        的"低品质"反而更有味道。下面介绍的合成器工具正是生来为此的。
-      </div>
+      <p>这三类音频在同一时刻可能同时播放（射击声 + BGM + Boss 登场语音），但它们的信息层级不同。音频设计的本质就是<strong>管理这个动态的信息层级</strong>——确保最重要的声音在最前面，不重要的声音往后让。</p>
     </ConceptBlock>
 
-    <ConceptBlock icon="🔧" title="工具一：BFXR — 音效合成器">
-      <p>
-        <strong>BFXR</strong
-        >（<strong>bfxr.net</strong>）是像素游戏开发者的标配音效工具。它的界面看起来像一个飞船控制面板，但每个滑块都有实际意义：
-      </p>
-
-      <h3>界面速览</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>区域</th>
-            <th>作用</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>左侧预设按钮</strong></td>
-            <td>
-              Pickup/Coin、Laser/Shoot、Explosion、Powerup、Hit/Hurt、Jump、Blip/Select——一键生成对应类型的音效种子
-            </td>
-          </tr>
-          <tr>
-            <td><strong>中间合成器面板</strong></td>
-            <td>波形选择（方波/正弦/三角/噪声）、滑音、颤音、包络等参数</td>
-          </tr>
-          <tr>
-            <td><strong>右侧混合器</strong></td>
-            <td>两个通道混合、音量、频率范围</td>
-          </tr>
-          <tr>
-            <td><strong>底部操作栏</strong></td>
-            <td>播放、随机变异（Mutate）、保存 WAV</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h3>快速上手流程</h3>
+    <ConceptBlock icon="🔧" title="动手：你的第一次音频意识实验">
+      <p>这个实验只需要你的一部手机和你最喜欢的游戏。但请认真做——它会永久改变你对游戏音频的认知。</p>
       <ol>
-        <li>点击右侧预设按钮（如 Laser/Shoot）→ 生成一个基础激光音效</li>
-        <li>点击 <strong>Mutate</strong>（变异）→ 在基础音效上随机变种，直到你觉得好听</li>
-        <li>如果不够满意，手动拖拽中间的滑块微调</li>
-        <li>点击 <strong>Save WAV</strong> → 保存为 <code>laser_shoot.wav</code></li>
-      </ol>
-
-      <div class="tip-box">
-        <strong>Mutate 是 BFXR 的核心用法：</strong>不要从零开始调参数——点预设 → 疯狂 Mutate
-        直到听到喜欢的 → 微调 → 保存。这个工作流是最高效的。
-      </div>
-    </ConceptBlock>
-
-    <ConceptBlock icon="🎛️" title="工具二：Chiptone — 浏览器版合成器">
-      <p>
-        <strong>Chiptone</strong>（<strong>sfbgames.itch.io/chiptone</strong>）是一个免费的浏览器端
-        chiptune 音效合成器。如果 BFXR 下载不了或者用得不顺手，它是最佳替代：
-      </p>
-      <ul>
-        <li>纯 Web 界面，无需安装</li>
-        <li>波形可视化更直观——能看到每种波形的形状</li>
-        <li>支持导出 WAV</li>
-        <li>预设偏向 Game Boy / NES 风格</li>
-      </ul>
-
-      <div class="tip-box">
-        <strong>工具选择：</strong>BFXR 适合科幻/射击类音效（尖锐、电子感强），Chiptone 适合更暖的
-        8-bit 平台游戏音效。两者都试试，哪个顺手用哪个。
-      </div>
-    </ConceptBlock>
-
-    <ConceptBlock icon="✂️" title="工具三：Audacity — 音频编辑器">
-      <p>
-        <strong>Audacity</strong>（<strong>audacityteam.org</strong>）是免费开源的音频编辑器。BFXR
-        生成的是"原材料"，Audacity 用来做最后的<strong>裁剪、标准化和格式转换</strong>：
-      </p>
-
-      <h3>必备操作（5 分钟学会）</h3>
-      <ol>
-        <li><strong>裁剪：</strong>拖选多余的静音部分 → 按 Delete</li>
-        <li><strong>标准化：</strong>菜单 Effect → Normalize → 设为 -0.5 dB（防止削波）</li>
-        <li>
-          <strong>淡入淡出：</strong>选中开头/结尾 50ms → Effect → Fade In / Fade
-          Out（避免播放时的"啪"声）
+        <li><strong>打开你最熟悉的一款手机游戏</strong>（或者任意你常玩的游戏），戴上耳机，<strong>开着声音</strong>认真玩 5 分钟。留意每一个声音出现的时机、它带给你的感觉。</li>
+        <li><strong>关掉声音</strong>，再玩 5 分钟。同样的关卡、同样的操作。</li>
+        <li>记录你的发现。至少写 <strong>3 条</strong>具体的体验差异。不是"感觉不一样"，而是：
+          <ul>
+            <li>哪个操作变得"不完整"了？（比如击杀敌人后没有爆炸声——像 GitHub push 之后没看到绿色对勾）</li>
+            <li>哪个情绪的强度被削弱了？（比如胜利画面没有音乐——像 npm install 成功但没有绿色输出）</li>
+            <li>哪个信息你完全错过了？（比如背后敌人的脚步声——没有声音=没有背后感知）</li>
+          </ul>
         </li>
-        <li><strong>导出：</strong>File → Export → 选择 WAV（SFX）或 OGG（BGM）</li>
-        <li><strong>转换格式：</strong>File → Export → 选择 OGG Vorbis，Quality 调到 6-7</li>
       </ol>
-
-      <div class="warn-box">
-        <strong>重要：</strong>BFXR 生成的 WAV 开头常有几毫秒空白。导入 Cocos 之前，一定在 Audacity
-        中<strong>放大波形开头</strong>（Ctrl+1），剪掉空白。这个小动作能消除所有音效的"延迟感"。
-      </div>
+      <p>这个小实验会让你亲身体验到：音频不是"配乐"，它是游戏体验不可分割的<strong>三分之一</strong>。你会惊讶地发现，没有声音的击杀反馈就像"一拳打在棉花上"，没有声音的胜利画面毫无成就感。</p>
     </ConceptBlock>
 
-    <ConceptBlock icon="🔨" title="动手练习：生成你的第一个音效">
-      <ol>
-        <li>在 BFXR 中，点击 <strong>Laser/Shoot</strong> 预设</li>
-        <li>点击 <strong>Mutate</strong> 5-10 次，挑选一个你喜欢的</li>
-        <li>保存为 <code>laser_player.wav</code></li>
-        <li>在 BFXR 中再生成一个 <strong>Explosion</strong> 预设音效</li>
-        <li>保存为 <code>explosion.wav</code></li>
-        <li>在 Audacity 中打开两个文件，裁剪掉开头的空白，标准化到 -0.5dB</li>
-        <li>分别导出为 WAV（16-bit PCM）</li>
-      </ol>
-
-      <div class="tip-box">
-        <strong>完成标准：</strong>你手上有两个自己生成的 WAV 文件——一个射击音效（清脆简短，0.1-0.3
-        秒）和一个爆炸音效（低沉有冲击力，0.5-1 秒）。
-      </div>
-    </ConceptBlock>
-
-    <ConceptBlock icon="✅" title="自检清单">
+    <ConceptBlock icon="🔗" title="课外延伸">
       <ul>
-        <li>采样率和位深度分别是什么？为什么音效用 Mono、BGM 用 Stereo？</li>
-        <li>为什么游戏音效不用 MP3？OGG 相比 WAV 有什么优势？</li>
-        <li>BFXR 的 Mutate 按钮是做什么的？你从哪类预设开始做射击音效？</li>
-        <li>BFXR 生成的 WAV 导入 Cocos 前，为什么要在 Audacity 中裁剪开头空白？</li>
-        <li>Audacity 的 Normalize 功能有什么用？一般设多少 dB？</li>
-        <li>淡入淡出为什么重要？一般设置多少毫秒？</li>
+        <li><strong>8-bit 时代的奇迹——限制激发创造力：</strong>NES（红白机）的音频处理单元（APU）只有 5 个声道：2 个方波（旋律）、1 个三角波（低音）、1 个噪声通道（打击乐）、1 个 DPCM（低质量采样）。就是这 5 个声道，诞生了<strong>近藤浩治（Koji Kondo）</strong>的《超级马里奥》主题曲和《塞尔达传说》主题曲——游戏史上最令人难忘的旋律。近藤浩治不是音乐天才出身，他是任天堂第一批专门为游戏作曲的人。他在五声道的限制下创造了"用旋律引导关卡节奏"的设计哲学——马里奥的第一关 BGM 从简单跳跃开始，节奏随关卡推进而加速，这是游戏作曲史上的里程碑。</li>
+        <li><strong>为什么限制是好东西：</strong>既然 NES 只有 5 个声道，作曲家就必须在"占满 5 个声道"和"留出空间给音效"之间做取舍。这种限制迫使音频设计师思考优先级——这个思维习惯在现代 3A 游戏（几百个声道可用）中依然成立。就像写 Vue 组件时 props 越少越干净一样——<strong>限制不是敌人，是设计师的盟友</strong>。</li>
       </ul>
+    </ConceptBlock>
+
+    <ConceptBlock icon="✅" title="自测清单">
+      <ol>
+        <li>音效（SFX）、音乐（BGM）、语音（VO）在游戏中的信息层级分别是什么？当三者同时播放时，谁应该"让路"给谁？</li>
+        <li>为什么音效的响应延迟必须 ≤50ms？这和 Web 前端按钮反馈的 100ms 黄金法则有什么相似之处？</li>
+        <li>NES 只有 5 个声道却诞生了历史上最经典的旋律。这个事实对你理解"限制在设计中是助力还是阻碍"有什么启发？</li>
+      </ol>
     </ConceptBlock>
   </PhaseLayout>
 </template>

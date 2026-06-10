@@ -4,398 +4,65 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
 </script>
 
 <template>
-  <PhaseLayout :phase="5" title="碰撞检测" duration="2-3 天">
-    <ConceptBlock icon="🎯" title="学完本节你能做什么">
+  <PhaseLayout :phase="5" title="精灵渲染" duration="2-3 天">
+    <ConceptBlock icon="🧭" title="本节定位">
+      <p>一张 PNG 图片从被拖入 Cocos，到最终显示在手机屏幕上，中间经历了一个完整的旅程。理解这个旅程中的每一步，能帮你做出正确的美术决策和性能优化。</p>
+    </ConceptBlock>
+
+    <ConceptBlock icon="🖼️" title="Texture2D → SpriteFrame → Sprite：三层抽象">
+      <p>Cocos 把"显示一张图片"这件事拆成了三层：</p>
       <ul>
-        <li>手写 <strong>AABB</strong> 和圆形<strong>碰撞检测</strong>算法</li>
-        <li>封装 <strong>CollisionManager</strong>，集中管理游戏中所有碰撞检测</li>
-        <li>实现碰撞可视化调试（开发阶段画出碰撞框）</li>
-        <li>解决高速物体的"穿透"问题</li>
-        <li>理解<strong>碰撞矩阵</strong>，正确管理不同阵营的碰撞关系</li>
+        <li><strong>Texture2D</strong>：最底层。就是 GPU 里存的那张原始纹理数据。一张 1024×1024 的 PNG 导入后，在 GPU 显存里占多大空间？答案是 1024×1024×4 字节 ≈ 4MB（RGBA 各 1 字节）。</li>
+        <li><strong>SpriteFrame</strong>：在 Texture2D 上"裁一个矩形"。比如一张 SpriteSheet 里有 6 帧爆炸动画，你可以从同一张 Texture2D 上切出 6 个 SpriteFrame，每个引用纹理的不同区域。这就像 CSS 的 <code>background-image + background-position</code>。</li>
+        <li><strong>Sprite 组件</strong>：挂在 Node 上，引用一个 SpriteFrame，负责在场景中显示它。一个 Node 只能挂一个 Sprite，但可以通过代码动态切换它的 spriteFrame。</li>
+      </ul>
+      <p>这个三层设计有一个巨大的好处：<strong>N 个 Sprite 可以共享同一个 Texture2D</strong>，只需要不同的 SpriteFrame 裁剪区域。这大大减少了 GPU 显存占用。</p>
+    </ConceptBlock>
+
+    <ConceptBlock icon="🔍" title="Point vs Bilinear：像素画与高清图的楚河汉界">
+      <p>这是一项看起来不起眼但<strong>对像素画来说致命的设置</strong>。</p>
+      <p>当你把一张 32×32 的像素画 PNG 导入 Cocos，默认的纹理过滤模式是 Bilinear（双线性插值）。这意味着当图片被放大显示时，GPU 会用相邻像素的加权平均来填充放大后的像素——结果是<strong>模糊</strong>。你的清晰像素画会变成一团糊。</p>
+      <p>切换为 <strong>Point 过滤</strong>（最近邻采样）：放大时直接取最近像素的颜色，不做混合。边缘锐利，每个像素都清清楚楚。这才是像素画该有的样子。</p>
+      <p>这不是 Cocos 的问题——所有游戏引擎都有这个选择。选 Point 还是 Bilinear，取决于你的美术风格。像素画 = Point，其他 = Bilinear。</p>
+    </ConceptBlock>
+
+    <ConceptBlock icon="🪟" title="九宫格（9-Slice）：让 UI 背景不变形的魔法">
+      <p>前端做按钮背景时，<code>border-image</code> 可以保证圆角区域不变形，只拉伸中间区域。Cocos 的 9-Slice 完全一样：</p>
+      <pre>把一张图切成 9 块：
+┌───┬───────┬───┐
+│ 1 │   2   │ 3 │  ← 四个角：保持原样不拉伸
+├───┼───────┼───┤
+│ 4 │   5   │ 6 │  ← 四条边：只在一个方向上拉伸
+├───┼───────┼───┤
+│ 7 │   8   │ 9 │  ← 中间：两个方向都拉伸
+└───┴───────┴───┘</pre>
+      <p>设置方式：在 Sprite 组件中，勾选 Type → Sliced，然后在 SpriteFrame 编辑器中调整四条切割线的位置。</p>
+    </ConceptBlock>
+
+    <ConceptBlock icon="🔧" title="动手：纹理过滤与 9-Slice 实战">
+      <p>打开你的 Cocos 项目，我们来做三个小实验，每个都能让你直观感受到设置的区别：</p>
+      <ol>
+        <li><strong>导入一张像素画 PNG（最好是 32×32 左右的小尺寸图，比如像素角色）。</strong> 选中它，在属性面板里找到"Filter Mode"——默认是 Bilinear。把 Sprite 放到场景里，拖拽放大到 3-4 倍。看到模糊了吗？现在把 Filter Mode 切换为 <strong>Point</strong>，点击右上角的"重新导入资源"按钮。再看场景——每个像素边缘锐利得像刀切的一样。这就是像素画该有的样子。</li>
+        <li><strong>同一个纹理，对比 Point vs Bilinear 的放大效果：</strong> 创建两个 Sprite 节点，分别引用不同过滤模式导入的同一张图，并排放在场景里，都放大到 4 倍左右。你应该看到：Bilinear 的图像边缘有渐变过渡（模糊但平滑），Point 的图像每个色块边界分明（锐利但可能有锯齿）。<strong>这不是"谁更好"的问题——像素画就该用 Point，平滑插画就该用 Bilinear。</strong></li>
+        <li><strong>做一个有圆角边框的 UI 面板，用 9-Slice：</strong> 导入或手绘一张带圆角边框的小图（比如 64×64 的圆角矩形 PNG）。选中它的 SpriteFrame，在属性面板中调整 9-Slice 的切割线，确保四个角被完整保留。然后在 Sprite 组件中选择 Type → Sliced。把这个 Sprite 节点拖大——你会发现四个角保持原样，四条边只在一个方向上拉伸，中间区域自由填充。整个边框比例完美，完全不会变形。</li>
+      </ol>
+      <div class="tip-box">
+        <strong>动手小挑战：</strong> 在 9-Slice 实验中，故意把切割线调到四个角以内（让角太小），拉到很大看看效果——你会立刻明白为什么切割线的位置需要精心设计。
+      </div>
+    </ConceptBlock>
+
+    <ConceptBlock icon="🔗" title="课外延伸">
+      <ul>
+        <li><strong>GPU 纹理压缩简史：</strong> S3TC（1998，DirectX 标准）→ ETC（2004，OpenGL ES 标准）→ ASTC（2012，ARM 提出，现在主流）。ASTC 比 ETC 压缩率高 30-50% 且质量更好。微信小游戏建议用 ASTC。</li>
+        <li><strong>为什么像素画必须用 Point 过滤：</strong> 这其实是一个采样定理的问题——当你放大一个信号（图片），Bilinear 会假设信号是连续的并做插值，但像素画是刻意不连续的（每个像素都是艺术选择），插值就是在破坏艺术。</li>
       </ul>
     </ConceptBlock>
-
-    <!-- ============ 两种碰撞方式 ============ -->
-    <ConceptBlock icon="⚖️" title="内置物理 vs 手写碰撞">
-      <p>
-        Cocos
-        提供了内置的物理碰撞系统（Collider2D），但对于像素飞机大战，<strong>手写碰撞更合适</strong>：
-      </p>
-
-      <table>
-        <thead>
-          <tr>
-            <th></th>
-            <th>内置物理（Collider2D）</th>
-            <th>手写碰撞</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>配置方式</td>
-            <td>编辑器挂组件 + 配置参数</td>
-            <td>纯代码，不依赖编辑器</td>
-          </tr>
-          <tr>
-            <td>性能</td>
-            <td>每个碰撞体有引擎开销</td>
-            <td>极轻量，你控制一切</td>
-          </tr>
-          <tr>
-            <td>子弹/敌人数量多时</td>
-            <td>物理引擎开销大</td>
-            <td>简单的数学运算，无额外开销</td>
-          </tr>
-          <tr>
-            <td>调试</td>
-            <td>物理引擎内置可视化</td>
-            <td>需要自己画碰撞框</td>
-          </tr>
-          <tr>
-            <td>适用场景</td>
-            <td>复杂物理交互（碰撞反弹等）</td>
-            <td>子弹碰撞、拾取道具、简单 hitbox</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="tip-box">
-        <strong>推荐：</strong
-        >飞机大战中所有碰撞用手写。只有几十行代码，但性能和可控性远超物理引擎。你需要做的只是判断两个矩形是否重叠。
-        <br /><br />
-        <strong>预告：</strong>学完手写碰撞后，<strong>Phase 18（2D 物理引擎入门）</strong>会教你何时该切换到内置物理——手写碰撞不是万能的，需要物理模拟（重力、摩擦力、弹性碰撞）时就要上引擎了。
-      </div>
-    </ConceptBlock>
-
-    <!-- ============ AABB ============ -->
-    <ConceptBlock icon="📐" title="AABB 碰撞算法详解">
-      <p>
-        AABB（Axis-Aligned Bounding Box）=
-        轴对齐包围盒。就是判断<strong>两个不旋转的矩形是否重叠</strong>。这是 2D
-        游戏最常用的碰撞检测。
-      </p>
-
-      <h3>核心公式</h3>
-      <pre><code>// 两个矩形碰撞的充分必要条件：
-// 它们在 X 轴和 Y 轴上的投影都有重叠
-
-interface Rect {
-  x: number       // 中心 X
-  y: number       // 中心 Y
-  width: number   // 宽度
-  height: number  // 高度
-}
-
-function rectCollide(a: Rect, b: Rect, tolerance: number = 0): boolean {
-  const halfAW = a.width / 2 - tolerance
-  const halfAH = a.height / 2 - tolerance
-  const halfBW = b.width / 2 - tolerance
-  const halfBH = b.height / 2 - tolerance
-
-  return (
-    Math.abs(a.x - b.x) < halfAW + halfBW &&
-    Math.abs(a.y - b.y) < halfAH + halfBH
-  )
-}</code></pre>
-
-      <h3>为碰撞体提供 BoundingBox</h3>
-      <pre><code>// 每个需要碰撞检测的节点实现这个接口
-interface ICollidable {
-  getBBox(): Rect
-}
-
-// Enemy 组件实现
-export class Enemy extends Component implements ICollidable {
-
-  getBBox(): Rect {
-    const uiTransform = this.node.getComponent(UITransform)
-    return {
-      x: this.node.position.x,
-      y: this.node.position.y,
-      width: uiTransform.width * this.node.scale.x,
-      height: uiTransform.height * this.node.scale.y,
-    }
-  }
-}</code></pre>
-
-      <div class="warn-box">
-        <strong>注意：</strong>上面的公式用的是节点中心坐标（Cocos
-        默认锚点在中心）。如果节点的锚点不是 (0.5, 0.5)，需要用
-        <code>getBoundingBox()</code> 或手动转换坐标。飞机大战建议所有碰撞体用中心锚点，计算最简单。
-      </div>
-    </ConceptBlock>
-
-    <!-- ============ 圆形碰撞 ============ -->
-    <ConceptBlock icon="⭕" title="圆形碰撞检测">
-      <p>有些场景矩形碰撞不够好（比如圆形道具、爆炸范围），这时候用圆形碰撞：</p>
-
-      <pre><code>interface Circle {
-  x: number       // 圆心 X
-  y: number       // 圆心 Y
-  radius: number  // 半径
-}
-
-function circleCollide(a: Circle, b: Circle): boolean {
-  const dx = a.x - b.x
-  const dy = a.y - b.y
-  const distSq = dx * dx + dy * dy       // 距离的平方
-  const radiusSum = a.radius + b.radius
-  return distSq < radiusSum * radiusSum   // 比较平方值，避免开根号
-}
-
-// 矩形 vs 圆形碰撞
-function rectCircleCollide(rect: Rect, circle: Circle): boolean {
-  // 找到矩形上离圆心最近的点
-  const closestX = Math.max(rect.x - rect.width / 2,
-    Math.min(circle.x, rect.x + rect.width / 2))
-  const closestY = Math.max(rect.y - rect.height / 2,
-    Math.min(circle.y, rect.y + rect.height / 2))
-
-  const dx = circle.x - closestX
-  const dy = circle.y - closestY
-  return dx * dx + dy * dy < circle.radius * circle.radius
-}</code></pre>
-
-      <div class="tip-box">
-        <strong>性能提示：</strong>比较距离时用平方值（<code>distSq &lt; r²</code>），避免
-        <code>Math.sqrt()</code>。开根号运算很慢，在每帧大量碰撞检测中会累积成性能问题。
-      </div>
-    </ConceptBlock>
-
-    <!-- ============ CollisionManager ============ -->
-    <ConceptBlock icon="🎛️" title="封装 CollisionManager">
-      <p>不要把碰撞检测逻辑散落在各个组件中。集中管理碰撞检测，让代码清晰且易于调试：</p>
-
-      <pre><code>import { Component, _decorator } from 'cc'
-const { ccclass } = _decorator
-
-interface Rect { x: number; y: number; width: number; height: number }
-
-export interface ICollidable {
-  getBBox(): Rect
-  onCollision?(other: ICollidable): void
-  group: string  // 'player' | 'enemy' | 'playerBullet' | 'enemyBullet' | 'item'
-}
-
-@ccclass('CollisionManager')
-export class CollisionManager extends Component {
-
-  static instance: CollisionManager
-
-  private _collidables: ICollidable[] = []
-
-  /** DebugDrawer 使用的只读访问 */
-  get collidables(): readonly ICollidable[] {
-    return this._collidables
-  }
-
-  // 碰撞矩阵：定义哪些 group 之间需要检测
-  private static MATRIX: Record&lt;string, string[]&gt; = {
-    playerBullet: ['enemy'],
-    enemyBullet:  ['player'],
-    enemy:        ['player'],
-    item:         ['player'],
-  }
-
-  onLoad() {
-    CollisionManager.instance = this
-  }
-
-  register(target: ICollidable) {
-    this._collidables.push(target)
-  }
-
-  unregister(target: ICollidable) {
-    const idx = this._collidables.indexOf(target)
-    if (idx !== -1) this._collidables.splice(idx, 1)
-  }
-
-  update(dt: number) {
-    const list = this._collidables
-    for (let i = 0; i < list.length; i++) {
-      const a = list[i]
-      if (!a.onCollision) continue
-
-      const targets = CollisionManager.MATRIX[a.group]
-      if (!targets) continue
-
-      for (let j = i + 1; j < list.length; j++) {
-        const b = list[j]
-        if (!targets.includes(b.group)) continue
-
-        if (rectCollide(a.getBBox(), b.getBBox())) {
-          a.onCollision(b)
-          b.onCollision?.(a)
-        }
-      }
-    }
-  }
-}
-
-function rectCollide(a: Rect, b: Rect): boolean {
-  return (
-    Math.abs(a.x - b.x) < (a.width + b.width) / 2 &&
-    Math.abs(a.y - b.y) < (a.height + b.height) / 2
-  )
-}</code></pre>
-
-      <h3>使用示例</h3>
-      <pre><code>// Enemy.ts
-export class Enemy extends Component implements ICollidable {
-  group = 'enemy'
-
-  onCollision(other: ICollidable) {
-    if (other.group === 'playerBullet') {
-      this.takeDamage()       // 被子弹击中
-    } else if (other.group === 'player') {
-      this.crash()            // 撞到玩家
-    }
-  }
-}</code></pre>
-    </ConceptBlock>
-
-    <!-- ============ 穿透问题 ============ -->
-    <ConceptBlock icon="🚀" title="高速物体的穿透问题">
-      <p>当子弹速度足够快，一帧的位移超过碰撞体尺寸时，会直接从目标"穿过去"：</p>
-
-      <pre><code>// 帧 N:  子弹 ●     |墙|     ← 还没碰到
-// 帧 N+1:            |墙|  ● 子弹  ← 已经穿过
-
-// 原因：每帧只检测当前帧的位置，两帧之间发生了什么不知道</code></pre>
-
-      <h3>解决方案一：限制速度（最简单）</h3>
-      <pre><code>// 确保每帧位移 < 碰撞体最小尺寸
-// 子弹宽 8px，每帧最多移动 4px
-// 这样永远不可能"跳过"一个宽 8px 的敌人
-@property bulletSpeed: number = 240  // 240px/s ÷ 60fps = 4px/帧 < 8px ✓</code></pre>
-
-      <h3>解决方案二：连续碰撞检测（CCD）</h3>
-      <pre><code>// 从上一帧位置到当前帧位置做射线检测
-function sweptAABB(prev: Rect, curr: Rect, target: Rect): boolean {
-  // 简化版：在路径上多采样几个点
-  const steps = Math.ceil(
-    Math.abs(curr.x - prev.x) / target.width  // 需要几步采样
-  )
-  for (let i = 0; i <= steps; i++) {
-    const t = i / steps
-    const sampled: Rect = {
-      x: prev.x + (curr.x - prev.x) * t,
-      y: prev.y + (curr.y - prev.y) * t,
-      width: curr.width,
-      height: curr.height,
-    }
-    if (rectCollide(sampled, target)) return true
-  }
-  return false
-}</code></pre>
-
-      <div class="tip-box">
-        <strong>实战建议：</strong
-        >飞机大战中先限制子弹速度（方案一），足够安全。如果后期引入了激光类高速武器（比如一帧横穿屏幕的射线），再考虑方案二。
-      </div>
-    </ConceptBlock>
-
-    <!-- ============ 延迟销毁 ============ -->
-    <ConceptBlock icon="⏳" title="延迟销毁——碰撞回调中的陷阱">
-      <p>
-        碰撞检测有一个<strong>非常容易踩的坑</strong>：在碰撞回调中直接
-        <code>destroy()</code> 节点，但同一帧内其他对象可能还在引用它：
-      </p>
-
-      <pre><code>// ❌ 危险的写法：
-onCollision(other: ICollidable) {
-  if (other.group === 'playerBullet') {
-    this.node.destroy()  // 立刻销毁！
-    // 问题：如果同一帧内还有一颗子弹也碰到了这个敌机
-    //       它的 onCollision 会收到一个已销毁节点的引用 → 报错
-  }
-}</code></pre>
-
-      <h3>标准解法：标记-延迟清理</h3>
-      <pre><code>// ✅ 安全的写法：只标记，不销毁
-private _pendingKill = false
-
-onCollision(other: ICollidable) {
-  if (other.group === 'playerBullet' && !this._pendingKill) {
-    this._pendingKill = true
-    eventBus.emit('enemy:killed', { /* ... */ })
-    // 不在这里 destroy！等 lateUpdate 处理
-  }
-}
-
-lateUpdate() {
-  if (this._pendingKill) {
-    this.node.active = false
-    this._pendingKill = false
-    // 或者放入对象池：this.pool.put(this.node)
-  }
-}
-
-// 在 CollisionManager 中也跳过高亮标记的对象
-update(dt: number) {
-  for (...) {
-    if (a._pendingKill) continue  // 被标记销毁的跳过碰撞检测
-    // ...
-  }
-}</code></pre>
-
-      <div class="warn-box">
-        <strong>规则：</strong>碰撞回调中<strong>只读数据、emit 事件、标记状态</strong
-        >——永远不要在碰撞回调中 destroy 节点或修改碰撞体列表。销毁和回收统一放在
-        <code>lateUpdate</code> 中处理。
-      </div>
-    </ConceptBlock>
-
-    <!-- ============ 碰撞可视化调试 ============ -->
-    <ConceptBlock icon="🔍" title="碰撞可视化调试">
-      <p>开发阶段能看到碰撞框，效率提升 10 倍。写一个简单的调试绘制工具：</p>
-
-      <pre><code>import { Graphics, Color } from 'cc'
-
-// 在 Canvas 下建一个空节点，挂 Graphics 组件，作为调试绘制层
-export class DebugDrawer extends Component {
-  static instance: DebugDrawer
-  private _graphics: Graphics
-
-  onLoad() {
-    DebugDrawer.instance = this
-    this._graphics = this.node.getComponent(Graphics)
-  }
-
-  drawRect(rect: Rect, color: Color = Color.RED) {
-    this._graphics.strokeColor = color
-    this._graphics.lineWidth = 1
-    this._graphics.rect(
-      rect.x - rect.width / 2,
-      rect.y - rect.height / 2,
-      rect.width, rect.height
-    )
-    this._graphics.stroke()
-  }
-
-  lateUpdate() {
-    // 每帧清空重画
-    this._graphics.clear()
-
-    // 画出所有注册的碰撞体（开发阶段）
-    for (const c of CollisionManager.instance.collidables) {
-      const color = getColorForGroup(c.group)
-      DebugDrawer.instance.drawRect(c.getBBox(), color)
-    }
-  }
-}</code></pre>
-    </ConceptBlock>
-
-    <ConceptBlock icon="✅" title="自检清单">
-      <ul>
-        <li>AABB 碰撞检测的数学原理是什么？能自己在纸上推导一遍吗？</li>
-        <li>圆形碰撞检测中为什么用距离的平方而不是开根号？</li>
-        <li>碰撞检测为什么应该集中管理（CollisionManager）而不是分散在各个组件中？</li>
-        <li>什么是碰撞矩阵？它解决了什么问题？</li>
-        <li>子弹"穿透"的原因是什么？有哪两种解决方案？</li>
-        <li>为什么碰撞回调中不能直接 <code>destroy()</code> 对象？"延迟销毁"怎么做？</li>
-        <li>碰撞可视化调试的价值是什么？你会怎么做？</li>
-      </ul>
+    <ConceptBlock icon="✅" title="自测清单">
+      <ol>
+        <li>从 PNG 文件到屏幕上显示的精灵，中间经历了 Texture2D → SpriteFrame → Sprite 三层抽象。为什么设计师不直接做一个"图片组件"一步到位，非要拆成三层？每一层解决的是什么问题？</li>
+        <li>一张像素画放大 4 倍后，用 Point 过滤和用 Bilinear 过滤的结果有什么本质区别？如果你要做一个复古风格的像素游戏，为什么必须在导入每张纹理时就选好 Point 过滤？</li>
+        <li>九宫格（9-Slice）能让你把一个 64×64 的按钮背景图拉伸到 300×200 而不变形。请解释它是怎么办到的——四个角、四条边、中间区域分别做了什么处理？如果在拉伸时不勾选 Sliced 会怎样？</li>
+      </ol>
     </ConceptBlock>
   </PhaseLayout>
 </template>

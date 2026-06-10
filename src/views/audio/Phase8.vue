@@ -1,0 +1,73 @@
+<script setup lang="ts">
+import PhaseLayout from '@/components/PhaseLayout.vue'
+import ConceptBlock from '@/components/ConceptBlock.vue'
+</script>
+
+<template>
+  <PhaseLayout :phase="8" title="音乐结构设计" duration="1-2 天">
+    <ConceptBlock icon="🧭" title="本节定位"><p>电影音乐是线性的——2 小时，固定的，放完就结束。游戏音乐是非线性的——玩家可能在任何区域停留任意时长，可能突然进入战斗又突然退出。所以游戏音乐的核心要求只有一个：<strong>可循环，且听不出循环点。</strong>这一节学会设计 Intro + Loop 结构和循环衔接。</p></ConceptBlock>
+
+    <ConceptBlock icon="🎬" title="故事：当 BGM 突然循环到你听出来">
+      <p>你玩过那种"循环感很强"的游戏吗？BGM 播到第 30 秒，突然有一个很明显的"停顿+重启"，你脑子里的反应是——"哦，循环了"。然后接下来每一次循环你都能听出来那个"接缝"。</p>
+      <p>这就像看一个 GIF 动画——如果最后一帧和第一帧之间有跳变，你会立刻注意到循环点。但好的 GIF 会设计成"无缝循环"：最后一帧自然地引导回第一帧。</p>
+      <p>游戏 BGM 的 loop 设计就是音频版的 <strong>CSS infinite animation</strong>。你写 <code>animation: spin 2s infinite</code> 时，必须保证关键帧的起始和结束状态完全一致——否则动画会"跳"。BGM 的 loop 也一样：第 16 小节的最后一拍必须<strong>在节奏和和声上</strong>引导回第 1 小节。</p>
+    </ConceptBlock>
+
+    <ConceptBlock icon="🔁" title="原理：游戏音乐的结构公式">
+      <p><strong>三层结构：Intro → Main Loop → Outro</strong></p>
+      <p>大多数游戏 BGM 不是一首完整的"歌"，而是一个<strong>可无限循环的片段 + 可选的开头和结尾</strong>：</p>
+
+      <pre>Intro（4-8 小节，游戏开始时播一次）
+  ↓ 建立氛围
+Main Loop（8-32 小节，无限循环）
+  ↓ 这是 BGM 的主体，玩家听 90% 的时间
+Outro（4-8 小节，只在特定触发时播放）
+  ↓ Boss 死亡 / 关卡结束 / 玩家死亡</pre>
+
+      <p>Intro 的设计哲学是：<strong>营造期待感。</strong>它可以只包含 Bass + 轻鼓点，旋律还没进来——引导玩家的情绪进入"即将开始"的状态。就像页面的 skeleton screen 在数据加载前给用户一个心理准备。Intro 播完后无缝进入 Main Loop。</p>
+
+      <p>Main Loop 是 BGM 的<strong>核心资产</strong>。它必须同时满足两个矛盾的要求：</p>
+      <ol>
+        <li><strong>足够有趣</strong>——让玩家在前 3 遍循环中觉得"这歌好听"。</li>
+        <li><strong>不过分抓耳</strong>——让玩家在第 50 遍循环时依然不觉得"烦"。</li>
+      </ol>
+      <p>好的游戏 BGM 你在玩游戏时会<strong>忽略它</strong>，但关掉声音后立刻觉得少了什么。它在你的注意力的边缘——恰好不打扰你玩游戏，恰好填满情绪的空白。</p>
+
+      <p><strong>Loop 无缝衔接 —— 循环的艺术</strong></p>
+      <p>Loop 衔接的关键在于：<strong>第 N 小节的最后一拍在节奏、和声、旋律上都引导回第 1 小节。</strong>具体技巧：</p>
+      <ul>
+        <li><strong>和声衔接：</strong>Loop 的最后一个和弦是"属和弦"（V 级，C 大调中是 G 和弦）——它有强烈的"回到主和弦"的倾向。主和弦（I 级，C 大调中是 C 和弦）正好是 Loop 的第一个和弦。V → I 的进行是人类听觉最自然的"结束 → 重新开始"。</li>
+        <li><strong>节奏衔接：</strong>最后的鼓 fill（加花）把节奏能量推到峰值，然后第一拍的重击"落地"。就像动画的 "anticipation → action" 循环——回收动作引导到下一个循环的预备动作。</li>
+        <li><strong>旋律衔接：</strong>最后一个音符"悬"在一个倾向于回到第一个音符的音高上。比如在 C 大调中，最后一音符是 B（导音），它天然倾向于回到 C（主音）。</li>
+      </ul>
+
+      <p>测试方法很简单：把 Main Loop 导出为 WAV → 在 Audacity 中连续播放 3 遍 → 如果你听不出哪是循环点，这就是一个好的 loop。</p>
+    </ConceptBlock>
+
+    <ConceptBlock icon="🔧" title="动手：结构化你的 BGM">
+      <p>回到 Bosca Ceoil，打开 Phase 7 做的那个 3 轨编曲。现在我们要把它改造成一个"游戏级的 BGM 结构"。</p>
+      <ol>
+        <li><strong>拆分 Intro（4 小节）：</strong>新建一个 Pattern（Pattern 1），只保留 Bass + 轻鼓点（底鼓只在第 1、5 拍，军鼓只在第 3、7 拍——低调的节奏铺陈）。旋律轨道静音。这是"游戏开始，玩家即将获得控制权"的 4 小节。</li>
+        <li><strong>创建 Main Loop（16 小节）：</strong>新建 Pattern 2，这是你已经写好的完整编曲（Melody + Bass + Drums 全开）。确保第 16 小节的最后一拍和第 1 小节的第一拍在节奏上顺滑过渡。技巧：在最后一拍加一个上行音（比如从 G 滑到 C），或者加一个鼓的轻击作为"提示音"引导循环。</li>
+        <li><strong>在 Arrangement 中排列：</strong>把 Pattern 1（Intro）放在前面，Pattern 2（Main Loop）跟在后面。设置 Pattern 2 的播放次数为无限循环（或至少 3 遍用于测试）。</li>
+        <li><strong>导出测试：</strong>导出为 WAV → 在 Audacity 中打开 → 用 Shift+空格（Loop Play）连播 3 遍 Main Loop 部分。听循环衔接点——如果听出了"断"感，回去调整第 16-1 小节的过渡。</li>
+      </ol>
+      <p>这个结构可以直接用于飞机大战：Intro 在"按任意键开始"画面播放 → Main Loop 在战斗中无限循环 → 如果后续做 Outro（Phase 11），在 Boss 击杀或关卡完成时触发。</p>
+    </ConceptBlock>
+
+    <ConceptBlock icon="🔗" title="课外延伸">
+      <ul>
+        <li><strong>近藤浩治（Koji Kondo）的循环设计艺术：</strong>任天堂的传奇作曲家近藤浩治是最早把"游戏音乐循环"当作严肃设计问题来对待的人之一。他的方法是在一个 loop 里写 <strong>A-B-A 结构</strong>——A 段是主旋律，B 段是变奏，再回到 A 段。这种"主题+变奏+回归"的结构让 loop 听起来像一首有发展的微型歌曲，而不是一段重复的机械循环。《超级马里奥》的地上关 BGM 就是这样——A 段让你记住旋律，B 段在中间制造一点紧张感，回到 A 段给你"回家"的满足感。如此循环 100 遍，你依然不觉得单调。</li>
+        <li><strong>水平作曲（Horizontal Composition）vs 垂直混音（Vertical Remixing）：</strong>这是两种游戏音频架构。水平作曲 = 写多个独立的音乐片段，根据游戏状态切换（比如探索 BGM → 战斗 BGM → Boss BGM）。垂直混音 = 同一段音乐拆成多个音轨层，根据状态叠加/移除音轨（Phase 11 的垂直分层）。水平像 <code>v-if</code>（切换整个组件），垂直像 <code>v-show</code>（在同一个结构上叠加/隐藏层）。专业游戏音频设计通常混合使用两者。</li>
+      </ul>
+    </ConceptBlock>
+
+    <ConceptBlock icon="✅" title="自测清单">
+      <ol>
+        <li>游戏 BGM 和电影配乐在结构上有哪些根本差异？为什么游戏 BGM 必须可循环而电影配乐不需要？</li>
+        <li>什么是 V → I 的和声进行？为什么 Loop 的最后一小节经常使用属和弦（V 级）？这和 CSS animation 的最后一帧回到第一帧的状态有什么相似之处？</li>
+        <li>水平作曲（切换片段）和垂直混音（叠加层）两种架构各适合什么游戏场景？</li>
+      </ol>
+    </ConceptBlock>
+  </PhaseLayout>
+</template>

@@ -4,287 +4,66 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
 </script>
 
 <template>
-  <PhaseLayout :phase="2" title="射击游戏音效制作" duration="1-2 天">
-    <ConceptBlock icon="🎯" title="学完本节你能做什么">
-      <ul>
-        <li>为飞机大战的所有动作设计并制作完整的<strong>射击音效</strong>、<strong>爆炸音效</strong>组</li>
-        <li>理解<strong>包络</strong>（<strong>Attack/Decay/Sustain/Release</strong>）如何塑造音效质感</li>
-        <li>为不同游戏事件匹配音色和<strong>频率</strong>范围</li>
-        <li>建立一套音效命名规范，方便在 <strong>Cocos</strong> 代码中调用</li>
-      </ul>
+  <PhaseLayout :phase="2" title="声音的物理学" duration="1 天">
+    <ConceptBlock icon="🧭" title="本节定位"><p>声音是什么？空气分子被挤压再弹开的波浪。理解这个波浪的三个属性——频率、振幅、波形——你就理解了音效合成的地基。不需要成为声学专家，但需要知道你在 BFXR 里拖滑块时到底在改变什么。</p></ConceptBlock>
+
+    <ConceptBlock icon="🌊" title="故事：一根琴弦告诉你的三件事">
+      <p>找一根橡皮筋，两端拉紧。用手指拨它一下。你看到什么？它在快速来回振动。你听到什么？一个音。</p>
+      <p>现在把橡皮筋拉得更紧再拨——音变高了。放松一些再拨——音变低了。用更大的力拨——声音变响了。用手指按住橡皮筋的一端拨——声音变短了。</p>
+      <p>你刚刚在 30 秒内体验了声音物理学的全部核心：<strong>频率决定音高，振幅决定响度，阻尼决定时长，材料和形状决定音色</strong>。游戏中的每一声音效——无论多复杂——最终都是这四个参数的某种组合。就像 CSS 里任何布局最终都是 <code>display</code> + <code>position</code> + <code>box-sizing</code> 的组合一样——底层的原理就那么几个，复杂的是组合方式。</p>
     </ConceptBlock>
 
-    <ConceptBlock icon="📐" title="音效设计原则">
-      <p>游戏音效不是随机噪音——每种音效都有<strong>信息传递</strong>的功能：</p>
+    <ConceptBlock icon="📐" title="原理：声音的三个维度">
+      <p><strong>频率（Frequency）—— 声音的"高矮"</strong></p>
+      <p>频率是振动物体每秒钟来回的次数，单位是赫兹（Hz）。钢琴中央 A 键 = 440Hz —— 意味着钢琴弦每秒钟振动 440 次。频率每翻一倍，音高就升高一个八度：440Hz = A4（中央 A），880Hz = A5（高八度的 A），220Hz = A3（低八度的 A）。</p>
+      <p>人耳能听到 20Hz ~ 20kHz，但这不是均匀的。我们对 <strong>2kHz-4kHz</strong> 最敏感——这不是巧合，这是进化选择。婴儿的哭声正好落在这个区间，所以你在任何嘈杂环境下都能听到婴儿哭。游戏音效设计利用这个原理：重要的警报和信息音效放在 2-4kHz，让你不可能忽略。</p>
+      <p>低频（50-200Hz）不是用来"听"的——是用来<strong>感受</strong>的。地震、引擎轰鸣、Boss 登场时的压迫感。你身体的胸腔会共振，你会"感觉"到声音，而不是"听到"它。这就是为什么好的游戏音频设计是"触觉"设计——它让玩家用身体感受游戏状态。</p>
 
+      <p><strong>振幅（Amplitude）—— 声音的"大小"</strong></p>
+      <p>振幅是空气被压缩的程度，用分贝（dB）表示。但 dB 是个反直觉的单位：0dB 不是"没声音"，而是<strong>数字音频能表示的最大音量</strong>。0dB = 满格，-6dB = 一半响度，-∞dB = 静音。</p>
+      <p>游戏音效通常设定在 -6dB ~ -12dB 区间。为什么不是 0dB？因为你需要<strong>留出动态空间（headroom）</strong>——当多个音效同时播放时，它们的振幅会叠加。如果每个音效都是 0dB，三个一起播放就会超过 0dB 造成<strong>削波失真（clipping）</strong>——听感就是刺耳的爆音。这就像 CSS 里的 <code>z-index</code> 管理：你不可能每个元素都是 z-index: 99999，总得有人退后。</p>
+
+      <p><strong>波形（Waveform）—— 声音的"颜色"</strong></p>
+      <p>为什么钢琴弹 440Hz 和小提琴拉 440Hz 听起来不一样？因为它们的波形不同。波形是频率成分的配方：</p>
       <table>
-        <thead>
-          <tr>
-            <th>原则</th>
-            <th>说明</th>
-            <th>正向例子</th>
-            <th>反例</th>
-          </tr>
-        </thead>
+        <thead><tr><th>波形</th><th>频率成分</th><th>听感</th><th>游戏用途</th></tr></thead>
         <tbody>
-          <tr>
-            <td><strong>信号清晰</strong></td>
-            <td>音效出现的瞬间玩家就知道发生了什么</td>
-            <td>激光：尖锐短促"pew"</td>
-            <td>模糊的长噪音——听不出是射击还是背景</td>
-          </tr>
-          <tr>
-            <td><strong>频率分层</strong></td>
-            <td>高频（提示/警告）、中频（反馈/确认）、低频（冲击/爆炸）</td>
-            <td>激光 2-4kHz → 刺耳醒目；爆炸 100-400Hz → 震撼</td>
-            <td>所有音效集中在同一频率——频谱打架</td>
-          </tr>
-          <tr>
-            <td><strong>比例合理</strong></td>
-            <td>频繁音效短、稀有音效长</td>
-            <td>射击 0.1s、拾取 0.3s、Boss 爆炸 1.5s</td>
-            <td>每发子弹 1 秒长——连续射击时声音堆叠成噪音</td>
-          </tr>
-          <tr>
-            <td><strong>一致调性</strong></td>
-            <td>同一游戏内所有音效风格统一</td>
-            <td>8-bit 像素风从头到尾</td>
-            <td>射击是电子音、爆炸是写实录音——违和</td>
-          </tr>
+          <tr><td>正弦波（Sine）</td><td>单一频率，无谐波</td><td>纯净、中空</td><td>消息提示音、风铃声</td></tr>
+          <tr><td>方波（Square）</td><td>奇数谐波丰富</td><td>复古电子、NES感</td><td>射击声、8-bit BGM</td></tr>
+          <tr><td>锯齿波（Sawtooth）</td><td>所有谐波</td><td>锋利、金属感</td><td>激光、警报</td></tr>
+          <tr><td>三角波（Triangle）</td><td>奇数谐波（递减）</td><td>柔和、温暖</td><td>引擎声底、柔和BGM</td></tr>
+          <tr><td>噪声（Noise）</td><td>所有频率随机</td><td>粗糙、爆炸感</td><td>爆炸、海浪、风声</td></tr>
         </tbody>
       </table>
+
+      <p><strong>采样率 —— 数字化的"分辨率"</strong></p>
+      <p>模拟声音是连续波浪，数字声音是波浪上的采样点。CD 音质 = 44100Hz（每秒采 44100 个点）。为什么是这个数字？因为<strong>奈奎斯特定理（Nyquist Theorem）</strong>：要准确还原一个频率为 f 的声音，采样率必须大于 2f。人耳最高听到 20kHz，所以采样率需要>40kHz——44100Hz 就是留出余量后的标准值。对游戏音效来说，22050Hz 或 44100Hz 都够用——你的射击声不是交响乐，不需要 96kHz 的采样率。</p>
     </ConceptBlock>
 
-    <ConceptBlock icon="🎛️" title="包络（Envelope）：塑形音效的关键">
-      <p>每个合成器音效都由四个阶段定义——ADSR 包络：</p>
-
-      <pre><code>音量
-100% ┤     ╭────╮
-     │    ╱      ╲
- 75% ┤   ╱        ╲___
-     │  ╱              ╲
- 50% ┤ ╱                ╲___
-     │╱                      ╲
-  0% ┼────────────────────────────→ 时间
-     A   D      S        R</code></pre>
-
-      <table>
-        <thead>
-          <tr>
-            <th>阶段</th>
-            <th>含义</th>
-            <th>射击音效</th>
-            <th>爆炸音效</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>A (Attack)</strong></td>
-            <td>从 0 升到最大音量的时间</td>
-            <td>0.001s（瞬间爆发）</td>
-            <td>0.05-0.1s（轰鸣渐起）</td>
-          </tr>
-          <tr>
-            <td><strong>D (Decay)</strong></td>
-            <td>从最大降到 Sustain 的时间</td>
-            <td>0.02s</td>
-            <td>0.1-0.2s</td>
-          </tr>
-          <tr>
-            <td><strong>S (Sustain)</strong></td>
-            <td>保持阶段的音量</td>
-            <td>10%（很低）</td>
-            <td>40%（持续轰鸣）</td>
-          </tr>
-          <tr>
-            <td><strong>R (Release)</strong></td>
-            <td>释放后降到 0 的时间</td>
-            <td>0.02s</td>
-            <td>0.3-0.5s（拖尾）</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="tip-box">
-        <strong>记忆口诀：</strong>射击音效的 A 越短越"脆"，爆炸音效的 R 越长越"震"。调整 BFXR
-        中对应的 Attack/Decay/Sustain/Release 滑块就能塑形。
-      </div>
-    </ConceptBlock>
-
-    <ConceptBlock icon="🔫" title="音效清单与制作指南">
-      <p>飞机大战需要的完整音效列表。每个音效都有推荐的 BFXR 预设起点和参数方向：</p>
-
-      <h3>玩家射击</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>文件</th>
-            <th>预设</th>
-            <th>时长</th>
-            <th>频率</th>
-            <th>感觉</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><code>player_shoot.wav</code></td>
-            <td>Laser/Shoot</td>
-            <td>0.1-0.2s</td>
-            <td>2-4 kHz</td>
-            <td>清脆、"pew"感、不刺耳</td>
-          </tr>
-          <tr>
-            <td><code>player_power_shoot.wav</code></td>
-            <td>Laser/Shoot → Mutate 降低音高</td>
-            <td>0.2-0.3s</td>
-            <td>1.5-3 kHz</td>
-            <td>比普通射击更沉、更有力</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h3>敌机音效</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>文件</th>
-            <th>预设</th>
-            <th>时长</th>
-            <th>频率</th>
-            <th>感觉</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><code>enemy_shoot.wav</code></td>
-            <td>Laser/Shoot → Mutate 提高音高</td>
-            <td>0.08-0.15s</td>
-            <td>3-5 kHz</td>
-            <td>比玩家子弹更高更尖——区分敌我</td>
-          </tr>
-          <tr>
-            <td><code>enemy_hit.wav</code></td>
-            <td>Hit/Hurt</td>
-            <td>0.1-0.2s</td>
-            <td>500-2kHz</td>
-            <td>短闷撞击感</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h3>爆炸与伤害</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>文件</th>
-            <th>预设</th>
-            <th>时长</th>
-            <th>频率</th>
-            <th>感觉</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><code>explosion_small.wav</code></td>
-            <td>Explosion</td>
-            <td>0.5-0.8s</td>
-            <td>200-1kHz</td>
-            <td>小块爆炸，轻闷</td>
-          </tr>
-          <tr>
-            <td><code>explosion_big.wav</code></td>
-            <td>Explosion → Mutate 降调+加噪声</td>
-            <td>1-1.5s</td>
-            <td>80-500Hz</td>
-            <td>Boss/大爆炸，低音冲击</td>
-          </tr>
-          <tr>
-            <td><code>player_hit.wav</code></td>
-            <td>Hit/Hurt</td>
-            <td>0.2-0.3s</td>
-            <td>300-1kHz</td>
-            <td>报警感——"你受伤了"</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h3>道具与 UI</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>文件</th>
-            <th>预设</th>
-            <th>时长</th>
-            <th>频率</th>
-            <th>感觉</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><code>pickup_power.wav</code></td>
-            <td>Powerup</td>
-            <td>0.3-0.5s</td>
-            <td>1-3 kHz</td>
-            <td>上升音阶——"变强了"</td>
-          </tr>
-          <tr>
-            <td><code>pickup_heal.wav</code></td>
-            <td>Pickup/Coin → Mutate 升调</td>
-            <td>0.2-0.3s</td>
-            <td>800-2kHz</td>
-            <td>明亮愉悦、两连音</td>
-          </tr>
-          <tr>
-            <td><code>pickup_bomb.wav</code></td>
-            <td>Powerup → Mutate 降调</td>
-            <td>0.3-0.4s</td>
-            <td>500-1.5kHz</td>
-            <td>重型武器感</td>
-          </tr>
-          <tr>
-            <td><code>ui_click.wav</code></td>
-            <td>Blip/Select</td>
-            <td>0.03-0.05s</td>
-            <td>1-2 kHz</td>
-            <td>清脆点击——菜单/按钮</td>
-          </tr>
-          <tr>
-            <td><code>ui_start.wav</code></td>
-            <td>Powerup</td>
-            <td>0.5-0.8s</td>
-            <td>800-2kHz</td>
-            <td>游戏开始——三连上升音</td>
-          </tr>
-        </tbody>
-      </table>
-    </ConceptBlock>
-
-    <ConceptBlock icon="🔨" title="动手练习：制作全部音效">
+    <ConceptBlock icon="🔧" title="动手：用 Audacity 感受声波">
+      <p>打开 Audacity（免费，audacityteam.org），我们来做几个 5 分钟的声学实验：</p>
       <ol>
-        <li>在 BFXR 中逐一生成上面列出的所有 12 个音效</li>
-        <li>每个音效 Mutate 至少 5 次再微调（不要满足于第一个随机结果）</li>
-        <li>在 Audacity 中对每个文件：裁剪开头空白 → Normalize -0.5dB → 加淡入/淡出</li>
-        <li>统一保存到项目文件夹 <code>assets/resources/sfx/</code></li>
-        <li>全部播放一遍——相邻音效之间有没有频率打架？（射击和拾取能分清吗？）</li>
-        <li>如有频率冲突，回到 BFXR 调整音高避开</li>
+        <li><strong>感受频率：</strong>菜单 Generate → Tone → 频率 440Hz，波形 Sine，持续时间 2 秒 → OK。你会听到钢琴的中央 A。再 Generate → 频率 880Hz → 你听到的是高八度的 A。频率翻倍 = 音高升八度——这就是为什么钢琴键盘每 12 个键频率翻一倍。</li>
+        <li><strong>感受音色：</strong>同样 440Hz，波形换成 Square（方波）。声音立刻变得"电子"了——这就是 NES 游戏的声音来源。再换成 Sawtooth（锯齿波）——更锋利了。同样的频率，不同的波形 = 不同的音色。你刚刚在 30 秒内体验了合成器的核心原理。</li>
+        <li><strong>感受叠加：</strong>新建一个音轨（Tracks → Add New → Mono Track），生成 440Hz 正弦波。再新建一轨，生成 660Hz 正弦波。同时播放两轨——你听到了什么？两个频率叠加后的"复合音"，听起来像电话拨号音。这就是<strong>和弦</strong>的物理基础：和弦就是多个频率同时存在。</li>
+        <li><strong>观察波形：</strong>放大时间轴（Ctrl+滚轮），直到你能看到波形在屏幕上展开。找一段声音，看它的振幅包络——起音多快？衰减多长？这就是下一节要讲的 ADSR 曲线。</li>
       </ol>
-
-      <div class="tip-box">
-        <strong>完成标准：</strong
-        >闭上眼按顺序播放所有音效——你能仅靠声音就区分出"这是射击""这是敌机被击""这是道具拾取"吗？这就是你的玩家在混乱的弹幕中依赖的听觉信息。
-      </div>
+      <p>你不必记住每个数字。重点是：以后你在 BFXR 里拖动"Frequency"滑块时，你脑子里浮现的不再是一个抽象的数字，而是——"这个滑块决定了声音有多尖锐，我在把射击声从低沉（200Hz）调到清脆（1500Hz）"。</p>
     </ConceptBlock>
 
-    <ConceptBlock icon="✅" title="自检清单">
+    <ConceptBlock icon="🔗" title="课外延伸">
       <ul>
-        <li>ADSR 四个字母分别代表什么？射击音效和爆炸音效的 ADSR 有什么区别？</li>
-        <li>为什么频繁音效（如射击）必须做得短？</li>
-        <li>玩家子弹和敌机子弹的音效如何区分？（音高差异）</li>
-        <li>小爆炸和大爆炸在频率上怎么区分？</li>
-        <li>道具拾取音效用什么感觉来传达"变强了"？</li>
-        <li>你做的所有音效之间有没有频率冲突？怎么检查？</li>
-        <li>为什么同一款游戏所有音效的风格要统一？</li>
+        <li><strong>心理声学（Psychoacoustics）—— 耳朵不是麦克风：</strong>麦克风忠实地记录所有频率，但人耳不是。人耳对 2-4kHz 最敏感（前面说过，婴儿哭声的进化优势），对极低频和极高频不敏感。更重要的是<strong>掩蔽效应（Masking）</strong>——一个大声的声音会让附近频率的小声声音"听不见"。MP3 压缩就是利用这个原理：把被掩蔽的频率扔掉，减小文件体积。你听不出差别，但文件变小了。这就是为什么 MP3 能做到 1/10 的体积而"听感差不多"。</li>
+        <li><strong>等响度曲线（Fletcher-Munson Curves）：</strong>1933 年，两位贝尔实验室的科学家发现：人耳对不同频率的敏感度会随音量变化而变化。小音量时，我们对低频和高频都不太敏感——这就是为什么很多音响有"Loudness"按钮（补偿低音量时的低频缺失）。游戏音频设计需要考虑玩家可能会调低音量——如果你把关键信息放在极低频（如 Boss 脚步震动），低音量玩家可能完全听不到。</li>
       </ul>
+    </ConceptBlock>
+
+    <ConceptBlock icon="✅" title="自测清单">
+      <ol>
+        <li>频率（Hz）决定音高，振幅（dB）决定响度，波形决定音色。一个 440Hz 的正弦波和一个 880Hz 的正弦波听起来有什么不同？为什么？</li>
+        <li>CD 音质的采样率为什么是 44100Hz 而不是随便一个数字？奈奎斯特定理如何解释这个选择？</li>
+        <li>游戏音效设计师为什么需要理解心理声学？掩蔽效应在音频压缩和混音中分别有什么应用？</li>
+      </ol>
     </ConceptBlock>
   </PhaseLayout>
 </template>

@@ -4,397 +4,99 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
 </script>
 
 <template>
-  <PhaseLayout :phase="4" title="输入与交互" duration="1-2 天">
-    <ConceptBlock icon="🎯" title="学完本节你能做什么">
+  <PhaseLayout :phase="4" title="资源管理" duration="1-2 天">
+    <ConceptBlock icon="🧭" title="本节定位">
+      <p>前端开发里，你 import 一个模块、require 一张图片，webpack 帮你打包好。但在 Cocos 里，资源的加载、引用、释放都有自己的一套机制。理解这套机制，能帮你避免"资源加载失败""内存泄漏"这些让人头疼的问题。</p>
+    </ConceptBlock>
+
+    <ConceptBlock icon="🆔" title=".meta 文件：每个资源都有一个身份证">
+      <p>把一张 PNG 拖入 Cocos 的 assets 目录后，你会发现在同一目录下多了一个同名的 <code>.meta</code> 文件。这个文件不要删，也不要在 Git 里 ignore 它。</p>
+      <p><strong>.meta 文件是资源的"身份证"</strong>。它记录了：</p>
       <ul>
-        <li>用键盘方向键/WASD 流畅控制角色移动（不依赖系统按键重复）</li>
-        <li>处理<strong>触摸事件</strong>，让游戏在手机上也能操作</li>
-        <li>封装一个统一的 <strong>InputManager</strong>，屏蔽键盘/触摸的差异</li>
-        <li>让飞机大战的玩家飞机在屏幕内自由移动 + 发射子弹</li>
+        <li>一个全局唯一的 <strong>UUID</strong>——Cocos 用 UUID 来引用资源，而不是文件路径。你把 PNG 移动到另一个文件夹，UUID 不变，所有引用自动更新。</li>
+        <li><strong>导入设置</strong>——比如纹理的过滤模式（Point vs Bilinear）、PPU、是否生成 Mipmap。</li>
+        <li><strong>子资源列表</strong>——如果一个 PSD 文件里有多层，或一个 SpriteSheet 被切成了多个 SpriteFrame，子资源的 UUID 也记录在这里。</li>
       </ul>
-    </ConceptBlock>
-
-    <!-- ============ 键盘事件 ============ -->
-    <ConceptBlock icon="⌨️" title="键盘输入：从基础到正确">
-      <p>
-        键盘输入是桌面端游戏的核心。但只监听 <code>KEY_DOWN</code> + <code>KEY_UP</code>
-        <strong>不够</strong>——处理持续移动时会有问题。
-      </p>
-
+      <p>类比前端：.meta 文件就像 Webpack 的 module ID——资源本身是一个文件，但系统通过一个稳定的 ID 来引用它。</p>
       <div class="warn-box">
-        <strong>小游戏注意：</strong>微信小游戏<strong>没有键盘事件</strong>。本节键盘方案仅用于
-        Web/桌面预览。在小游戏中，移动必须靠触摸或虚拟摇杆。好在本章末尾的 InputManager
-        封装已经屏蔽了键盘/触摸的差异——你只需要确保 InputManager 中小游戏路径走触摸逻辑即可，Player
-        代码不用改。
+        <strong>重要：</strong> .meta 文件必须提交到 Git。没有 .meta，其他开发者拉取项目后，所有引用（SpriteFrame、Animation 等）都会丢失。这不像 npm install 可以重新生成——UUID 是唯一的，丢了就丢了。
       </div>
+    </ConceptBlock>
 
-      <h3>错误做法：</h3>
-      <pre><code>// ❌ 只在 keyDown 回调中移动
-systemEvent.on(EventKeyboard.KEY_DOWN, (e) => {
-  if (e.keyCode === KeyCode.ARROW_LEFT)
-    this.node.x -= 10  // 只移动一次！不会持续移动
-})
+    <ConceptBlock icon="📦" title="资源类型全景：你都有哪些素材">
+      <table>
+        <thead><tr><th>Cocos 类型</th><th>对应前端概念</th><th>用途</th></tr></thead>
+        <tbody>
+          <tr><td>Texture2D</td><td>原始图片文件</td><td>GPU 中的纹理数据</td></tr>
+          <tr><td>SpriteFrame</td><td>background-image + background-position</td><td>从纹理中裁出一个矩形区域来显示</td></tr>
+          <tr><td>AudioClip</td><td>音频文件</td><td>音效和 BGM</td></tr>
+          <tr><td>Prefab</td><td>.vue 单文件组件</td><td>可复用的节点模板</td></tr>
+          <tr><td>AnimationClip</td><td>CSS @keyframes</td><td>关键帧动画数据</td></tr>
+          <tr><td>Material</td><td>CSS class</td><td>定义渲染效果（颜色/Shader/参数）</td></tr>
+        </tbody>
+      </table>
+    </ConceptBlock>
 
-// ❌ 依赖系统按键重复延迟（约 30ms，且不可控）
-// 移动会先顿一下，然后才连续——手感很差</code></pre>
-
-      <h3>正确做法：按键状态表 + update 轮询</h3>
-      <pre><code>import { Component, _decorator, systemEvent, EventKeyboard, KeyCode } from 'cc'
-const { ccclass } = _decorator
-
-@ccclass('PlayerController')
-export class PlayerController extends Component {
-
-  @property speed: number = 300
-
-  // 按键状态表：记录哪些键正在被按住
-  private keysDown = new Set&lt;number&gt;()
-
-  onLoad() {
-    systemEvent.on(EventKeyboard.KEY_DOWN,
-      (e) => this.keysDown.add(e.keyCode))
-    systemEvent.on(EventKeyboard.KEY_UP,
-      (e) => this.keysDown.delete(e.keyCode))
-  }
-
-  update(dt: number) {
-    // 每帧检查按键状态——持续按住 = 持续移动
-    if (this.keysDown.has(KeyCode.ARROW_LEFT) ||
-        this.keysDown.has(KeyCode.KEY_A))
-      this.node.x -= this.speed * dt
-
-    if (this.keysDown.has(KeyCode.ARROW_RIGHT) ||
-        this.keysDown.has(KeyCode.KEY_D))
-      this.node.x += this.speed * dt
-
-    if (this.keysDown.has(KeyCode.ARROW_UP) ||
-        this.keysDown.has(KeyCode.KEY_W))
-      this.node.y += this.speed * dt
-
-    if (this.keysDown.has(KeyCode.ARROW_DOWN) ||
-        this.keysDown.has(KeyCode.KEY_S))
-      this.node.y -= this.speed * dt
-  }
-
-  onDestroy() {
-    // 必须解绑！否则切换场景后还会触发
-    systemEvent.off(EventKeyboard.KEY_DOWN)
-    systemEvent.off(EventKeyboard.KEY_UP)
-  }
-}</code></pre>
-
+    <ConceptBlock icon="📥" title="动态加载：resources.load vs assetManager">
+      <p>有两种加载资源的方式：</p>
+      <p><strong>1. 拖拽绑定（静态引用）：</strong> 在编辑器中把 SpriteFrame 拖到组件的 @property 属性上。构建时 Cocos 会自动分析引用关系，把用到的资源打包。如果某个资源没有被任何属性引用，它不会被打包。这相当于 Webpack 的 Tree Shaking。</p>
+      <p><strong>2. 代码动态加载：</strong> 放在 resources 目录下的资源可以运行时加载。这适合"不确定会不会用到"的资源——比如下一关的地图、可选皮肤。</p>
+      <pre>// 动态加载一个 SpriteFrame
+resources.load('textures/hero/spriteFrame', SpriteFrame, (err, spriteFrame) => {
+  if (err) { console.error(err); return }
+  this.getComponent(Sprite).spriteFrame = spriteFrame
+})</pre>
       <div class="tip-box">
-        <strong>Set vs 对象：</strong>用 <code>Set&lt;number&gt;()</code> 管理按键状态比
-        <code>{}</code> 更合适——add/delete/has 语义清晰，且 KeyCode 本身就是 number。
+        <strong>速通提示：</strong> 别把所有资源都放在 resources 里。Cocos 构建时会把 resources 目录<strong>全部打包</strong>（不管用没用），这会让包体积膨胀。核心资源用拖拽绑定，可选资源放 resources。
       </div>
     </ConceptBlock>
 
-    <!-- ============ 触摸事件 ============ -->
-    <ConceptBlock icon="👆" title="触摸输入：为移动端做准备">
-      <p>如果你希望飞机大战在手机上也能玩（或者发布为微信小游戏），触摸事件是必须的：</p>
-
-      <pre><code>import { Component, _decorator, Node, EventTouch, UITransform } from 'cc'
-const { ccclass } = _decorator
-
-@ccclass('TouchInput')
-export class TouchInput extends Component {
-
-  onLoad() {
-    // 监听整个节点的触摸事件
-    this.node.on(Node.EventType.TOUCH_START, this.onTouchStart, this)
-    this.node.on(Node.EventType.TOUCH_MOVE, this.onTouchMove, this)
-    this.node.on(Node.EventType.TOUCH_END, this.onTouchEnd, this)
-  }
-
-  private onTouchStart(e: EventTouch) {
-    const pos = e.getUILocation()  // UI 坐标
-    console.log(`触摸开始: (${pos.x}, ${pos.y})`)
-  }
-
-  private onTouchMove(e: EventTouch) {
-    // getDelta(): 相对上一帧的位移（类比 mouse delta）
-    const delta = e.getDelta()
-    this.node.x += delta.x
-    this.node.y += delta.y
-  }
-
-  private onTouchEnd(e: EventTouch) {
-    console.log('触摸结束')
-  }
-
-  onDestroy() {
-    this.node.off(Node.EventType.TOUCH_START, this.onTouchStart, this)
-    this.node.off(Node.EventType.TOUCH_MOVE, this.onTouchMove, this)
-    this.node.off(Node.EventType.TOUCH_END, this.onTouchEnd, this)
-  }
-}</code></pre>
-
-      <div class="warn-box">
-        <strong>注意：</strong>要让触摸生效，节点必须有 <code>UITransform</code> 组件（大部分 UI
-        节点默认就有）。如果触摸不响应，先检查节点尺寸是否 > 0。
-        <br /><br />
-        本节只涉及<strong>单点触摸</strong>的基础操作。多点触控、双指缩放、手势识别、虚拟摇杆等进阶话题见 <strong>Phase 21（多点触控与手势）</strong>。
-      </div>
-    </ConceptBlock>
-
-    <!-- ============ InputManager ============ -->
-    <ConceptBlock icon="🎮" title="封装 InputManager：统一键盘和触摸">
-      <p>游戏逻辑不应该关心"玩家用的是键盘还是手指"。一个好的 InputManager 对上层提供统一接口：</p>
-
-      <pre><code>// ---- InputManager.ts ----
-import { Component, _decorator, systemEvent, EventKeyboard, KeyCode,
-         Node, EventTouch, view, Vec2, Vec3 } from 'cc'
-const { ccclass } = _decorator
-
-export interface InputState {
-  direction: Vec2     // { x: -1|0|1, y: -1|0|1 }
-  fire: boolean       // 射击键是否按下
-}
-
-@ccclass('InputManager')
-export class InputManager extends Component {
-
-  static instance: InputManager  // 单例
-
-  private _keysDown = new Set&lt;number&gt;()
-  private _touchActive = false
-  private _touchDir = new Vec2()
-  private _fireDown = false
-
-  onLoad() {
-    InputManager.instance = this  // 单例模式
-
-    // 键盘监听
-    systemEvent.on(EventKeyboard.KEY_DOWN, this.onKeyDown, this)
-    systemEvent.on(EventKeyboard.KEY_UP, this.onKeyUp, this)
-
-    // 触摸监听（挂在 Canvas 上接收全屏触摸）
-    this.node.on(Node.EventType.TOUCH_START, this.onTouchStart, this)
-    this.node.on(Node.EventType.TOUCH_MOVE, this.onTouchMove, this)
-    this.node.on(Node.EventType.TOUCH_END, this.onTouchEnd, this)
-  }
-
-  get input(): InputState {
-    const dir = new Vec2()
-
-    // 键盘方向
-    if (this._keysDown.has(KeyCode.ARROW_LEFT)  ||
-        this._keysDown.has(KeyCode.KEY_A))        dir.x -= 1
-    if (this._keysDown.has(KeyCode.ARROW_RIGHT) ||
-        this._keysDown.has(KeyCode.KEY_D))        dir.x += 1
-    if (this._keysDown.has(KeyCode.ARROW_UP)    ||
-        this._keysDown.has(KeyCode.KEY_W))        dir.y += 1
-    if (this._keysDown.has(KeyCode.ARROW_DOWN)  ||
-        this._keysDown.has(KeyCode.KEY_S))        dir.y -= 1
-
-    // 触摸方向覆盖（如果有触摸）
-    if (this._touchActive) {
-      dir.set(this._touchDir)
-    }
-
-    return {
-      direction: dir,
-      fire: this._fireDown ||
-            this._keysDown.has(KeyCode.SPACE) ||
-            this._keysDown.has(KeyCode.KEY_J)
-    }
-  }
-
-  // ---- 键盘回调 ----
-  private onKeyDown(e: EventKeyboard) {
-    this._keysDown.add(e.keyCode)
-  }
-  private onKeyUp(e: EventKeyboard) {
-    this._keysDown.delete(e.keyCode)
-  }
-
-  // ---- 触摸回调 ----
-  private onTouchStart(e: EventTouch) {
-    const x = e.getUILocation().x
-    // 左半屏 = 移动，右半屏 = 射击（移动端常用布局）
-    if (x < view.getVisibleSize().width / 2) {
-      this._touchActive = true
-    } else {
-      this._fireDown = true
-    }
-  }
-
-  private onTouchMove(e: EventTouch) {
-    if (!this._touchActive) return
-    const delta = e.getDelta()
-    this._touchDir.x = delta.x > 10 ? 1 : delta.x < -10 ? -1 : 0
-    this._touchDir.y = delta.y > 10 ? 1 : delta.y < -10 ? -1 : 0
-  }
-
-  private onTouchEnd(e: EventTouch) {
-    this._touchActive = false
-    this._fireDown = false
-    this._touchDir.set(0, 0)
-  }
-
-  onDestroy() {
-    systemEvent.off(EventKeyboard.KEY_DOWN)
-    systemEvent.off(EventKeyboard.KEY_UP)
-    this.node.off(Node.EventType.TOUCH_START)
-    this.node.off(Node.EventType.TOUCH_MOVE)
-    this.node.off(Node.EventType.TOUCH_END)
-  }
-}</code></pre>
-
-      <h3>使用 InputManager</h3>
-      <pre><code>// ---- Player.ts ----
-update(dt: number) {
-  const input = InputManager.instance.input
-
-  // 移动
-  this.node.x += input.direction.x * this.speed * dt
-  this.node.y += input.direction.y * this.speed * dt
-
-  // 射击
-  if (input.fire) {
-    this.tryShoot()
-  }
-
-  // 限制在屏幕内
-  this.clampToScreen()
-}</code></pre>
-
-      <div class="tip-box">
-        <strong>设计原则：</strong>游戏逻辑只依赖
-        <code>InputState</code> 接口，不关心底层是键盘还是触摸。以后加手柄支持，只需要在
-        InputManager 中增加处理，Player 代码不动。
-      </div>
-    </ConceptBlock>
-
-    <!-- ============ 高级输入模式 ============ -->
-    <ConceptBlock icon="⚡" title="高级输入模式：组合键 / 长按 / 双击">
-      <p>飞机大战的操控远不止上下左右。下面是三种常见的进阶输入需求：</p>
-
-      <h3>1. 组合键：斜向移动</h3>
-      <p>
-        玩家同时按住 ↑ 和 → 时，飞机应该向右上移动——速度<strong>不能翻倍</strong>。InputManager 中
-        <code>dir.x</code> 和 <code>dir.y</code> 各自独立，Player 中对方向向量做归一化：
-      </p>
-      <pre><code>// Player.ts —— 斜向移动归一化
-update(dt: number) {
-  const input = InputManager.instance.input
-  const dir = input.direction.clone()
-
-  // 如果同时按下水平和垂直键，归一化防止斜向速度翻倍
-  if (dir.length() > 1) {
-    dir.normalize()
-  }
-
-  this.node.x += dir.x * this.speed * dt
-  this.node.y += dir.y * this.speed * dt
-}</code></pre>
-
-      <h3>2. 长按：蓄力攻击 / 连射</h3>
-      <p>记录按键按下的时刻，在 update 中比较持续时间：</p>
-      <pre><code>// InputManager 中增加长按检测
-private _firePressTime = 0
-private _fireHeld = false
-
-private onKeyDown(e: EventKeyboard) {
-  this._keysDown.add(e.keyCode)
-  if (e.keyCode === KeyCode.SPACE) {
-    this._firePressTime = Date.now()
-    this._fireHeld = true
-  }
-}
-
-private onKeyUp(e: EventKeyboard) {
-  this._keysDown.delete(e.keyCode)
-  if (e.keyCode === KeyCode.SPACE) {
-    this._fireHeld = false
-  }
-}
-
-// 对外暴露：是否长按超过 0.3 秒（用于蓄力判定）
-get isHoldingFire(): boolean {
-  return this._fireHeld &&
-    (Date.now() - this._firePressTime) > 300
-}</code></pre>
-
-      <h3>3. 双击：冲刺 / 闪避</h3>
-      <p>双击检测的核心：两次同方向按键间隔 < 300ms：</p>
-      <pre><code>// Player.ts —— 双击方向键触发冲刺
-private _lastTapTime = 0
-private _lastTapKey = -1
-private _dashCooldown = 0
-
-update(dt: number) {
-  // 检测双击（同一键 300ms 内按两次）
-  for (const key of [
-    KeyCode.ARROW_LEFT, KeyCode.ARROW_RIGHT,
-    KeyCode.ARROW_UP, KeyCode.ARROW_DOWN
-  ]) {
-    if (this.keysDown.has(key) && key !== this._lastTapKey) {
-      const now = Date.now()
-      if (now - this._lastTapTime < 300 && key === this._lastTapKey) {
-        this.doDash(key)  // 触发冲刺
-        this._lastTapTime = 0
-      } else {
-        this._lastTapTime = now
-        this._lastTapKey = key
-      }
-    }
-  }
-}
-
-private doDash(key: KeyCode) {
-  if (this._dashCooldown > 0) return
-  // ... 冲刺逻辑 ...
-}</code></pre>
-
-      <div class="tip-box">
-        <strong>取舍建议：</strong
-        >双击冲刺需要记录额外状态，复杂度不低。对于飞机大战，如果已有武器升级/道具系统，冲刺可以作为<strong>拾取"加速道具"后的能力</strong>，而不是基础操作。评估你的游戏是否需要。
-      </div>
-    </ConceptBlock>
-
-    <!-- ============ 动手练习 ============ -->
-    <ConceptBlock icon="🔨" title="动手练习：可操控的玩家飞机">
-      <p>把本节的知识串起来，实现一个完整的玩家飞机操控：</p>
-
+    <ConceptBlock icon="🔧" title="动手：resources.load 与 loadBundle 实战">
+      <p>理解资源加载最好的方式就是亲手写一遍。打开你的 Cocos 项目，按以下步骤来：</p>
       <ol>
-        <li>创建 Canvas 节点，挂 InputManager 脚本（设为单例）</li>
-        <li>创建 Player 节点 + Sprite（用方块代替飞机也行）</li>
-        <li>Player 脚本中通过 <code>InputManager.instance.input</code> 读取输入</li>
-        <li>方向键/WASD 控制移动，空格键发射子弹</li>
-        <li>限制飞机不能飞出屏幕</li>
+        <li><strong>创建 resources 目录：</strong> 在 assets 下新建一个文件夹叫 <code>resources</code>，把几张测试用的 PNG 丢进去。</li>
+        <li><strong>用 resources.load 动态加载纹理：</strong></li>
       </ol>
+      <pre>import { resources, SpriteFrame, Sprite } from 'cc'
 
-      <h3>屏幕限制参考</h3>
-      <pre><code>private clampToScreen() {
-  const screenSize = view.getVisibleSize()
-  const halfW = screenSize.width / 2
-  const halfH = screenSize.height / 2
+// 动态加载 resources/textures/hero 下的 SpriteFrame
+resources.load('textures/hero/spriteFrame', SpriteFrame, (err, spriteFrame) => {
+  if (err) { console.error('加载失败：', err); return }
+  // 把加载到的 SpriteFrame 挂到当前节点的 Sprite 组件上
+  this.getComponent(Sprite).spriteFrame = spriteFrame
+  console.log('resources.load 成功！')
+})</pre>
+      <ol start="3">
+        <li><strong>用 assetManager.loadBundle 加载整个包：</strong> 在 assets 下新建一个文件夹叫 <code>bundle_test</code>，右键把它设为 Bundle。放进几张图，然后写：</li>
+      </ol>
+      <pre>import { assetManager, SpriteFrame, Sprite } from 'cc'
 
-  // 限制在屏幕内（留一点边距）
-  const margin = 30
-  this.node.x = Math.max(-halfW + margin,
-    Math.min(halfW - margin, this.node.x))
-  this.node.y = Math.max(-halfH + margin,
-    Math.min(halfH - margin, this.node.y))
-}</code></pre>
-
+assetManager.loadBundle('bundle_test', (err, bundle) => {
+  if (err) { console.error('Bundle 加载失败：', err); return }
+  // 从 Bundle 里加载资源
+  bundle.load('some-image/spriteFrame', SpriteFrame, (err2, sf) => {
+    if (err2) { console.error(err2); return }
+    this.getComponent(Sprite).spriteFrame = sf
+  })
+})</pre>
+      <p><strong>对比一下两者的区别：</strong> resources.load 直接从主包加载，适合少量可选资源；loadBundle 把一整组资源打包成独立的 Bundle，可以按需加载和卸载——想象一下你的游戏有 10 个关卡，每个关卡一个 Bundle，玩家打到第 3 关时才加载第 3 关的资源，前两关的可以卸载掉。这才是正经游戏的资源管理方式。</p>
       <div class="tip-box">
-        <strong>完成标准：</strong
-        >玩家飞机能用键盘流畅移动（不会先顿一下才动），空格键能发射子弹。触摸屏上左半屏滑动控制方向，右半屏按住射击。
+        <strong>动手小挑战：</strong> 试试在加载完成后，用 <code>assetManager.getBundle('bundle_test')?.releaseAll()</code> 释放 Bundle，再回到编辑器检查资源是否被卸载了（在调试面板的 Assets 页可以看到引用计数）。
       </div>
     </ConceptBlock>
 
-    <ConceptBlock icon="✅" title="自检清单">
+    <ConceptBlock icon="🔗" title="课外延伸">
       <ul>
-        <li>为什么处理持续移动不能只靠 <code>KEY_DOWN</code> 回调？</li>
-        <li>按键状态表用什么数据结构管理？为什么？</li>
-        <li><code>getDelta()</code> 和 <code>getLocation()</code> 的区别是什么？</li>
-        <li>InputManager 的设计中，为什么要把键盘和触摸的差异屏蔽掉？</li>
-        <li>
-          Cocos 的 <code>systemEvent</code> 和 <code>node.on</code> 有什么不同？分别用于什么场景？
-        </li>
+        <li><strong>Unreal 的软引用：</strong> Unreal 有一个概念叫"软引用"（Soft Reference）——指向一个资源但不阻止它被卸载。Cocos 没有这个机制，但理解它有助于理解为什么资源管理是一个复杂问题。</li>
+        <li><strong>Web 的 ES Module 和 Cocos Bundle：</strong> Cocos 的 Asset Bundle 和 Webpack 的 Code Splitting + dynamic import() 是同一个思路——把资源按需分块加载，减少首屏时间。</li>
       </ul>
+    </ConceptBlock>
+    <ConceptBlock icon="✅" title="自测清单">
+      <ol>
+        <li>如果项目中删除了一个 PNG 的 .meta 文件但 PNG 还在，会发生什么？为什么 .meta 文件必须提交到 Git 而不能像 node_modules 一样 ignore？</li>
+        <li>resources.load 和 assetManager.loadBundle 都能动态加载资源。请用你自己的话描述一个场景：什么情况下用 resources.load 就够了，什么情况下必须上 loadBundle？提示：想想一个 10 关的游戏的包体积。</li>
+        <li>JavaScript 有垃圾回收（GC），用完的对象会自动回收。那为什么游戏引擎还需要手动的 addRef/decRef 引用计数？提示：想想 GPU 纹理——GC 看得到显存里的东西吗？</li>
+      </ol>
     </ConceptBlock>
   </PhaseLayout>
 </template>

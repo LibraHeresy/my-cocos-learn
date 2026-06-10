@@ -1,422 +1,85 @@
 <script setup lang="ts">
 import PhaseLayout from '@/components/PhaseLayout.vue'
 import ConceptBlock from '@/components/ConceptBlock.vue'
-import PixelCanvas from '@/components/PixelCanvas.vue'
 </script>
 
 <template>
-  <PhaseLayout :phase="5" title="帧动画制作" duration="1-2 天">
-    <ConceptBlock icon="🎯" title="学完本节你能做什么">
+  <PhaseLayout :phase="5" title="明暗与体积" duration="1-2 天">
+    <ConceptBlock icon="🧭" title="本节定位">
+      <p>画一个圆——它是平的。在上面加一个亮面、一个暗面——它变成了球。<strong>这就是明暗的魔法：用颜色差异在 2D 平面上制造 3D 的错觉</strong>。本节讲的就是怎么只用 3-4 个颜色把一个平面形状变成立体物体。</p>
+    </ConceptBlock>
+
+    <ConceptBlock icon="💡" title="光从哪来：一个决定，全画面都要遵守">
+      <p>在开始画明暗之前，你只做一个决定——但一旦做了，整张画的所有物体都必须服从。这个决定就是：<strong>光源从哪来？</strong></p>
+      <p>游戏美术有一个不成文的默认约定：光源从左上角打下来，角度大约 45°。这不是物理规律——但你几乎在 90% 的 2D 游戏里都能看到这个约定。为什么是左上？因为大多数玩家是右撇子，视线习惯从左上扫到右下。角色面朝右——亮面在左上方，影子投向右下方——符合视觉流向。</p>
+      <p>一旦你定了光源方向，画面里的每一个物体都必须遵守同一个照明逻辑。如果你画了三个敌机，第一个亮面朝左、第二个亮面朝右、第三个亮面朝上——玩家不会说"光照不一致"，但他们会感觉"画面哪里怪怪的"。这和你在 Vue 组件里给三个卡片用不同的 <code>box-shadow</code> 方向一样——单独看没问题，放在一起就"不协调"。一致性本身就是一种美学。</p>
+
+      <h3>三区域法则：亮面 / 中间调 / 暗面</h3>
+      <p>任何一个被光照到的物体，至少有三个视觉区域：</p>
       <ul>
-        <li>用 <strong>Aseprite</strong> 时间轴和<strong>洋葱皮</strong>工具制作<strong>逐帧动画</strong></li>
-        <li>将 Phase 4 学的运动规律落地——在 <strong>Aseprite</strong> 中实现缓动、<strong>挤压拉伸</strong>、<strong>次级运动</strong></li>
-        <li>制作飞机<strong>爆炸动画</strong>（6-12 帧，参考 Phase 4 的帧数速查表）</li>
-        <li>制作<strong>引擎火焰</strong><strong>循环动画</strong>（4-6 帧）和玩家飞机<strong>待机浮动</strong>动画</li>
-        <li>制作飞机<strong>受击闪烁</strong>效果和道具旋转动画</li>
-        <li>导出 <strong>SpriteSheet</strong>（<strong>雪碧图</strong>）导入 <strong>Cocos</strong> 使用</li>
+        <li><strong>亮面（Highlight）：</strong> 最靠近光源的面。在像素画里用亮色（主色加明度 20-30%、降饱和度 10-20%）填充。注意——高光不是整个亮面，而是亮面里最亮的那一小块。比如球体的高光是一个小圆斑；立方体的高光是面向光源的整个面。</li>
+        <li><strong>中间调（Midtone）：</strong> 物体的"本来的颜色"——既不完全面向光源也不完全背向光源的面。用主色填充。</li>
+        <li><strong>暗面 / 阴影（Shadow）：</strong> 背向光源的面。用暗色（主色降明度 20-30%、降饱和度 10-15%）填充。注意——<strong>不要用纯黑做阴影</strong>。现实世界的阴影从来不是纯黑的——它是深蓝、深紫或深灰，取决于环境光的颜色。纯黑阴影会让画面看起来"脏"。</li>
       </ul>
+      <p>这三个区域对应了你在 CSS 设计系统里定义的 <code>--color-primary-light</code>、<code>--color-primary</code>、<code>--color-primary-dark</code>。一模一样的三级结构。</p>
     </ConceptBlock>
 
-    <ConceptBlock icon="⏱️" title="Aseprite 时间轴入门">
-      <p>Aseprite 不仅是像素画工具，还是<strong>像素动画编辑器</strong>。时间轴在底部面板。前端同学可以把时间轴理解为<strong>CSS @keyframes 的视觉版</strong>——每个帧就是一个 keyframe stop，帧之间的过渡就是你手动控制的 animation-timing-function。</p>
+    <ConceptBlock icon="🔮" title="球体 vs 立方体：两种明暗模式揭示材质的本质">
+      <p>现在我们来对比两个形状——这不是枯燥的美术理论，这是你理解游戏里一切物体明暗的基础。</p>
 
-      <h3>核心概念</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>概念</th>
-            <th>说明</th>
-            <th>前端类比</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>帧（Frame）</strong></td>
-            <td>动画的一个静态画面</td>
-            <td>CSS @keyframes 中的一个百分比 stop</td>
-          </tr>
-          <tr>
-            <td><strong>图层（Layer）</strong></td>
-            <td>每一帧内都有相同的图层结构</td>
-            <td>Figma/PS 的图层面板</td>
-          </tr>
-          <tr>
-            <td><strong>洋葱皮（Onion Skin）</strong></td>
-            <td>同时看到前后几帧的虚影</td>
-            <td>Git diff 的可视化——看到"前后帧的差异"</td>
-          </tr>
-          <tr>
-            <td><strong>帧速率（Frame Rate）</strong></td>
-            <td>每秒播放几帧</td>
-            <td>FPS</td>
-          </tr>
-          <tr>
-            <td><strong>标签（Tag）</strong></td>
-            <td>给一段帧序列命名（如"爆炸""待机"）</td>
-            <td>animation-name: "explosion"</td>
-          </tr>
-        </tbody>
-      </table>
+      <h3>球体：渐变过渡</h3>
+      <p>球体的表面是连续的曲面——没有"面"和"面"之间的硬边界。所以从亮面到暗面的过渡是渐变的。在像素画中，你用 3-4 层颜色来表达这种渐变：最亮色（高光小圆斑）→ 亮色（亮面区域）→ 主色（中间调）→ 暗色（暗面区域）。每一层的形状近似于同心圆环——外圈暗，内圈亮。这个渐变感就是你做 CSS <code>radial-gradient</code> 时的圆形渐变。</p>
+      <p>高光的位置决定了材质。金属的高光：小而亮，边界清晰（因为金属表面光滑，反射集中）。皮肤的高光：大而柔，边界模糊（因为皮肤是散射表面）。在像素画里你用高光色块的大小来表达——1-2 像素大小的高光 = 金属、玻璃；3-5 像素的高光 = 布料、皮肤、木头。</p>
 
-      <h3>基础操作</h3>
-      <ul>
-        <li><strong>Alt+N</strong>：插入新帧（复制当前帧内容）</li>
-        <li><strong>Alt+B</strong>：插入空白新帧</li>
-        <li><strong>F</strong> 键：跳转到下一帧 / 上一帧</li>
-        <li><strong>Enter</strong>：播放/停止动画预览</li>
-        <li><strong>拖动帧</strong>：调整帧顺序</li>
-        <li><strong>右键帧 → Frame Properties</strong>：设置该帧持续时间（毫秒）——相当于 CSS 的 animation-duration 针对单个 keyframe stop</li>
-      </ul>
+      <h3>立方体：面与面的硬切</h3>
+      <p>立方体就好理解了——它有 3 个可见的面（上、左、右）。光源在左上，所以上面最亮，左侧中间，右侧最暗。三个面用三种颜色平涂——没有渐变，因为面与面的转折是硬的。这和球体形成了鲜明对比：<strong>曲面的明暗靠渐变，平面的明暗靠色块</strong>。</p>
+      <p>在像素画中画角色时，你要判断每个身体部位是"更像球体"还是"更像立方体"。头部 → 球体式渐变。躯干 → 介于两者之间。机械装甲块 → 立方体式面切。判断方式对了，立体感自然就出来了。</p>
 
-      <div class="tip-box">
-        <strong>帧速率建议：</strong>像素动画通常用 <strong>12 FPS</strong>（每秒 12
-        帧）。太快看不出细节（浪费绘制精力），太慢动作不流畅。爆炸可以稍快（15
-        FPS），引擎火焰可以稍慢（8-10 FPS）。
-      </div>
+      <h3>环境光遮蔽（AO）："面与面挨着的地方总是更暗"</h3>
+      <p>还有一个容易被忽略的现象：两个物体挨着的地方总是比周围更暗——因为光线进不去。比如角色的下巴和脖子之间、手臂和身体之间、飞机机翼和机身的连接处。在像素画里，你只需要在这些"夹缝"位置加 1-2 像素的暗色（比正常阴影还暗一点），立体感就立竿见影地增强了。这个技巧叫做 <strong>Ambient Occlusion（环境光遮蔽）</strong>，是 3D 渲染中计算量很大的效果——但在像素画里，你只需要手放几个暗像素，就完成了。</p>
     </ConceptBlock>
 
-    <ConceptBlock icon="🧅" title="洋葱皮——动画流畅的核心">
-      <p>
-        洋葱皮是像素动画师<strong>最重要的工具</strong>。它让你在画当前帧时看到前后帧的半透明虚影。前端直觉：这就像在 Git 里看 diff——你知道上一帧和下一帧长什么样，才能决定当前帧应该画在什么位置。
-      </p>
-
-      <pre><code>当前帧：    ●   ← 你正在画这一帧
-前一帧虚影： ○   ← 红色半透明显示
-后一帧虚影： ◌   ← 蓝色半透明显示
-
-看到三者叠加 → 你就知道当前帧应该画在什么位置才能让动画流畅</code></pre>
-
-      <h3>洋葱皮设置</h3>
-      <ul>
-        <li>时间轴面板顶部 → 洋葱皮图标（像两层叠起来的纸）→ 点击开启</li>
-        <li>调节显示前后几帧（默认前后各 2 帧）</li>
-        <li>红色 tint = 前帧，蓝色 tint = 后帧</li>
-        <li>快捷键 <strong>Alt+O</strong> 快速开关洋葱皮</li>
-      </ul>
-    </ConceptBlock>
-
-    <ConceptBlock icon="💥" title="制作爆炸动画">
-      <p>爆炸是飞机大战中<strong>最重要的动画</strong>——每次击杀敌机都要播放。根据 Phase 4 的帧数标准，小型爆炸 4-6 帧及格、8-10 帧流畅。下面以 6 帧为例演示完整工作流：</p>
-
-      <h3>爆炸动画的阶段</h3>
+    <ConceptBlock icon="🔧" title="动手：画一个球和一个方块，然后对比">
+      <p>打开 Aseprite，新建 32×32 的画布。我们要画两个东西来对比明暗模式。</p>
       <ol>
-        <li><strong>爆发阶段（帧 1-2）：</strong>从中心向外快速扩张，亮黄/白色为主，每帧 50ms（快）</li>
-        <li><strong>燃烧阶段（帧 3-4）：</strong>火焰散开，橙/红色为主，碎片开始飞出，每帧 80ms</li>
-        <li><strong>消散阶段（帧 5-6）：</strong>火焰变暗、缩小，灰色烟尘升腾，每帧 120ms（慢）</li>
-      </ol>
-
-      <h3>操作步骤</h3>
-      <ol>
-        <li>新建 <strong>32×32</strong> 画布，Alt+B 插入 6 帧空白帧</li>
-        <li>开启洋葱皮（前后各 2 帧）</li>
-        <li>帧 1：在中心画一个 4×4 的亮黄色方块（爆炸起点），Duration 设 50ms</li>
-        <li>帧 2：黄块扩大并加入橙色边缘，Duration 设 50ms</li>
-        <li>帧 3-4：圆圈扩大碎裂，加入红色和深色碎块，Duration 设 80ms/帧</li>
-        <li>帧 5-6：火焰缩小，碎块减少，颜色变暗转灰，Duration 设 120ms/帧</li>
-        <li>按 Enter 预览动画，调整不满意的帧</li>
-      </ol>
-
-      <p>爆炸动画色彩时间线：</p>
-      <PixelCanvas
-        :grid="[
-          ['#ffffff', '#ffffff', '#ffee44', '#ffee44', '#ff8800', '#ff8800'],
-          ['#ff8800', '#ff8800', '#ff8800', '#ff8800', '#ee2200', '#ee2200', '#881100', '#881100'],
-          ['#881100', '#881100', '#664444', '#664444', '#888888', '#888888'],
-          ['#888888', '#888888', '#bbbbbb', '#bbbbbb'],
-        ]"
-        :scale="22"
-      />
-      <p class="px-desc">
-        帧1-2：白 → 黄 → 橙（50ms/帧） ｜ 帧3-4：橙 → 红 → 深红（80ms/帧） ｜ 帧5-6：深红 → 灰 → 透明（120ms/帧）
-      </p>
-
-      <div class="warn-box">
-        <strong>回忆 Phase 4 的关键原则：</strong>爆炸帧不要平均分配时长！前 1/3 帧占 70% 视觉冲击力，Duration 要短；后 2/3 帧是消散过程，Duration 要长。新手最容易搞反。
-      </div>
-    </ConceptBlock>
-
-    <ConceptBlock icon="🔥" title="制作引擎火焰动画（4 帧循环）">
-      <p>引擎火焰是<strong>循环动画</strong>——4 帧无限循环播放，帧之间要有微妙的形状变化。Phase 4 讲过：火焰只需 3-4 帧就及格，因为火焰是湍流、天然不规则，肉眼接受"跳跃感"。</p>
-
-      <ol>
-        <li>新建 <strong>8×12</strong> 画布（只画火焰部分，之后合成到飞机上）</li>
-        <li>4 帧的火焰形状依次变化：长→短→中→短（模拟火焰跳动）</li>
-        <li>颜色：白（核心）→ 黄 → 橙 → 红（边缘），明暗差要大</li>
-        <li>每帧底部（引擎喷口端）保持一致，顶部（火焰尖端）上下摆动</li>
-      </ol>
-
-      <div class="px-compare px-compare-end">
-        <div>
-          <p class="px-label">帧1（长）</p>
-          <PixelCanvas
-            :grid="[
-              ['', '', '', '#ffffff', '#ffffff', '', '', ''],
-              ['', '', '#ffffff', '#ffee44', '#ffee44', '#ffffff', '', ''],
-              ['', '#ffffff', '#ffee44', '#ffee44', '#ffee44', '#ffee44', '#ffffff', ''],
-              ['', '#ffffff', '#ffee44', '#ff8800', '#ff8800', '#ffee44', '#ffffff', ''],
-              [
-                '#ffffff',
-                '#ffee44',
-                '#ff8800',
-                '#ff8800',
-                '#ff8800',
-                '#ff8800',
-                '#ffee44',
-                '#ffffff',
-              ],
-              [
-                '#ffffff',
-                '#ffee44',
-                '#ff8800',
-                '#dd2200',
-                '#dd2200',
-                '#ff8800',
-                '#ffee44',
-                '#ffffff',
-              ],
-              [
-                '#ffee44',
-                '#ff8800',
-                '#dd2200',
-                '#dd2200',
-                '#dd2200',
-                '#dd2200',
-                '#ff8800',
-                '#ffee44',
-              ],
-              [
-                '#666666',
-                '#666666',
-                '#666666',
-                '#666666',
-                '#666666',
-                '#666666',
-                '#666666',
-                '#666666',
-              ],
-            ]"
-            :scale="13"
-          />
-        </div>
-        <div>
-          <p class="px-label">帧2（短）</p>
-          <PixelCanvas
-            :grid="[
-              ['', '', '', '#ffffff', '#ffffff', '', '', ''],
-              ['', '', '#ffffff', '#ffee44', '#ffee44', '#ffffff', '', ''],
-              ['', '#ffffff', '#ffee44', '#ff8800', '#ff8800', '#ffee44', '#ffffff', ''],
-              [
-                '#ffffff',
-                '#ffee44',
-                '#ff8800',
-                '#dd2200',
-                '#dd2200',
-                '#ff8800',
-                '#ffee44',
-                '#ffffff',
-              ],
-              [
-                '#666666',
-                '#666666',
-                '#666666',
-                '#666666',
-                '#666666',
-                '#666666',
-                '#666666',
-                '#666666',
-              ],
-            ]"
-            :scale="13"
-          />
-        </div>
-        <div>
-          <p class="px-label">帧3（中）</p>
-          <PixelCanvas
-            :grid="[
-              ['', '', '#ffffff', '#ffffff', '', '', '', ''],
-              ['', '#ffffff', '#ffee44', '#ffee44', '#ffffff', '', '', ''],
-              ['', '#ffffff', '#ffee44', '#ff8800', '#ff8800', '#ffee44', '#ffffff', ''],
-              [
-                '#ffffff',
-                '#ffee44',
-                '#ff8800',
-                '#ff8800',
-                '#ff8800',
-                '#ff8800',
-                '#ffee44',
-                '#ffffff',
-              ],
-              [
-                '#ffffff',
-                '#ffee44',
-                '#ff8800',
-                '#dd2200',
-                '#dd2200',
-                '#ff8800',
-                '#ffee44',
-                '#ffffff',
-              ],
-              [
-                '#666666',
-                '#666666',
-                '#666666',
-                '#666666',
-                '#666666',
-                '#666666',
-                '#666666',
-                '#666666',
-              ],
-            ]"
-            :scale="13"
-          />
-        </div>
-        <div>
-          <p class="px-label">帧4（短）</p>
-          <PixelCanvas
-            :grid="[
-              ['', '', '#ffffff', '#ffffff', '', '', '', ''],
-              ['', '#ffffff', '#ffee44', '#ffee44', '#ffffff', '', '', ''],
-              ['#ffffff', '#ffee44', '#ff8800', '#ff8800', '#ffee44', '#ffffff', '', ''],
-              [
-                '#ffffff',
-                '#ffee44',
-                '#ff8800',
-                '#dd2200',
-                '#dd2200',
-                '#ff8800',
-                '#ffee44',
-                '#ffffff',
-              ],
-              [
-                '#666666',
-                '#666666',
-                '#666666',
-                '#666666',
-                '#666666',
-                '#666666',
-                '#666666',
-                '#666666',
-              ],
-            ]"
-            :scale="13"
-          />
-        </div>
-      </div>
-      <p class="px-desc">
-        白（核心）→ 黄 → 橙 → 红（边缘） ｜ 底部深灰为引擎喷口 ｜ 帧1-4 长→短→中→短循环
-      </p>
-    </ConceptBlock>
-
-    <ConceptBlock icon="🛩️" title="玩家飞机动画集">
-      <h3>待机浮动动画（4-6 帧，循环）</h3>
-      <p>飞机停在原地时上下微微浮动——运用 Phase 4 的<strong>缓入缓出</strong>原理，运动幅度很小（2-3 像素），但让画面有生命力：</p>
-      <ol>
-        <li>在 Aseprite 中新建 4-6 帧（从玩家飞机的静态图开始，Alt+N 逐帧复制）</li>
-        <li>帧 1→2→3：飞机整体向上移动 0→1→2 像素（缓出——加速向上）</li>
-        <li>帧 4→5→6：飞机整体向下移动 2→1→0 像素（缓入——减速回落）</li>
-        <li>注意：引擎火焰的上下位移比机身大一点（次级运动——Phase 4 的火焰滞后原则）</li>
-      </ol>
-
-      <h3>移动倾斜动画（2-3 帧过渡）</h3>
-      <p>飞机左右移动时，机身向移动方向微微倾斜——给玩家提供<strong>视觉反馈</strong>：</p>
-      <ul>
-        <li>左移：机身向左倾斜 5-10 度（帧 1：正常 → 帧 2：左倾）</li>
-        <li>右移：机身向右倾斜 5-10 度</li>
-        <li>不动：回归正常角度</li>
-        <li>简化方案：不真的旋转像素（会模糊），而是在倾斜方向多偏移 1-2 列像素</li>
-      </ul>
-
-      <div class="tip-box">
-        <strong>Cocos 替代方案：</strong>如果不想手绘倾斜帧，可以在 Cocos 中通过
-        <code>node.angle</code> 属性直接旋转飞机节点，配合 cc.tween
-        做平滑过渡。像素画旋转可能会有锯齿，试试看效果。这也是 Phase 4 "逐帧 vs 代码"决策矩阵的实际应用。
-      </div>
-    </ConceptBlock>
-
-    <ConceptBlock icon="✨" title="受击闪烁与道具动画">
-      <h3>受击闪烁（Hit Flash）</h3>
-      <p>飞机中弹时短暂全白——Phase 4 帧数表推荐的 2 帧重复 3 次方案：</p>
-      <ol>
-        <li>在飞机图层的<strong>最上面</strong>新增一个"受击白膜"图层</li>
-        <li>用白色填充飞机的轮廓（和飞机大小相同，全白）</li>
-        <li>默认隐藏该图层；需要闪烁时显示 1-2 帧</li>
-        <li>导出时作为独立帧：帧序列中 1 帧白膜 → 1 帧正常 → 1 帧白膜 → 1 帧正常</li>
-      </ol>
-
-      <div class="tip-box">
-        <strong>Cocos 替代方案：</strong>在代码中设置
-        <code>sprite.color = Color.WHITE</code>（变白），2
-        帧后再设置回去。比手绘白膜更省事，适合快速原型。
-      </div>
-
-      <h3>道具旋转/浮动动画（4-8 帧，循环）</h3>
-      <p>掉落中的道具不能静止——旋转或弹跳让玩家注意到它们：</p>
-      <ul>
-        <li>
-          <strong>弹跳：</strong>道具图标上下弹跳（4 帧循环：正常→上升→最高点→下降），运用 Phase 4 的挤压拉伸——触地时加 1 帧压缩
+        <li><strong>画一个 16×16 的球：</strong>
+          <ul>
+            <li>用圆形工具（U）在画布左半部分画一个直径 16px 的圆圈轮廓（深色）。</li>
+            <li>确定光源方向——我们就用经典的左上 45°。</li>
+            <li>暗色（最暗的一层颜色）填充右下方的弧区——大约占球体的 1/3。</li>
+            <li>中间调（主色）填充球体的中央区域——大约占 1/3。</li>
+            <li>亮色（高光色）填充左上方区域——大约占 1/3。</li>
+            <li>最亮色（高光点）在左上角最靠光源的位置，点 2-3 像素的一个小簇。</li>
+            <li>在最底部（球和地面的交界）加 1-2 像素的极暗色做 AO 效果。</li>
+          </ul>
         </li>
-        <li><strong>闪光：</strong>道具周围画一圈星星/光点（2-4 像素），在 4 帧中轮流亮灭</li>
-        <li><strong>旋转：</strong>菱形道具每 4 帧旋转 90°（刚好压平 4 个角），形成旋转视觉效果</li>
-      </ul>
-    </ConceptBlock>
-
-    <ConceptBlock icon="📤" title="导出 SpriteSheet 到 Cocos">
-      <p>
-        画完动画后，需要导出为<strong>雪碧图（SpriteSheet）</strong>——一张包含所有帧的大图，每帧等距排列。这就像前端 Webpack 把多张小图拼成雪碧图减少 HTTP 请求——原理完全一致。
-      </p>
-
-      <h3>Aseprite 导出步骤</h3>
-      <ol>
-        <li>File → Export Sprite Sheet</li>
-        <li>
-          Layout：选择 <strong>Horizontal Strip</strong>（水平排列）或
-          <strong>Grid</strong>（网格排列，帧多时用）
+        <li><strong>画一个 16×16 的立方体：</strong>
+          <ul>
+            <li>在画布右半部分，用深色画一个立方体的轮廓线——上面是一个菱形（顶面），下面是两个平行四边形（左侧面和右侧面）。</li>
+            <li>顶面 → 用最亮色填充（正对光源）。</li>
+            <li>左侧面 → 用中间调填充（半对光源）。</li>
+            <li>右侧面 → 用暗色填充（背对光源）。</li>
+            <li>三条棱线保留深色——面与面的边界清晰保留，不要柔化。</li>
+          </ul>
         </li>
-        <li>勾选 <strong>Trim</strong>（裁剪空白边缘，减小文件体积）</li>
-        <li>Output File：选择导出路径</li>
-        <li>点击 Export</li>
+        <li><strong>对比观察：</strong> 球体的明暗是柔软的渐变——你甚至能看到"过渡色像素"在亮面和暗面之间形成一圈一圈的环。立方体的明暗是硬朗的切面——面与面之间没有渐变，就是一个颜色直接跳到另一个颜色。这就是曲面 vs 平面的本质区别。把这个感受记在心里——之后画角色的头部（曲面）和飞机机翼（平面）时，你就能判断该用哪种明暗模式。</li>
       </ol>
-
-      <h3>放入 Cocos 项目</h3>
-      <ol>
-        <li>把导出的 PNG 放到 <code>assets/textures/</code> 目录下</li>
-        <li>Cocos 会自动识别为 SpriteFrame 序列</li>
-        <li>Phase 6 会详细讲 Auto Atlas 合批和纹理配置——现在先手动导入，后续统一优化</li>
-        <li>在代码中用 FrameAnimator 脚本播放</li>
-      </ol>
-
-      <div class="warn-box">
-        <strong>注意：</strong>如果动画帧数较多（8+ 帧），不要导出为单张巨大的长条图。用 Grid
-        布局（比如 4×4 网格）更紧凑，也方便 Cocos 的 Atlas 处理。
-      </div>
     </ConceptBlock>
 
-    <ConceptBlock icon="🔨" title="动手练习：完整的一个飞机爆炸">
-      <p>综合本节所学，完成以下练习：</p>
-      <ol>
-        <li>运用 Phase 4 的帧数速查表和帧时长分配原则，画一个 <strong>6 帧</strong>爆炸动画（32×32），每帧 Duration 按阶段正确设置</li>
-        <li>画一个 <strong>4 帧</strong>引擎火焰动画（8×12），确保明暗差大、循环流畅</li>
-        <li>运用 Phase 4 的次级运动原理，给引擎火焰加上滞后效果（火焰图层独立于机身图层）</li>
-        <li>两套动画分别导出为 SpriteSheet PNG</li>
-        <li>把导出的 PNG 放入 Cocos 项目，用脚本播放</li>
-      </ol>
-
-      <div class="tip-box">
-        <strong>完成标准：</strong>在 Cocos 游戏中：敌机被子弹击中时播放爆炸动画（帧时长不均分、有节奏感），动画结束后自动回收敌机节点。引擎火焰 4 帧循环播放，火焰有独立于机身的次级运动。Phase 4 的运动规律在本节得到了具体落地。
-      </div>
-    </ConceptBlock>
-
-    <ConceptBlock icon="✅" title="自检清单">
+    <ConceptBlock icon="🔗" title="课外延伸">
       <ul>
-        <li>Aseprite 时间轴中，新帧（Alt+N）和空白新帧（Alt+B）的区别是什么？</li>
-        <li>洋葱皮是干什么的？红色和蓝色虚影分别代表什么？为什么说它像 Git diff？</li>
-        <li>"缓入缓出"在 Aseprite 中怎么实现？每帧的 Duration 怎么设置才符合 Phase 4 的原则？</li>
-        <li>爆炸动画分为几个阶段？每个阶段多少帧、什么颜色、什么 Duration？为什么不能平均分配？</li>
-        <li>循环动画（如引擎火焰）的帧数为什么可以很少？Phase 4 的"3 帧不卡"原理是什么？</li>
-        <li>待机浮动动画中，引擎火焰的位移为什么和机身不一样？这体现了 Phase 4 的什么原理？</li>
-        <li>受击闪烁有哪两种实现方式？各有什么优缺点？这和 Phase 4 "逐帧 vs 代码"的哪个判断标准对应？</li>
-        <li>导出 SpriteSheet 时，Horizontal Strip 和 Grid 布局各自适合什么场景？</li>
+        <li><strong>伦勃朗光的像素画应用：</strong> 17 世纪的荷兰画家伦勃朗以"三角光"闻名——角色一侧脸颊上有一个倒三角形的亮区，其余部分浸入暗影。这个 400 年前的布光技巧在像素画角色设计中完全适用。当你在限制的像素数量内想表达角色面部的立体感时——在颧骨位置点 2 像素的亮色三角形，面部瞬间立体。这不是"古典美学附庸风雅"——这是几百年验证过的最好用的视觉技巧之一。</li>
+        <li><strong>为什么暗部饱和度要低于亮部：</strong> 这个经验法则不止是美术审美——它确实有物理基础。光的衰减不仅是强度衰减（变暗），还包括光谱展宽（颜色变"不纯"）。一个红苹果的暗面接收到的光主要是环境散射光（各种颜色的混合），而不是直射光（纯白色光）。环境散射光把颜色"冲淡"了——所以暗面不仅是暗红，而且是偏灰的暗红。像素画里你通过降低暗部的饱和度来模拟这个物理现象，画面立刻从"塑料感"升级为"自然感"。</li>
+        <li><strong>AO 在像素画中的低成本高回报：</strong> 环境光遮蔽在 3D 游戏中需要昂贵的实时计算（SSAO/HBAO），但在像素画里它的成本是零——只需要在"两个物体挨着的地方"加 1-2 像素深色。角色腋窝、脖子下方、飞机引擎和机身的接缝——每一处花了 2 像素的 AO，观众不会注意到它，但会注意到整个画面"看着对了"。好的 AO 是隐形的。</li>
       </ul>
+    </ConceptBlock>
+
+    <ConceptBlock icon="✅" title="自测清单">
+      <ol>
+        <li>球体和立方体的明暗表现方式为什么不同？用你自己的话解释——如果能联系到曲面物体和平面物体在光照下的物理差异就更好了。</li>
+        <li>高光的大小和锐利度怎么影响观众对材质的判断？试着举例：金属的高光是什么样的？皮肤的高光是什么样的？</li>
+        <li>为什么"把所有阴影都画成纯黑色"是错误的？从物理和视觉两个角度解释。</li>
+      </ol>
     </ConceptBlock>
   </PhaseLayout>
 </template>

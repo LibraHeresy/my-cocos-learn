@@ -14,6 +14,19 @@ const blockRef = ref<HTMLElement | null>(null)
 onMounted(() => {
   const root = blockRef.value
   if (!root) return
+
+  // 自带动画：IntersectionObserver 添加 .revealed
+  const observer = new IntersectionObserver(
+    ([entry]) => {
+      if (entry.isIntersecting) {
+        root.classList.add('revealed')
+        observer.unobserve(root)
+      }
+    },
+    { threshold: 0.08 }
+  )
+  observer.observe(root)
+
   root.querySelectorAll('pre').forEach((pre) => {
     if (pre.querySelector('.copy-btn')) return
 

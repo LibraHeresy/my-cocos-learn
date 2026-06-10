@@ -5,7 +5,7 @@ describe('makePhaseRoutes', () => {
   it('generates correct number of routes', () => {
     expect(makePhaseRoutes('cocos', 3)).toHaveLength(3)
     expect(makePhaseRoutes('art', 1)).toHaveLength(1)
-    expect(makePhaseRoutes('audio', 7)).toHaveLength(7)
+    expect(makePhaseRoutes('audio', 12)).toHaveLength(12)
   })
 
   it('generates correct path and name', () => {
@@ -23,7 +23,6 @@ describe('makePhaseRoutes', () => {
 
   it('returns empty array for count 0', () => {
     expect(makePhaseRoutes('cocos', 0)).toHaveLength(0)
-    expect(makePhaseRoutes('cocos', 0)).toEqual([])
   })
 
   it('each route has a component function', () => {
