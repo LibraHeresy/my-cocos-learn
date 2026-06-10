@@ -31,6 +31,12 @@ this.node.on(Input.EventType.TOUCH_MOVE, (e: EventTouch) => {
 }, this)
 this.node.on(Input.EventType.TOUCH_END, this.onTouchEnd, this)</pre>
       <p>多点触控的关键是追踪 Touch ID——每个手指有一个唯一 ID，通过 <code>event.getID()</code> 区分。如果两个手指同时按，Touch ID 分别是 0 和 1。</p>
+      <div class="tip-box">
+        <strong>前端视角：事件传播模型完全一致。</strong> Cocos 的触摸事件和 DOM 事件用的是同一套传播模型——捕获阶段（capture）、目标阶段（target）、冒泡阶段（bubble）。如果你在前端用过 <code>addEventListener(el, handler, { capture: true })</code>，Cocos 里事件的传播方向和拦截逻辑你基本可以无缝迁移。连 <code>event.stopPropagation()</code> 这种 API 都存在。
+      </div>
+      <div class="tip-box">
+        <strong>前端视角：Pointer Events API。</strong> 如果你用过 W3C Pointer Events（<code>pointerdown</code> / <code>pointermove</code> / <code>pointerup</code>），Cocos 的多点触控模型几乎一模一样：每个 touch 有一个唯一 ID（<code>e.getID()</code> 等价于 <code>e.pointerId</code>），位移增量（<code>getUIDelta()</code> 等价于 <code>e.movementX/Y</code>）。区别只是 Pointer Events 把鼠标和触摸统一成一个接口，Cocos 则把键盘和触摸分开处理。
+      </div>
     </ConceptBlock>
 
     <ConceptBlock icon="🕹️" title="虚拟摇杆：触屏上的 D-Pad">
@@ -50,6 +56,9 @@ onKeyDown(e: EventKeyboard) {
     this.inputBuffer.shift()
   }
 }</pre>
+      <div class="tip-box">
+        <strong>前端视角：防抖与节流。</strong> 前端处理 scroll/resize/input 事件时用 debounce 和 throttle 来控制执行频率——别每个像素都处理，缓冲一下再批量执行。格斗游戏的输入缓冲也是这个思路：别每一帧都立刻响应原始输入，存起来看时机再释放。同一个抽象——"不要对原始事件流一对一反应，用策略缓冲处理"——在游戏和 Web 前端中各自换了个名字而已。
+      </div>
     </ConceptBlock>
 
     <ConceptBlock icon="🔧" title="动手：同时支持键盘和触摸双输入">

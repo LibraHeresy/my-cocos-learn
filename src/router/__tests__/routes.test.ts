@@ -1,32 +1,61 @@
 import { describe, it, expect } from 'vitest'
 import { makePhaseRoutes } from '@/router/routes'
 
+// Phase counts per PLAN.md — if these change, PLAN.md must be updated too
+const PLAN_COUNTS = { cocos: 25, art: 14, audio: 12, engineering: 16 } as const
+
 describe('makePhaseRoutes', () => {
-  it('generates correct number of routes', () => {
-    expect(makePhaseRoutes('cocos', 3)).toHaveLength(3)
-    expect(makePhaseRoutes('art', 1)).toHaveLength(1)
-    expect(makePhaseRoutes('audio', 12)).toHaveLength(12)
+  it('generates correct number of routes for all courses matching PLAN.md', () => {
+    expect(makePhaseRoutes('cocos', PLAN_COUNTS.cocos)).toHaveLength(25)
+    expect(makePhaseRoutes('art', PLAN_COUNTS.art)).toHaveLength(14)
+    expect(makePhaseRoutes('audio', PLAN_COUNTS.audio)).toHaveLength(12)
+    expect(makePhaseRoutes('engineering', PLAN_COUNTS.engineering)).toHaveLength(16)
   })
 
-  it('generates correct path and name', () => {
+  it('total phase count across all courses is 67', () => {
+    const total =
+      makePhaseRoutes('cocos', PLAN_COUNTS.cocos).length +
+      makePhaseRoutes('art', PLAN_COUNTS.art).length +
+      makePhaseRoutes('audio', PLAN_COUNTS.audio).length +
+      makePhaseRoutes('engineering', PLAN_COUNTS.engineering).length
+    expect(total).toBe(67)
+  })
+
+  it('generates correct path and name format', () => {
     const routes = makePhaseRoutes('cocos', 3)
     expect(routes[0]).toMatchObject({ path: '/cocos/phase/1', name: 'cocos-phase1' })
     expect(routes[1]).toMatchObject({ path: '/cocos/phase/2', name: 'cocos-phase2' })
     expect(routes[2]).toMatchObject({ path: '/cocos/phase/3', name: 'cocos-phase3' })
   })
 
-  it('works for engineering course', () => {
-    const routes = makePhaseRoutes('engineering', 2)
-    expect(routes[0].path).toBe('/engineering/phase/1')
-    expect(routes[0].name).toBe('engineering-phase1')
+  it('works for all course path prefixes', () => {
+    expect(makePhaseRoutes('art', 1)[0].path).toBe('/art/phase/1')
+    expect(makePhaseRoutes('audio', 1)[0].path).toBe('/audio/phase/1')
+    expect(makePhaseRoutes('engineering', 1)[0].path).toBe('/engineering/phase/1')
   })
 
   it('returns empty array for count 0', () => {
-    expect(makePhaseRoutes('cocos', 0)).toHaveLength(0)
+    expect(makePhaseRoutes('cocos', 0)).toEqual([])
   })
 
-  it('each route has a component function', () => {
+  it('each generated route has a lazy component function', () => {
     const routes = makePhaseRoutes('cocos', 1)
-    expect(routes[0].component).toBeDefined()
+    expect(routes[0].component).toBeInstanceOf(Function)
+    // 验证是动态 import（返回 Promise 的工厂函数）
+    expect(typeof routes[0].component).toBe('function')
+  })
+
+  it('phase numbers start at 1 and are sequential', () => {
+    const routes = makePhaseRoutes('cocos', 5)
+    const nums = routes.map(r => parseInt(r.path.split('/').pop()!))
+    expect(nums).toEqual([1, 2, 3, 4, 5])
+  })
+
+  it('phase names use correct format: course-phaseN', () => {
+    const routes = makePhaseRoutes('cocos', 3)
+    expect(routes.map(r => r.name)).toEqual(['cocos-phase1', 'cocos-phase2', 'cocos-phase3'])
+
+    const artRoutes = makePhaseRoutes('art', 2)
+    expect(artRoutes.map(r => r.name)).toEqual(['art-phase1', 'art-phase2'])
   })
 })

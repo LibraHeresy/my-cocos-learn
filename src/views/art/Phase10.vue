@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import PhaseLayout from '@/components/PhaseLayout.vue'
 import ConceptBlock from '@/components/ConceptBlock.vue'
 </script>
@@ -6,13 +6,14 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
 <template>
   <PhaseLayout :phase="10" title="帧动画实战（下）" duration="2 天">
     <ConceptBlock icon="🧭" title="本节定位">
-      <p>角色动起来了——但特效呢？引擎火焰、爆炸碎片、受击闪烁——这些不是"附加内容"，它们是玩家<strong>感受</strong>到"我打中了"的媒介。本节做三个特效动画：爆炸、引擎火焰、受击闪烁。</p>
+      <p>你打中了一个敌机。你怎么知道的？因为屏幕上出现了爆炸特效。如果特效没出现——你会怀疑"打中了吗？"，会再按一次攻击键，会犹豫那一帧。好的 VFX 不是"好看"——是<strong>"让玩家在 50ms 内确认自己打中了"</strong>。这和按钮点击后的 <code>:active</code> 反馈是同一种东西。本节做三个特效动画：爆炸、引擎火焰、受击闪烁。</p>
     </ConceptBlock>
 
-    <ConceptBlock icon="💥" title="VFX 设计哲学：每一帧都服务于“感觉”">
+    <ConceptBlock icon="💥" title="VFX 设计哲学：每一帧都服务于感觉">
       <p>在进入画特效之前，先聊一个底层认知：VFX（Visual Effects，视觉特效）的目的不是"好看"——是<strong>"传达信息"</strong>。每一次攻击命中、每一次爆炸、每一次受伤闪烁——都是在告诉玩家："系统已经检测到这个事件，这是它的视觉反馈。"好的 VFX 让玩家在 50ms 内就知道发生了什么，差的 VFX 让玩家打了两秒后还在想"打中了吗？"</p>
       <p>这和你做前端交互反馈一模一样：按钮点击后的 <code>:active</code> 伪类变暗、表单验证的红色边框、上传文件时的进度条——这些都不是"装饰"，是<strong>系统状态的可视化</strong>。VFX 就是游戏世界的"微交互"。</p>
       <p>一个经验法则：<strong>玩家能感知的最小时间窗口约 50-100ms</strong>。所以特效的关键帧（爆发帧、命中帧）必须在这个时间窗口内出现——否则反馈就会有"延迟感"。这不是技术限制，是人体生理限制。</p>
+      <p>你在前端写 CSS 动画时已经内化了这套时间逻辑：<code>animation-duration: 0.5s</code> 和这里的 80ms × 6 帧 ≈ 0.5 秒爆炸动画是完全相同的时间预算。帧时长 80ms 就是 CSS <code>@keyframes</code> 中每个百分比段的停留时间——你可以把它理解为 <code>animation: explode 0.5s steps(6)</code>，每一步正好是 80ms 的视觉停留。<strong>前端动画和 VFX 帧动画共用同一套人类感知模型：在这个时间窗口内完成"触发 → 反馈"闭环，用户才会觉得"响应即时"。</strong></p>
     </ConceptBlock>
 
     <ConceptBlock icon="🎆" title="三种特效的结构拆解">
@@ -27,6 +28,7 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
         <li><strong>帧 6（消散）：</strong> 烟雾变淡，接近透明/背景色。</li>
       </ul>
       <p>帧率建议：每帧 80-100ms。6 帧爆炸约 0.5-0.6 秒——刚好够玩家看清"爆炸了 → 炸完了"的过程。更快的节奏（4 帧=0.3 秒）会更"干练"，适合小型敌机的快速爆炸。</p>
+      <p>这 6 帧的时序结构在前端中有一个精确的类比：<strong>CSS <code>@keyframes</code> 百分比动画</strong>。把爆炸的总时长 0.5 秒映射为 0%-100%：<code>0% { 起爆: 白/黄色小菱形 } → 30% { 膨胀: 橙色不规则多边形 } → 60% { 峰值: 红色碎片飞散 } → 80% { 余烬: 深红变暗 } → 100% { 消散: 暗灰烟雾消失 }</code>。你在前端写 <code>@keyframes</code> 时的思路——"每个百分比节点做什么"——和画逐帧 VFX 时的思路——"每帧画什么"——完全一致，区别只是一个是代码声明，一个是像素手绘。</p>
 
       <h3>引擎火焰：4 帧循环的永动机</h3>
       <p>引擎火焰是循环动画，所以它的设计核心是<strong>"形态在变，位置不变"</strong>：</p>

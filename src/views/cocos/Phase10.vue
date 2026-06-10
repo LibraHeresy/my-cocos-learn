@@ -19,6 +19,9 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
 }
 // 四个条件全是"小于"——任何一个不满足就不重叠</pre>
       <p>理解手写 AABB 的价值在于：当你需要做精确到像素的碰撞、或者需要在 update 中批量检测 100 个对象时，你知道底层的原理是什么，知道什么时候内置系统够用，什么时候需要自己优化。</p>
+      <div class="tip-box">
+        <strong>前端视角：AABB 就是 DOM 的盒模型碰撞。</strong> 每个 DOM 元素都有 x, y, width, height——<code>element.getBoundingClientRect()</code> 返回的就是这四个值。AABB 碰撞检测的本质就是判断两个元素的 BoundingRect 是否重叠。如果你写过"判断 tooltip 是否超出视口""检测两个 div 是否重叠""拖拽时判断 drop target"，你已经在用 AABB 算法了，只是没意识到它有一个这么正式的名字。
+      </div>
     </ConceptBlock>
 
     <ConceptBlock icon="🎯" title="Cocos 内置碰撞系统">
@@ -35,6 +38,9 @@ const POWERUP = 8  // 1000
 
 // 碰撞矩阵：BULLET & ENEMY = true, PLAYER & ENEMY = true
 // BULLET & PLAYER = false（自己的子弹不该打自己）</pre>
+      <div class="tip-box">
+        <strong>前端视角：位掩码和 Unix 权限是同一件事。</strong> Unix 文件权限 rwx 用三个 bit 表示（rwx = 111 = 7，rw- = 110 = 6）。碰撞分组也是用 bit——PLAYER = 1（0001），ENEMY = 2（0010），POWERUP = 4（0100）。引擎判断"玩家和敌人要不要碰撞"只需要 <code>PLAYER & ENEMY !== 0</code>——一次位运算，比遍历数组快几个数量级。如果你见过 Linux 的 <code>chmod 777</code>，你就已经理解了碰撞分组的底层原理。
+      </div>
     </ConceptBlock>
 
     <ConceptBlock icon="🔄" title="触发 vs 碰撞：穿透检测 vs 物理阻挡">
@@ -42,6 +48,9 @@ const POWERUP = 8  // 1000
         <li><strong>碰撞（Collision）：</strong> 两个物体碰到会互相弹开，有物理反馈。适合"子弹打中敌机后子弹消失"这种场景。</li>
         <li><strong>触发（Trigger）：</strong> 勾选 "Is Sensor" 后，物体可以穿透但会触发回调。适合"玩家走过一道门，触发剧情"或"道具碰到玩家被拾取"。</li>
       </ul>
+      <div class="tip-box">
+        <strong>前端视角：Trigger = mouseenter，Collision = click。</strong> 鼠标进入一个元素区域不一定要点它——mouseenter 只是"你进入我的范围了"，就像 Trigger 的"你穿过我了但我不挡你"。click 则是一个带目的的动作——"你确实打中我了"，对应 Collision 的"碰到你就有物理反馈"。一个检测存在，一个触发行为——Web 交互和游戏碰撞用的是完全相同的概念分层。
+      </div>
     </ConceptBlock>
 
     <ConceptBlock icon="🔧" title="动手：手写 AABB 与内置碰撞系统对比">

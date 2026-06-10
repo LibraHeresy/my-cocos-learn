@@ -22,6 +22,9 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
 // easeOut：v = 1-(1-t)² —— 快→慢（减速）
 // backOut：v = 1+(v-1)²*(2.7v-1.7) —— 超调后回弹（弹窗效果）</pre>
       <p>Robert Penner 在 2001 年发表了一篇名为《Robert Penner's Easing Functions》的文章，系统总结了这些缓动函数。<strong>这篇文章可能是游戏和 Web 动画史上被引用最多的独立贡献之一。</strong> GSAP、CSS animation、Cocos tween——它们全部基于 Penner 的缓动公式。</p>
+      <div class="tip-box">
+        <strong>前端视角：</strong> CSS 的 <code>animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1)</code> 和 Cocos 的 <code>easing: 'easeOut'</code> 做的是同一件事——用数学函数把线性时间映射为非线性进度。CSS 用三次贝塞尔曲线参数化，Cocos 用 Penner 缓动函数，换汤不换药。如果你在 Chrome DevTools 里调过 cubic-bezier 曲线，你就已经理解了 Cocos easing 的全部数学本质。
+      </div>
     </ConceptBlock>
 
     <ConceptBlock icon="🔧" title="动手：UI 弹窗、分数滚动与道具飞行">
@@ -46,6 +49,9 @@ tween(itemNode)
       .to(0.3, { scale: new Vec3(0, 0, 1) })            // 再缩小消失
   )
   .start()</pre>
+      <div class="tip-box">
+        <strong>前端视角：链式调用 ≈ Promise.then()。</strong> cc.tween 用 <code>.to().call().start()</code> 的链式写法定义一串连续动作，这和 Promise 的 <code>.then().then().catch()</code> 思路如出一辙——每一环结束后自动触发下一环。而 <code>.parallel()</code> 就是 <code>Promise.all()</code>——多个动画同时跑，都完成后才继续下一步。如果你写过异步流程控制，tween 的 API 对你来说只是换了个名字的 Promise 链。
+      </div>
     </ConceptBlock>
 
     <ConceptBlock icon="🔗" title="课外延伸">

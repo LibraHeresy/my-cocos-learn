@@ -26,6 +26,9 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
         <li>构建时 Cocos 自动把所有小图拼成一张大纹理，更新所有 SpriteFrame 的 UV 坐标</li>
       </ol>
       <p>限制：单张图集最大 2048×2048（移动端建议不超过 1024×1024）。所有 SpriteFrame 必须使用同样的过滤模式和压缩格式。</p>
+      <div class="tip-box">
+        <strong>前端视角：</strong> Auto Atlas 做的事和 CSS Sprite 完全一样。你做 Web 开发时把 20 个小图标拼成一张 <code>sprite.png</code>，用 <code>background-position</code> 来裁剪显示——这就是图集。区别只在于，CSS Sprite 省的是 HTTP 请求数，游戏图集省的是 DrawCall 数。本质都是：<strong>一次通信，干完所有事</strong>。
+      </div>
     </ConceptBlock>
 
     <ConceptBlock icon="🔬" title="合批条件：为什么有时候合不了？">
@@ -36,7 +39,11 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
         <li><strong>不同混合模式：</strong> 一个 Normal，一个 Additive。</li>
         <li><strong>节点层级不连续：</strong> 同一个图集的两个 Sprite 之间插了一个别的东西。</li>
       </ul>
+      <p>做前端的同学可以把合批条件理解为 <strong>webpack 的模块打包规则</strong>——不是所有 import 都能打进同一个 chunk 里。异步 import() 会拆出独立 chunk，不同类型的资源有各自独立的处理管线。DrawCall 合批也一样：不同纹理、不同 Shader、不同混合模式——它们就像不同类型的模块，必须分开处理。</p>
       <p>在 Chrome DevTools 的 Cocos 调试面板中可以看到 DrawCall 数量。目标是控制在 <strong>50 以内</strong>（移动端）。</p>
+      <div class="tip-box">
+        <strong>前端类比：渲染阻塞资源。</strong> 打断合批就像页面里夹了一个 render-blocking 的 CSS——它自己要多走一趟网络，还卡住了后面所有东西的渲染。DrawCall 也是这样：一个"不合群"的 Sprite 不仅自己多占一次 DrawCall，还会把本来可以合批的一组对象硬生生拆成两拨。
+      </div>
     </ConceptBlock>
 
     <ConceptBlock icon="🔧" title="动手：Auto Atlas 前后 DrawCall 对比">

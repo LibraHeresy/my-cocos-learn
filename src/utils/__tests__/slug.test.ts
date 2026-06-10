@@ -29,4 +29,15 @@ describe('slug', () => {
   it('preserves CJK and lowers ASCII mixed together', () => {
     expect(slug('Cocos入门-101')).toBe('cocos入门-101')
   })
+
+  it('converts fullwidth punctuation to hyphens in mixed content', () => {
+    // （ ） ： —— are non-word chars, get converted to hyphens
+    expect(slug('帧动画实战（上）')).toBe('帧动画实战-上')
+    expect(slug('数值设计（上）——伤害公式')).toBe('数值设计-上-伤害公式')
+    expect(slug('Phase 1：游戏引擎世界观')).toBe('phase-1-游戏引擎世界观')
+  })
+
+  it('strips leading/trailing whitespace', () => {
+    expect(slug('  开始  ')).toBe('开始')
+  })
 })

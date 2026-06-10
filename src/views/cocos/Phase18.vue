@@ -6,39 +6,67 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
 <template>
   <PhaseLayout :phase="18" title="性能优化实战" duration="2-3 天">
     <ConceptBlock icon="🧭" title="本节定位">
-      <p>编辑器里跑 60fps ≠ 真机上跑 60fps。这一节讲游戏性能优化的三个核心方向——DrawCall、纹理、脚本——以及如何用工具找到瓶颈。</p>
+      <p><strong>60fps。16 毫秒。</strong>这是游戏的硬标准——不是"建议"，玩家对掉帧的容忍度为零。在 PC 上，你的 JS 独享一个 3.5GHz 的 CPU 核心；但在手机上，你的 JS 和 GPU 共享一块发热的芯片，还要和微信的渲染线程抢资源、和系统的后台进程抢带宽。编辑器里跑 60fps 不等于真机上跑 60fps。这一节教你怎么找到瓶颈、然后精准地粉碎它——用数据说话，不靠猜。</p>
     </ConceptBlock>
 
-    <ConceptBlock icon="📊" title="三大优化方向">
+    <ConceptBlock icon="⏱️" title="16 毫秒的生命：一帧里发生了什么？">
+      <p>在 60fps 下，每一帧只能占用 16.67 毫秒。在这 16ms 里——包括你所有的 update 回调、碰撞检测、物理计算、渲染提交——必须全部完成。如果某一帧超出了 16ms，用户就会看到一个"掉帧"。</p>
+      <p>和前端性能优化相比：前端有一个 <code>requestIdleCallback</code>，浏览器可以在空闲时做一些低优先级的活。但游戏没有——<strong>游戏的每一帧都是硬实时约束</strong>。这就是为什么你在游戏里不能用"反正前端也慢"来安慰自己——前端的"慢"是用户觉得页面反应迟钝；游戏的"慢"是用户肉眼可见的卡顿和拖影。</p>
       <table>
-        <thead><tr><th>方向</th><th>问题</th><th>工具</th><th>目标</th></tr></thead>
+        <thead><tr><th>维度</th><th>Web 前端性能</th><th>游戏性能</th></tr></thead>
         <tbody>
-          <tr><td>DrawCall</td><td>每帧 CPU→GPU 通信次数</td><td>Cocos Profiler / Chrome DevTools</td><td>&lt; 50（移动端）</td></tr>
-          <tr><td>纹理内存</td><td>GPU 显存占用</td><td>Cocos 构建面板</td><td>&lt; 200MB（移动端）</td></tr>
-          <tr><td>脚本 CPU</td><td>update 中的 JS 耗时</td><td>Chrome Performance 面板</td><td>单帧 JS &lt; 5ms</td></tr>
+          <tr><td><strong>核心指标</strong></td><td>FCP、LCP、TTI、CLS</td><td>FPS（帧率）、Frame Time（帧时间）</td></tr>
+          <tr><td><strong>硬实时要求</strong></td><td>无（加载完就好了）</td><td>每 16ms 必须完成一帧</td></tr>
+          <tr><td><strong>主要瓶颈</strong></td><td>网络、JS Bundle 体积、渲染阻塞</td><td>DrawCall、GC、纹理带宽</td></tr>
+          <tr><td><strong>优化后效果</strong></td><td>页面更快加载、交互更灵敏</td><td>画面不卡、手感流畅</td></tr>
+          <tr><td><strong>失败后果</strong></td><td>用户跳失</td><td>玩家操作滞后 1 帧→飞机撞墙→怒删游戏</td></tr>
         </tbody>
       </table>
     </ConceptBlock>
 
-    <ConceptBlock icon="🗜️" title="纹理压缩">
+    <ConceptBlock icon="📊" title="三大优化方向——和 Web 性能的对应关系">
+      <table>
+        <thead><tr><th>方向</th><th>问题</th><th>Web 前端类比</th><th>工具</th><th>目标</th></tr></thead>
+        <tbody>
+          <tr><td><strong>DrawCall</strong></td><td>每帧 CPU→GPU 通信次数</td><td>HTTP 请求数量——每次通信有开销</td><td>Cocos Profiler / Chrome DevTools</td><td>&lt; 50（移动端）</td></tr>
+          <tr><td><strong>纹理内存</strong></td><td>GPU 显存占用</td><td>图片体积（WebP/AVIF 优化）</td><td>Cocos 构建面板</td><td>&lt; 200MB（移动端）</td></tr>
+          <tr><td><strong>脚本 CPU</strong></td><td>update 中的 JS 耗时</td><td>Long Task / JS Blocking Time</td><td>Chrome Performance 面板</td><td>单帧 JS &lt; 5ms</td></tr>
+        </tbody>
+      </table>
+      <div class="tip-box">
+        <strong>前端类比一：</strong> DrawCall ≈ <strong>HTTP 请求</strong>。每一次 DrawCall 是 CPU 告诉 GPU 画一次东西。100 次 DrawCall = 100 次"画这个→画那个→画下一个"，就像浏览器打开一个页面时发出了 100 个 HTTP 请求——每次都有握手开销（CPU→GPU 通信延迟），哪怕请求内容很小。Web 通过 HTTP/2 Multiplexing（多路复用）来减少请求数开销；Cocos 通过 <strong>Auto Batching</strong>（自动合批）来减少 DrawCall——同一个纹理的 Sprite 放在相邻位置，引擎会自动把它们合并成一次 DrawCall。原理完全相同：减少通信频率。
+      </div>
+    </ConceptBlock>
+
+    <ConceptBlock icon="🗜️" title="纹理压缩——游戏世界的图片优化">
+      <p>前端有 WebP/AVIF——在同样视觉质量下减少文件体积 30-50%。游戏有 ETC2/ASTC——在同样视觉质量下减少显存占用 75-87.5%：</p>
       <pre>// 未压缩：1024×1024 RGBA = 4MB
 // ETC2：≈ 1MB（Android）
 // ASTC 6×6：≈ 0.5MB（iOS A8+）
 // 建议：Cocos 构建时同时勾选 ETC2 和 ASTC，运行时自动选择</pre>
+      <div class="tip-box">
+        <strong>前端类比二：</strong> ETC2/ASTC 纹理压缩 ≈ <strong>WebP/AVIF 图片格式</strong>。就像 <code>&lt;picture&gt;</code> 标签根据浏览器支持自动选择 WebP 或 JPEG 格式，Cocos 构建面板勾选多种纹理格式后，运行时自动根据设备 GPU 选择最优格式。不同的是：纹理压缩发生在 GPU 内存中（不仅仅是文件体积），所以压缩效果直接影响显存占用和发热量——这在手机上尤其关键。
+      </div>
     </ConceptBlock>
 
-    <ConceptBlock icon="⚡" title="脚本性能 Tips">
+    <ConceptBlock icon="⚡" title="脚本性能 Tips——和前端 Long Task 优化的对照">
+      <p>前端的"长任务优化"（把超过 50ms 的任务拆成小块）在游戏里对应"单帧 JS 不超过 5ms"——因为游戏只有 16ms 的总预算，JS 只能用其中的 5-8ms（剩下的给渲染和输入）：</p>
       <ul>
         <li>减少 update 中的 <code>getComponent()</code> 调用——在 start 中缓存引用</li>
         <li>避免在 update 中创建新对象（new Vec3、字符串拼接）——触发 GC</li>
         <li>用对象池替代 instantiate/destroy</li>
         <li>不需要每帧更新的逻辑用 <code>schedule(callback, interval)</code> 替代</li>
       </ul>
+      <div class="tip-box">
+        <strong>前端类比三：</strong> 对象池 ≈ <strong>数据库连接池 / HTTP Keep-Alive</strong>。就像后端不会每收到一个请求就新建一个数据库连接（而是从连接池里取），游戏不该每发射一颗子弹就新建一个 Node（而是从对象池里取）。连接池节省的是 TCP 握手开销；对象池节省的是 JS 内存分配 + GC 回收开销。原理相同，规模不同——一个 web 请求的生命是几十毫秒到几秒，一颗子弹的生命是 1-5 秒，但创建和销毁的频率可能是每秒 30 次。
+      </div>
     </ConceptBlock>
 
     <ConceptBlock icon="🔗" title="课外延伸">
       <ul>
-        <li><strong>移动端 GPU 的 Tile-Based Rendering：</strong> 手机 GPU（Mali、Adreno、Apple GPU）和桌面 GPU 的架构不同。移动端用 TBR（Tile-Based Rendering）——把屏幕切成小块逐块渲染，节省带宽。这解释了为什么粒子特效在手机上比桌面上更贵——每个粒子跨越的 Tile 越多，GPU 工作量越大。</li>
+        <li><strong>为什么手机 GPU 用 Tile-Based Rendering？——物理学决定的架构差异：</strong> 手机 GPU（Mali、Adreno、Apple GPU）和桌面 GPU（NVIDIA、AMD）的架构完全不同。桌面 GPU 用的是 Immediate Mode Rendering——收到一个三角形，立刻画到帧缓冲里。手机 GPU 用的是<strong>Tile-Based Rendering（TBR）</strong>——把屏幕切成 16×16 像素的小方块（Tile），一块一块地渲染。这就意味着：一个粒子特效如果在屏幕上跨越了 100 个 Tile，GPU 需要把它的数据写入 100 次（每个 Tile 一次）——而桌面上只需要写一次。这就是为什么粒子特效在手机上比桌面上昂贵得多。理解这一点对性能优化至关重要：在手机上，不要用"桌面端跑明明没问题"的粒子密度。</li>
+        <li><strong>Naughty Dog 如何在 PS1 上做出《古惑狼》——性能优化界的"黑魔法"：</strong> 1996 年，Naughty Dog 的 Andy Gavin 和 Jason Rubin 面临一个不可能的任务：在 PlayStation 1（2MB 主内存 + 1MB 显存）上做一个 3D 平台跳跃游戏。PS1 的硬件根本不足以加载一整关的纹理和模型。他们的解决方案——用今天的眼光看简直疯狂：他们<strong>重写了索尼官方的整个 3D 图形库</strong>，用汇编语言实现了一个自定义的纹理流式加载系统（Texture Streaming），让游戏可以在角色向前走的瞬间<strong>只加载屏幕可见范围内的纹理</strong>——而不可见部分全部卸载，甚至不保留在内存中。这套自研系统让《古惑狼》在 PS1 上实现了流畅的 30fps 3D 画面——而同期其他 PS1 游戏普遍只有 20fps 且画面模糊。Naughty Dog 后来将这套技术授权给索尼，成为 PS1 第三方开发者的标准 SDK 组件。今天你在 Cocos 里看到的"纹理压缩""自动合批""LOD"，都是 1996 年 Andy Gavin 在 2MB 内存限制下的挣扎的遗产。</li>
+        <li><strong>Web Vitals（LCP/FID/CLS）和游戏性能标准的对比——为什么游戏需要自己的"Core Web Vitals"：</strong> Google 的 Web Vitals 定义了前端的三个核心性能指标：LCP（最大内容绘制——2.5 秒内）、FID（首次输入延迟——100ms 内）、CLS（累积布局偏移——0.1 以下）。游戏需要类似的"Core Game Vitals"：FPS 稳定性（90% 帧在 16ms 内）、帧时间标准差（&lt; 2ms——表示帧率平稳，不存在"时快时慢"）、GC 频率（&lt; 1次/10s——减少 GC 导致的帧丢失）。前端的"卡顿"用户会忍（"网络不好吧"），游戏的"卡顿"用户不会忍——因为玩家的大脑会把"我按了射击但没射出来"归因为"游戏破"而不是"网络差"。记住这个区别。</li>
       </ul>
     </ConceptBlock>
 
@@ -101,10 +129,12 @@ update(dt: number) {
     </ConceptBlock>
 
     <ConceptBlock icon="✅" title="自测清单">
+      <p>学完这一节，你应该能回答：</p>
       <ol>
-        <li>什么原因会导致游戏出现"卡顿"（frame stutter）？GC（垃圾回收）在这个过程中扮演什么角色？为什么在 PC 上流畅、手机上卡顿的游戏通常是 GC 问题？</li>
-        <li>为什么移动端和桌面端使用不同的纹理压缩格式？ETC2 为什么只能在 Android 上用，ASTC 为什么只能在较新的 iOS 设备上用？纹理格式的选择是由什么决定的？</li>
-        <li>你会用什么工具来分析性能问题？FPS 降到了 30 以下，你应该先看哪个指标（DrawCall？JS CPU？GPU 耗时？纹理内存？），先怀疑哪个方向？</li>
+        <li>为什么同样是 JS 代码，游戏里的 GC（垃圾回收）比 Web 前端致命得多？从帧时间预算（16ms vs 无硬约束）和人类对视觉流畅度的敏感性两个角度解释。</li>
+        <li>DrawCall 为什么被类比为 HTTP 请求？它们有什么共同的性能特征？为什么"合并请求"（Batching / HTTP/2 Multiplexing）在两种场景下都是优化策略？</li>
+        <li>为什么移动端和桌面端使用不同的纹理压缩格式？ETC2 为什么只能在 Android 上用，ASTC 为什么只能在较新的 iOS 设备上用？这个格式兼容性问题和前端的什么场景类似？</li>
+        <li>Naughty Dog 在 1996 年 PS1 上做《古惑狼》时用了什么"黑魔法"来突破硬件限制？这套技术在今天的 Cocos/Cocos Bundle 系统中以什么形式存在？性能优化的"永恒难题"是什么？</li>
       </ol>
     </ConceptBlock>
   </PhaseLayout>

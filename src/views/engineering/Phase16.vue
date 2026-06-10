@@ -14,73 +14,70 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
       <p><strong>类型不是"约束你的代码"——是"替你的眼睛做检查"。</strong>就像你用了 ESLint 之后不再需要手动数缩进空格——TS 让你不再需要手动检查"这个值是不是有效值"。</p>
     </ConceptBlock>
 
-    <ConceptBlock icon="🔍" title="游戏 TS 模式的四大金刚">
+    <ConceptBlock icon="🔢" title="模式一 & 二：枚举类型与字面量联合">
       <p><strong>1. 枚举（enum）或字面量联合类型——不要用 string 做状态标识。</strong></p>
-      <div style="background:var(--color-surface);padding:12px;border-radius:8px;margin:8px 0;font-family:monospace;font-size:0.85em;">
-// 不推荐<br/>
-const state = 'playing' // string 类型——任何 string 都能赋值,"palying" 不报错<br/><br/>
-// 推荐<br/>
-type GamePhase = 'menu' | 'playing' | 'paused' | 'gameOver'<br/>
-let phase: GamePhase = 'menu' // 写 'palying' 会编译报错<br/><br/>
-// 也可以<br/>
-enum GamePhase { Menu, Playing, Paused, GameOver }
-      </div>
+      <pre>// 不推荐
+const state = 'playing' // string 类型——任何 string 都能赋值,"palying" 不报错
+
+// 推荐
+type GamePhase = 'menu' | 'playing' | 'paused' | 'gameOver'
+let phase: GamePhase = 'menu' // 写 'palying' 会编译报错
+
+// 也可以
+enum GamePhase { Menu, Playing, Paused, GameOver }</pre>
       <p>字面量联合类型更轻量（不产生 JS 代码），enum 在运行时能反向查找（GamePhase[0] → 'Menu'）。选哪个看场景——需要"数字和字符串互相转换"就用 enum，否则用联合类型。</p>
 
       <p><strong>2. Discriminated Union——EventBus 的类型安全终极方案。</strong>这是游戏开发中 TS 最强大的模式。你的 EventBus 可能有 20 种事件类型——每一种有不同的 payload。</p>
-      <div style="background:var(--color-surface);padding:12px;border-radius:8px;margin:8px 0;font-family:monospace;font-size:0.85em;">
-type GameEvent =<br/>
-&nbsp;&nbsp;| { type: 'enemy-killed'; enemyType: EnemyType; score: number }<br/>
-&nbsp;&nbsp;| { type: 'powerup-collected'; powerupType: PowerUpType; duration: number }<br/>
-&nbsp;&nbsp;| { type: 'phase-changed'; newPhase: GamePhase; oldPhase: GamePhase }<br/>
-&nbsp;&nbsp;| { type: 'player-died'; finalScore: number; wave: number }<br/><br/>
-// EventBus.on 的类型安全版本<br/>
-function on&lt;K extends GameEvent['type']&gt;(<br/>
-&nbsp;&nbsp;type: K,<br/>
-&nbsp;&nbsp;cb: (event: Extract&lt;GameEvent, { type: K }&gt;) => void<br/>
-)<br/><br/>
-// 使用时——完美推导各个事件类型的 payload<br/>
-eventBus.on('enemy-killed', (event) => {<br/>
-&nbsp;&nbsp;// event.enemyType 类型是 EnemyType，event.score 类型是 number<br/>
-&nbsp;&nbsp;// 编译器保证你不会读到不存在的字段<br/>
-})
-      </div>
-      <p>这和 Redux / Vuex 中 action type + payload 的 discriminated union 是完全相同的模式——TypeScript 帮你确保你 emit 的每个事件都有正确的 payload 类型，on 的每个回调都能安全地访问对应事件的字段。</p>
+      <pre>type GameEvent =
+  | { type: 'enemy-killed'; enemyType: EnemyType; score: number }
+  | { type: 'powerup-collected'; powerupType: PowerUpType; duration: number }
+  | { type: 'phase-changed'; newPhase: GamePhase; oldPhase: GamePhase }
+  | { type: 'player-died'; finalScore: number; wave: number }
 
+// EventBus.on 的类型安全版本
+function on&lt;K extends GameEvent['type']&gt;(
+  type: K,
+  cb: (event: Extract&lt;GameEvent, { type: K }&gt;) =&gt; void
+)
+
+// 使用时——完美推导各个事件类型的 payload
+eventBus.on('enemy-killed', (event) =&gt; {
+  // event.enemyType 类型是 EnemyType，event.score 类型是 number
+  // 编译器保证你不会读到不存在的字段
+})</pre>
+      <p>这和 Redux / Vuex 中 action type + payload 的 discriminated union 是完全相同的模式——TypeScript 帮你确保你 emit 的每个事件都有正确的 payload 类型，on 的每个回调都能安全地访问对应事件的字段。</p>
+    </ConceptBlock>
+
+    <ConceptBlock icon="🧩" title="模式三 & 四：泛型 Manager 与只读配置">
       <p><strong>3. 泛型 Manager——复用不是复制粘贴。</strong>ObjectPool&lt;T&gt;、Singleton&lt;T&gt;、EventBus&lt;T&gt;——这些类本身不关心 T 是什么，但加了 T 后实例化时 TS 知道具体的类型。</p>
-      <div style="background:var(--color-surface);padding:12px;border-radius:8px;margin:8px 0;font-family:monospace;font-size:0.85em;">
-class ObjectPool&lt;T extends Poolable&gt; {<br/>
-&nbsp;&nbsp;get(): T { /* 从池中取或新建 */ }<br/>
-&nbsp;&nbsp;put(obj: T): void { /* 放回池中 */ }<br/>
-}<br/>
-const bulletPool = new ObjectPool&lt;Bullet&gt;()<br/>
-// bulletPool.get() 返回类型是 Bullet——不是 any
-      </div>
+      <pre>class ObjectPool&lt;T extends Poolable&gt; {
+  get(): T { /* 从池中取或新建 */ }
+  put(obj: T): void { /* 放回池中 */ }
+}
+const bulletPool = new ObjectPool&lt;Bullet&gt;()
+// bulletPool.get() 返回类型是 Bullet——不是 any</pre>
       <p>这和前端中的 <code>const store = defineStore&lt;MyState&gt;()</code> 是同一个 TS 模式——泛型让代码"写一次就能复用各种类型"。你不会想为 Bullet、Enemy、Particle 各写一个 Pool 类——写一个泛型 ObjectPool，然后用的时候指定 T。</p>
 
       <p><strong>4. 只读配置表（as const）——让你的数值表"不可变"。</strong></p>
-      <div style="background:var(--color-surface);padding:12px;border-radius:8px;margin:8px 0;font-family:monospace;font-size:0.85em;">
-const ENEMY_CONFIG = {<br/>
-&nbsp;&nbsp;small:  { hp: 50,  speed: 200, score: 10,  color: '#ff4444' },<br/>
-&nbsp;&nbsp;medium: { hp: 150, speed: 150, score: 25,  color: '#ff8844' },<br/>
-&nbsp;&nbsp;large:  { hp: 400, speed: 100, score: 50,  color: '#cc44cc' },<br/>
-&nbsp;&nbsp;boss:   { hp: 1000, speed: 60, score: 500, color: '#ff0000' }<br/>
-} as const // ← 整个对象树变为 readonly<br/><br/>
-// TS 推导 ENEMY_CONFIG.small.hp 类型为 50（字面量类型），不是 number<br/>
-// 这会严格约束——你的伤害计算如果用到了 hp，TS 知道它一定是 50
-      </div>
+      <pre>const ENEMY_CONFIG = {
+  small:  { hp: 50,  speed: 200, score: 10,  color: '#ff4444' },
+  medium: { hp: 150, speed: 150, score: 25,  color: '#ff8844' },
+  large:  { hp: 400, speed: 100, score: 50,  color: '#cc44cc' },
+  boss:   { hp: 1000, speed: 60, score: 500, color: '#ff0000' }
+} as const // ← 整个对象树变为 readonly
+
+// TS 推导 ENEMY_CONFIG.small.hp 类型为 50（字面量类型），不是 number
+// 这会严格约束——你的伤害计算如果用到了 hp，TS 知道它一定是 50</pre>
       <p><code>as const</code> 让你的配置表变成一个"不可变的类型常量"——你不能不小心修改它，TS 知道每个值的精确字面量类型。这和前端的"constants 文件 + readonly"是同一做法——但 as const 走得更远（类型级别的不可变）。</p>
     </ConceptBlock>
 
     <ConceptBlock icon="🔧" title="动手：重构飞机大战的类型系统">
       <ol>
         <li><strong>定义核心类型文件 <code>src/types.ts</code>：</strong>把所有散落在各组件中的字符串字面量集中到一个文件：
-          <div style="background:var(--color-surface);padding:8px;border-radius:8px;margin:8px 0;font-family:monospace;font-size:0.85em;">
-export type EnemyType = 'small' | 'medium' | 'large' | 'boss'<br/>
-export type PowerUpType = 'bomb' | 'shield' | 'extraLife' | 'doubleScore'<br/>
-export type GamePhase = 'menu' | 'playing' | 'paused' | 'gameOver'<br/>
-export type BulletOwner = 'player' | 'enemy'
-          </div>
+          <pre>export type EnemyType = 'small' | 'medium' | 'large' | 'boss'
+export type PowerUpType = 'bomb' | 'shield' | 'extraLife' | 'doubleScore'
+export type GamePhase = 'menu' | 'playing' | 'paused' | 'gameOver'
+export type BulletOwner = 'player' | 'enemy'</pre>
           然后用 VS Code 的"找到所有引用"功能（右键→Go to References），逐个替换项目中所有裸 string 为这些类型。</li>
         <li><strong>创建 discriminanted union 的 GameEvent：</strong>定义完整的 GameEvent 类型（见上文）。然后修改 EventBus 的 emit 和 on 方法签名——使用 <code>Extract</code> 做类型收窄。编译——如果 EventBus.on('enemy-killed', cb) 的 cb 里写了 <code>event.playerDied</code>（不存在的字段），TS 编译报错。修复所有报错——这些报错每一个都代表一个"如果运行时才发现会很痛的 Bug"。</li>
         <li><strong>替换 string 为类型：</strong>搜索项目中所有的 <code>=== 'small'</code>、<code>=== 'boss'</code> 等字符串判断——全部替换为对 EnemyType 的判断。你会发现在一些地方你写了拼写错误的字符串（比如 'samll'）——TS 编译立刻报错。把错误修掉。完成后——你的代码中没有未定义的字面量状态了。</li>

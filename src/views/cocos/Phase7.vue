@@ -13,6 +13,9 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
       <p>帧动画的原理简单到让你觉得"就这？"——把一系列稍有差别的图片按固定时间间隔快速切换，利用人眼的<strong>视觉暂留</strong>效应，产生连续的动态感。</p>
       <p>在游戏开发中，这些"稍有差别的图片"被拼在一张大图上，叫 <strong>SpriteSheet（精灵表）</strong>。每一帧就是 SpriteSheet 的一个矩形区域。引擎按顺序切换显示这些矩形区域，就形成了动画。</p>
       <p>为什么拼成一张大图而不是分开的文件？因为在 Phase 6 里我们讲了：一张大图 = 一次 DrawCall。6 帧动画如果是 6 个小文件 = 6 个 DrawCall。</p>
+      <div class="tip-box">
+        <strong>前端视角：</strong> SpriteSheet 帧切换的原理和 CSS Sprite 动画一模一样——background-image 指向一整张大图，用 background-position 决定显示哪个区域。在没有 CSS @keyframes 的年代，前端就是用 JS 定时器逐帧修改 background-position 来做动画的。Cocos 的 SpriteFrame 切换本质上就是在做同样的事，只是换成引擎帮你管理帧索引和定时器。
+      </div>
     </ConceptBlock>
 
     <ConceptBlock icon="⏱️" title="帧率：12fps vs 24fps vs 60fps">
@@ -23,6 +26,7 @@ import ConceptBlock from '@/components/ConceptBlock.vue'
         <li><strong>60 fps：</strong> 极流畅。现代 3D 游戏的标准。但对 2D 像素画来说，60fps 的帧动画可能会让画面显得"太光滑"，失去手绘质感。</li>
       </ul>
       <p>建议：<strong>飞机大战的动画用 12-15fps</strong>。这个帧率下爆炸和火焰看起来有"打击感"而不是"滑溜溜"。</p>
+      <p>前端开发者对这个概念应该不陌生——<strong>Web 动画性能预算</strong>里讨论的就是同样的问题。你是用 60fps 的 CSS transform 动画还是降到 30fps 来省电？低端手机上 requestAnimationFrame 跑不满 60fps 时你会主动降到 30fps 吗？游戏帧率的选择和 Web 动画性能优化用的是完全相同的决策逻辑：<strong>够用就好，不是越高越好</strong>。</p>
     </ConceptBlock>
 
     <ConceptBlock icon="✂️" title="SpriteFrame 数组动画：最简单的实现">
@@ -53,6 +57,9 @@ update(dt: number) {
         <li><strong>运行观察：</strong> 点击预览，你会看到小人在走路。因为每一帧间隔约 0.08 秒，所以动画大约 12.5fps——这是我们之前讨论的"像素游戏经典帧率"。</li>
         <li><strong>调帧率感受差异：</strong> 回到 Animation 编辑器，把所有关键帧的间隔缩小到 0.04 秒（约 25fps），再次预览。对比 12.5fps 和 25fps——哪个更像你想要的美术风格？</li>
       </ol>
+      <div class="tip-box">
+        <strong>前端视角：Animation Clip 就是游戏版的 @keyframes。</strong> CSS 里你写 <code>@keyframes walk { 0% { background-position: 0 0; } 100% { background-position: -600px 0; } }</code> 来定义动画。Cocos 的 Animation Clip 做的事完全一样——在时间轴上定义"在哪个时间点，显示哪个 SpriteFrame"。两者的核心概念一一对应：关键帧 = keyframe selectors，时间轴 = animation-duration，循环播放 = animation-iteration-count: infinite。
+      </div>
       <div class="tip-box">
         <strong>动手小挑战：</strong> 如果你有第二套 SpriteSheet（比如小人的"跑"动画），再创建一个 Animation Clip 叫 <code>run</code>。学习怎么在代码里用 <code>this.getComponent(Animation).play('walk')</code> 和 <code>.play('run')</code> 来切换动画。
       </div>
