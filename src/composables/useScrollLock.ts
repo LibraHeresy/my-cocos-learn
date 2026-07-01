@@ -19,7 +19,7 @@ export function useScrollLock() {
   })
 
   onBeforeUnmount(() => {
-    document.removeEventListener('wheel', blockWheel, { capture: true } as any)
+    document.removeEventListener('wheel', blockWheel, { capture: true })
   })
 
   return { scrollSeq, lockScroll }

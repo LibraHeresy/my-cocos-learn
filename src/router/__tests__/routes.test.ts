@@ -1,23 +1,16 @@
 import { describe, it, expect } from 'vitest'
 import { makePhaseRoutes } from '@/router/routes'
-
-// Phase counts per PLAN.md — if these change, PLAN.md must be updated too
-const PLAN_COUNTS = { cocos: 25, art: 14, audio: 12, engineering: 16 } as const
+import { COURSES } from '@/data/courses'
 
 describe('makePhaseRoutes', () => {
-  it('generates correct number of routes for all courses matching PLAN.md', () => {
-    expect(makePhaseRoutes('cocos', PLAN_COUNTS.cocos)).toHaveLength(25)
-    expect(makePhaseRoutes('art', PLAN_COUNTS.art)).toHaveLength(14)
-    expect(makePhaseRoutes('audio', PLAN_COUNTS.audio)).toHaveLength(12)
-    expect(makePhaseRoutes('engineering', PLAN_COUNTS.engineering)).toHaveLength(16)
+  it('generates correct number of routes for all courses matching courses.ts', () => {
+    for (const [id, meta] of Object.entries(COURSES)) {
+      expect(makePhaseRoutes(id, meta.phaseCount)).toHaveLength(meta.phaseCount)
+    }
   })
 
-  it('total phase count across all courses is 67', () => {
-    const total =
-      makePhaseRoutes('cocos', PLAN_COUNTS.cocos).length +
-      makePhaseRoutes('art', PLAN_COUNTS.art).length +
-      makePhaseRoutes('audio', PLAN_COUNTS.audio).length +
-      makePhaseRoutes('engineering', PLAN_COUNTS.engineering).length
+  it('total phase count across all courses matches courses.ts', () => {
+    const total = Object.values(COURSES).reduce((sum, m) => sum + makePhaseRoutes(m.id, m.phaseCount).length, 0)
     expect(total).toBe(67)
   })
 

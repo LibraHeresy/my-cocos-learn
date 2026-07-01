@@ -1,15 +1,19 @@
 # my-cocos-learn
 
-Vue 3 + TypeScript + Vite 游戏开发学习文档站，4 门课程，59 个阶段页面，纯静态无后端。
+Vue 3 + TypeScript + Vite 游戏开发学习文档站，4 门课程共 67 个阶段页面（Cocos 25、美术 14、音效 12、工程化 16）+ 30 天速通计划，纯静态无后端。
 
 ## 命令
 
 ```bash
-npm run dev          # 开发服务器
+npm run dev          # 开发服务器 (端口 7777)
 npm run build        # 生产构建 (vue-tsc -b && vite build)
-npm test             # vitest run (12 tests)
+npm test             # vitest run
 npm run test:watch   # vitest watch
 ```
+
+## 课程元数据（单一起源）
+
+`src/data/courses.ts` 定义了所有课程的 id、标签、图标、路径、阶段数。新增/修改课程只需改这一个文件，其余所有位置（路由、导航栏、键盘导航等）均从此处引用。
 
 ## 路由
 
@@ -17,11 +21,14 @@ Hash 模式。`src/router/index.ts` + `src/router/routes.ts`（`makePhaseRoutes(
 
 | 路径 | 名称 | 组件 |
 |------|------|------|
-| `/` | home | `views/cocos/Home.vue` |
-| `/cocos/phase/1~29` | cocos-phaseN | `views/cocos/PhaseN.vue` |
-| `/art` + `/art/phase/1~9` | art / art-phaseN | `views/art/` |
-| `/audio` + `/audio/phase/1~7` | audio / audio-phaseN | `views/audio/` |
-| `/engineering` + `/engineering/phase/1~14` | engineering / engineering-phaseN | `views/engineering/` |
+| `/` | home | `views/speedrun/Landing.vue` |
+| `/cocos` | cocos | `views/cocos/Home.vue` |
+| `/cocos/phase/1~25` | cocos-phaseN | `views/cocos/PhaseN.vue` |
+| `/art` + `/art/phase/1~14` | art / art-phaseN | `views/art/` |
+| `/audio` + `/audio/phase/1~12` | audio / audio-phaseN | `views/audio/` |
+| `/engineering` + `/engineering/phase/1~16` | engineering / engineering-phaseN | `views/engineering/` |
+| `/speedrun` | speedrun | `views/speedrun/Landing.vue` |
+| `/speedrun/day/1~30` | speedrun-dayN | `views/speedrun/DayN.vue` |
 
 ## 组件架构
 
@@ -38,12 +45,13 @@ App.vue → NavBar + RouterView
 ## Composables
 
 - `useScrollLock()` → `{ scrollSeq, lockScroll }` — 点击导航时禁止滚轮
-- `usePhaseCounts()` → `Record<course, maxPhase>` — 缓存的路由阶段数
+- `useRevealOnScroll(options?)` → `{ observe }` — IntersectionObserver 滚动渐入动画，PhaseLayout 和 ConceptBlock 共用
 
 ## 共享工具
 
 - `src/utils/slug.ts` — 中英文 slug 化
 - `src/types/phase.ts` — `Phase`, `PhaseGroup` 接口
+- `src/data/courses.ts` — 课程元数据单一起源（id/标签/图标/阶段数）
 
 ## 设计系统 (CSS 变量)
 

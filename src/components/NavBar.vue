@@ -1,15 +1,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
+import { COURSE_LIST, SPEEDRUN } from '@/data/courses'
 
 const route = useRoute()
 
 const courses = [
-  { id: 'speedrun', label: '30天速通', icon: '⏱️', path: '/speedrun' },
-  { id: 'cocos', label: 'Cocos 引擎', icon: '🎮', path: '/cocos' },
-  { id: 'art', label: '像素美术', icon: '🎨', path: '/art' },
-  { id: 'audio', label: '游戏音效', icon: '🔊', path: '/audio' },
-  { id: 'engineering', label: '工程化与运营', icon: '⚙️', path: '/engineering' },
+  { id: SPEEDRUN.id, label: SPEEDRUN.label, icon: SPEEDRUN.icon, path: SPEEDRUN.path },
+  ...COURSE_LIST.map((c) => ({ id: c.id, label: c.label, icon: c.icon, path: c.path })),
 ]
 
 const activeCourse = computed(() => {

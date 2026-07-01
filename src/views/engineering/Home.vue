@@ -80,8 +80,3 @@ const phaseGroups: PhaseGroup[] = [
   </div>
 </template>
 <style scoped src="@/styles/home-shared.css"></style>
-<style scoped>
-.speedrun-cta { display: flex; align-items: center; gap: 0.6rem; padding: 0.75rem 1.25rem; margin-bottom: 2rem; background: linear-gradient(135deg, var(--color-primary-soft), #fef0e5); border: 1px solid var(--color-primary); border-radius: var(--radius-md); font-size: 0.92rem; color: var(--color-text); }
-.speedrun-cta .cta-icon { font-size: 1.3rem; flex-shrink: 0; }
-.speedrun-cta a { color: var(--color-primary); font-weight: 700; text-decoration: underline; }
-</style>

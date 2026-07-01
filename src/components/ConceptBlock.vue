@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { slug } from '@/utils/slug'
+import { useRevealOnScroll } from '@/composables/useRevealOnScroll'
 
 const props = defineProps<{
   title: string
@@ -11,23 +12,14 @@ const slugId = computed(() => slug(props.title))
 
 const blockRef = ref<HTMLElement | null>(null)
 
+const { observe } = useRevealOnScroll({ threshold: 0.08 })
+
 onMounted(() => {
-  const root = blockRef.value
-  if (!root) return
+  const el = blockRef.value
+  if (!el) return
+  observe(el)
 
-  // 自带动画：IntersectionObserver 添加 .revealed
-  const observer = new IntersectionObserver(
-    ([entry]) => {
-      if (entry.isIntersecting) {
-        root.classList.add('revealed')
-        observer.unobserve(root)
-      }
-    },
-    { threshold: 0.08 }
-  )
-  observer.observe(root)
-
-  root.querySelectorAll('pre').forEach((pre) => {
+  el.querySelectorAll('pre').forEach((pre) => {
     if (pre.querySelector('.copy-btn')) return
 
     const btn = document.createElement('button')

@@ -2,21 +2,18 @@
 import { onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute, RouterView } from 'vue-router'
 import NavBar from '@/components/NavBar.vue'
-import { usePhaseCounts } from '@/composables/usePhaseCounts'
+import { detectCourseFromRoute, getPhaseCount, COURSES } from '@/data/courses'
 
 const router = useRouter()
 const route = useRoute()
-const PHASE_COUNTS = usePhaseCounts()
 
 function getRouteInfo() {
   const name = route.name as string
-  if (name === 'home' || name === 'art' || name === 'audio' || name === 'engineering') {
-    return { course: name === 'home' ? 'cocos' : name, phase: null }
-  }
-  const match = name.match(/^(cocos|art|audio|engineering)-phase(\d+)$/)
-  if (match) {
-    return { course: match[1], phase: parseInt(match[2]) }
-  }
+  if (name === 'home') return { course: 'cocos', phase: null }
+  // 课程首页路由名即课程 id
+  if (name in COURSES) return { course: name, phase: null }
+  const m = detectCourseFromRoute(name)
+  if (m) return { course: m, phase: parseInt(name.match(/-phase(\d+)$/)![1]) }
   return { course: null, phase: null }
 }
 
@@ -27,7 +24,7 @@ function handleKeydown(e: KeyboardEvent) {
   const { course, phase } = getRouteInfo()
   if (!course) return
 
-  const maxPhase = PHASE_COUNTS[course] ?? 7
+  const maxPhase = getPhaseCount(course)
 
   if (e.key === 'ArrowLeft') {
     e.preventDefault()

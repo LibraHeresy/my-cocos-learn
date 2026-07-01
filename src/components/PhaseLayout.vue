@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, onMounted, onBeforeUnmount } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import PageTOC from '@/components/PageTOC.vue'
-import { usePhaseCounts } from '@/composables/usePhaseCounts'
+import { COURSES, detectCourseFromRoute, getPhaseCount } from '@/data/courses'
+import { useRevealOnScroll } from '@/composables/useRevealOnScroll'
 
 const props = withDefaults(defineProps<{
   phase: number
@@ -14,49 +15,20 @@ const props = withDefaults(defineProps<{
 })
 
 const route = useRoute()
-const phaseCounts = usePhaseCounts()
 
-const course = computed(() => {
-  const m = (route.name as string)?.match(/^(cocos|art|audio|engineering)-phase\d+$/)
-  return m ? m[1] : 'cocos'
-})
+const course = computed(() => detectCourseFromRoute(route.name as string) ?? 'cocos')
 
 const maxPhase = computed(() =>
-  props.total > 0 ? props.total : phaseCounts[course.value] ?? 0,
+  props.total > 0 ? props.total : getPhaseCount(course.value),
 )
 
 const courseHome = computed(() => course.value === 'cocos' ? '/' : `/${course.value}`)
 
-const courseLabel = computed(() => {
-  const labels: Record<string, string> = {
-    cocos: '返回 cocos 课程',
-    art: '返回美术课程',
-    audio: '返回音效课程',
-    engineering: '返回工程课程',
-  }
-  return labels[course.value] ?? '返回课程首页'
-})
+const courseLabel = computed(() => COURSES[course.value]?.backLabel ?? '返回课程首页')
 
-let revealObserver: IntersectionObserver | null = null
+const { observe } = useRevealOnScroll()
 
-onMounted(() => {
-  revealObserver = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) {
-          e.target.classList.add('revealed')
-          revealObserver?.unobserve(e.target)
-        }
-      })
-    },
-    { rootMargin: '0px 0px -60px 0px' },
-  )
-  document.querySelectorAll('.concept-block').forEach((el) => revealObserver!.observe(el))
-})
-
-onBeforeUnmount(() => {
-  revealObserver?.disconnect()
-})
+onMounted(() => observe('.concept-block'))
 </script>
 
 <template>
