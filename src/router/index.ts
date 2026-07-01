@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import { makePhaseRoutes } from './routes'
 import { COURSE_LIST, SPEEDRUN } from '@/data/courses'
 
+const homeModules = import.meta.glob('../views/*/Home.vue')
 const speedrunDayModules = import.meta.glob('../views/speedrun/Day*.vue')
 
 const router = createRouter({
@@ -12,7 +13,7 @@ const router = createRouter({
       {
         path: c.path,
         name: c.id,
-        component: () => import(`@/views/${c.id}/Home.vue`),
+        component: homeModules[`../views/${c.id}/Home.vue`],
       },
       ...makePhaseRoutes(c.id, c.phaseCount),
     ]),

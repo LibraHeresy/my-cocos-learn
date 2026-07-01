@@ -23,10 +23,10 @@ Hash 模式。`src/router/index.ts` + `src/router/routes.ts`（`makePhaseRoutes(
 |------|------|------|
 | `/` | home | `views/speedrun/Landing.vue` |
 | `/cocos` | cocos | `views/cocos/Home.vue` |
-| `/cocos/phase/1~25` | cocos-phaseN | `views/cocos/PhaseN.vue` |
-| `/art` + `/art/phase/1~14` | art / art-phaseN | `views/art/` |
-| `/audio` + `/audio/phase/1~12` | audio / audio-phaseN | `views/audio/` |
-| `/engineering` + `/engineering/phase/1~16` | engineering / engineering-phaseN | `views/engineering/` |
+| `/cocos/phase/1~25` | cocos-phaseN | `components/PhasePage.vue`（通用，内容来自 `content/cocos/phase-NN.md`） |
+| `/art` + `/art/phase/1~14` | art / art-phaseN | 同上，内容来自 `content/art/` |
+| `/audio` + `/audio/phase/1~12` | audio / audio-phaseN | 同上，内容来自 `content/audio/` |
+| `/engineering` + `/engineering/phase/1~16` | engineering / engineering-phaseN | 同上，内容来自 `content/engineering/` |
 | `/speedrun` | speedrun | `views/speedrun/Landing.vue` |
 | `/speedrun/day/1~30` | speedrun-dayN | `views/speedrun/DayN.vue` |
 
@@ -34,13 +34,23 @@ Hash 模式。`src/router/index.ts` + `src/router/routes.ts`（`makePhaseRoutes(
 
 ```
 App.vue → NavBar + RouterView
-  PhaseLayout.vue (所有阶段页共用)
-    → PageTOC.vue (右侧目录，position:fixed)
+  PhasePage.vue (通用阶段页，根据路由读取对应 content/*.md)
+    → PhaseLayout.vue (进度条 + 上下导航 + 页眉)
+      → ConceptBlock.vue (内容块，有滚动渐入动画)
+      → PageTOC.vue (右侧目录，position:fixed)
   HomeSidebar.vue (首页右侧导航，position:fixed)
   FlowChart.vue (首页核心路径，竖向步骤图)
-  ConceptBlock.vue (阶段页内容块，有滚动渐入动画)
   PixelCanvas.vue (像素画 canvas 展示)
 ```
+
+## 内容系统
+
+阶段教学内容存放在 `src/content/{course}/phase-NN.md`（共 67 个文件），YAML frontmatter + Markdown 格式：
+
+- `## 🧭 标题` → 一个 ConceptBlock（首个 emoji 自动提取为 icon）
+- 标准 Markdown + 内嵌 HTML（`<pre>`、`<table>`、`<div class="tip-box">`）
+- 构建时由 `vite.config.ts` 中的 `phaseMdPlugin`（markdown-it + gray-matter）转换为 PhaseMdData 对象
+- 支持 HMR：编辑 `.md` 文件即时热更新
 
 ## Composables
 
@@ -50,7 +60,7 @@ App.vue → NavBar + RouterView
 ## 共享工具
 
 - `src/utils/slug.ts` — 中英文 slug 化
-- `src/types/phase.ts` — `Phase`, `PhaseGroup` 接口
+- `src/types/phase.ts` — `Phase`, `PhaseGroup`, `PhaseMdData`, `BlockMdData` 接口
 - `src/data/courses.ts` — 课程元数据单一起源（id/标签/图标/阶段数）
 
 ## 设计系统 (CSS 变量)
@@ -81,4 +91,4 @@ App.vue → NavBar + RouterView
 - `noUnusedLocals: true` — 未用变量会报 TS 错误
 - 侧边栏/TOC 使用 `position:fixed`，`right` 计算公式基于 `--max-width` 居中
 - `html { overflow-y: scroll }` 防止滚动条闪现
-- 所有阶段页内容在 `.vue` 模板中，无外部数据源
+- 阶段内容存放在 `src/content/**/*.md`，构建时由 Vite 插件（markdown-it + gray-matter）转换

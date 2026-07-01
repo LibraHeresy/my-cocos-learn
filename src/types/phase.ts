@@ -12,3 +12,16 @@ export interface PhaseGroup {
   tagline: string
   phases: Phase[]
 }
+
+export interface BlockMdData {
+  icon: string
+  title: string
+  html: string
+}
+
+export interface PhaseMdData {
+  phase: number
+  title: string
+  duration: string
+  blocks: BlockMdData[]
+}
