@@ -14,7 +14,7 @@ const uniqueCourses = computed(() => {
   const set = new Set<string>()
   for (const [, entries] of groupedEntries.value) {
     for (const e of entries) {
-      if (e) set.add(e.course)
+      if (e && e.course) set.add(e.course)
     }
   }
   return Array.from(set).sort()

@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { computed, ref, watch, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
-import { getChallenge, getStageForChallenge, STAGES } from '@/data/challenges'
+import { getChallenge, getStageForChallenge } from '@/data/challenges'
 import { SKILL_LINES } from '@/data/skill-tree'
 import { usePracticeLog } from '@/composables/usePracticeLog'
-import { getSkillProgress } from '@/stores/workshopStore'
 
 const MAX_IMAGE_SIZE = 500 * 1024
 const DRAFT_KEY = '__workshop_phase_form__'
@@ -14,8 +13,8 @@ const { addPractice, updatePractice, getPhasePractice } = usePracticeLog()
 
 const challengeId = computed(() => parseInt(route.params.phase as string) || 1)
 const challenge = computed(() => getChallenge(challengeId.value))
+const skillReward = computed(() => challenge.value?.skillReward ?? null)
 const stage = computed(() => getStageForChallenge(challengeId.value))
-const stageInfo = computed(() => STAGES.find((s) => s.id === stage.value))
 const existingPractice = computed(() => getPhasePractice(challengeId.value))
 
 // Form state
@@ -51,9 +50,6 @@ onMounted(() => {
     selfCheckResults.value = defaults
   }
 })
-
-// Skill impact
-const skillLevels = computed(() => getSkillProgress())
 
 function saveDraft() {
   try {
@@ -232,17 +228,17 @@ const allPassed = computed(() =>
       </div>
 
       <!-- Skill Reward -->
-      <div v-if="challenge.skillReward" class="skill-section">
+      <div v-if="skillReward" class="skill-section">
         <h3>🏆 通过后</h3>
         <p>
-          <span v-for="line in SKILL_LINES.filter(l => l.id === challenge.skillReward!.skillId)" :key="line.id">
+          <span v-for="line in SKILL_LINES.filter(l => l.id === skillReward!.skillId)" :key="line.id">
             {{ line.icon }} {{ line.name }}
           </span>
-          <span v-if="challenge.skillReward.level > 0">
-            → Lv.{{ challenge.skillReward.level }}
+          <span v-if="skillReward!.level > 0">
+            → Lv.{{ skillReward!.level }}
           </span>
         </p>
-        <p class="skill-capability">你能：{{ challenge.skillReward.capability }}</p>
+        <p class="skill-capability">你能：{{ skillReward!.capability }}</p>
       </div>
 
       <!-- Upload -->

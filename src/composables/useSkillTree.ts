@@ -1,10 +1,9 @@
 import { computed } from 'vue'
 import { SKILL_LINES } from '@/data/skill-tree'
-import { getSkillProgress, useWorkshopState } from '@/stores/workshopStore'
+import { getSkillProgress } from '@/stores/workshopStore'
 import type { SkillTreeNode } from '@/types/workshop'
 
 export function useSkillTree() {
-  const state = useWorkshopState()
 
   const nodes = computed<SkillTreeNode[]>(() => {
     const result: SkillTreeNode[] = []
