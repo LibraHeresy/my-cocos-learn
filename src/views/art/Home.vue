@@ -69,11 +69,6 @@ const phaseGroups: PhaseGroup[] = [
       <p class="subtitle">零基础像素画入门到独立创作。从历史和美学讲起，理解每一笔背后的原理，最终独立完成游戏所需的全部像素素材和动画。</p>
     </header>
 
-    <div class="speedrun-cta">
-      <span class="cta-icon">⏱️</span>
-      <span>想要<strong>30 天发布游戏</strong>？试试 <RouterLink to="/speedrun">速通挑战</RouterLink>——从本课程中提取的最精简路径。</span>
-    </div>
-
     <section class="phases-section">
       <h2 class="section-title">学习路径</h2>
       <div v-for="(group, i) in phaseGroups" :key="group.label" :id="slug(group.label)" :data-group-index="i" class="phase-group" :style="{ '--s': i }">

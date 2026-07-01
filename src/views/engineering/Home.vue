@@ -58,7 +58,6 @@ const phaseGroups: PhaseGroup[] = [
       <h1>从<span class="highlight">Demo</span>到<span class="highlight">产品</span></h1>
       <p class="subtitle">覆盖微信小游戏发布、数值设计、用户留存、商业化变现、测试体系、CI/CD、手感打磨与性能优化。</p>
     </header>
-    <div class="speedrun-cta"><span class="cta-icon">⏱️</span><span>想要<strong>30 天发布游戏</strong>？试试 <RouterLink to="/speedrun">速通挑战</RouterLink>——从本课程中提取的最精简路径。</span></div>
     <section class="phases-section">
       <h2 class="section-title">学习路径</h2>
       <div v-for="(group, i) in phaseGroups" :key="group.label" :id="slug(group.label)" :data-group-index="i" class="phase-group" :style="{ '--s': i }">

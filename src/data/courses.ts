@@ -50,14 +50,6 @@ export const COURSES: Record<string, CourseMeta> = {
 
 export const COURSE_LIST: CourseMeta[] = Object.values(COURSES)
 
-export const SPEEDRUN = {
-  id: 'speedrun',
-  label: '30天速通',
-  icon: '⏱️',
-  path: '/speedrun',
-  dayCount: 30,
-}
-
 let _phasePattern: RegExp | null = null
 
 /** 匹配路由名称的正则，由 COURSES 的 key 动态生成 */

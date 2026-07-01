@@ -1,14 +1,13 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { makePhaseRoutes } from './routes'
-import { COURSE_LIST, SPEEDRUN } from '@/data/courses'
+import { COURSE_LIST } from '@/data/courses'
 
 const homeModules = import.meta.glob('../views/*/Home.vue')
-const speedrunDayModules = import.meta.glob('../views/speedrun/Day*.vue')
 
 const router = createRouter({
   history: createWebHashHistory(),
   routes: [
-    { path: '/', name: 'home', component: () => import('@/views/speedrun/Landing.vue') },
+    { path: '/', name: 'home', component: () => import('@/views/workshop/WorkshopHome.vue') },
     ...COURSE_LIST.flatMap((c) => [
       {
         path: c.path,
@@ -18,18 +17,20 @@ const router = createRouter({
       ...makePhaseRoutes(c.id, c.phaseCount),
     ]),
     {
-      path: '/speedrun',
-      name: 'speedrun',
-      component: () => import('@/views/speedrun/Landing.vue'),
+      path: '/workshop',
+      name: 'workshop',
+      component: () => import('@/views/workshop/WorkshopHome.vue'),
     },
-    ...Array.from({ length: SPEEDRUN.dayCount }, (_, i) => {
-      const n = i + 1
-      return {
-        path: `/speedrun/day/${n}`,
-        name: `speedrun-day${n}`,
-        component: speedrunDayModules[`../views/speedrun/Day${n}.vue`],
-      }
-    }),
+    {
+      path: '/workshop/gallery',
+      name: 'workshop-gallery',
+      component: () => import('@/views/workshop/GalleryView.vue'),
+    },
+    {
+      path: '/workshop/phase/:phase',
+      name: 'workshop-phase',
+      component: () => import('@/views/workshop/WorkshopPhase.vue'),
+    },
   ],
   scrollBehavior() {
     return { top: 0, behavior: 'instant' as const }

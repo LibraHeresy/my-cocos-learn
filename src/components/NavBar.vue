@@ -1,26 +1,26 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
-import { COURSE_LIST, SPEEDRUN } from '@/data/courses'
+import { COURSE_LIST } from '@/data/courses'
 
 const route = useRoute()
 
 const courses = [
-  { id: SPEEDRUN.id, label: SPEEDRUN.label, icon: SPEEDRUN.icon, path: SPEEDRUN.path },
+  { id: 'workshop', label: '工坊', icon: '🛠️', path: '/workshop' },
   ...COURSE_LIST.map((c) => ({ id: c.id, label: c.label, icon: c.icon, path: c.path })),
 ]
 
 const activeCourse = computed(() => {
   const name = route.name
-  if (!name) return 'cocos'
+  if (!name) return 'workshop'
   const nameStr = name as string
-  if (nameStr === 'home') return 'speedrun'
-  if (nameStr.startsWith('speedrun')) return 'speedrun'
+  if (nameStr === 'home') return 'workshop'
+  if (nameStr.startsWith('workshop')) return 'workshop'
   if (nameStr.startsWith('engineering')) return 'engineering'
   if (nameStr.startsWith('cocos')) return 'cocos'
   if (nameStr.startsWith('art')) return 'art'
   if (nameStr.startsWith('audio')) return 'audio'
-  return 'cocos'
+  return 'workshop'
 })
 </script>
 

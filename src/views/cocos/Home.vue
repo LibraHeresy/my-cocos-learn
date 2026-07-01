@@ -95,11 +95,6 @@ const phaseGroups: PhaseGroup[] = [
       </p>
     </header>
 
-    <div class="speedrun-cta">
-      <span class="cta-icon">⏱️</span>
-      <span>想要<strong>30 天发布游戏</strong>？试试 <RouterLink to="/speedrun">速通挑战</RouterLink>——从本课程中提取的最精简路径。</span>
-    </div>
-
     <section class="phases-section">
       <h2 class="section-title">学习路径</h2>
 

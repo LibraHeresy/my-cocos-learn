@@ -54,7 +54,6 @@ const phaseGroups: PhaseGroup[] = [
       <h1>从<span class="highlight">零基础</span>到完整游戏音频</h1>
       <p class="subtitle">使用免费工具纯合成方式生成全部游戏音效和背景音乐，无需录音设备或音乐基础。</p>
     </header>
-    <div class="speedrun-cta"><span class="cta-icon">⏱️</span><span>想要<strong>30 天发布游戏</strong>？试试 <RouterLink to="/speedrun">速通挑战</RouterLink>——从本课程中提取的最精简路径。</span></div>
     <section class="phases-section">
       <h2 class="section-title">学习路径</h2>
       <div v-for="(group, i) in phaseGroups" :key="group.label" :id="slug(group.label)" :data-group-index="i" class="phase-group" :style="{ '--s': i }">
