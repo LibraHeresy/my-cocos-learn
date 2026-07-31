@@ -73,7 +73,7 @@ onKeyDown(e: EventKeyboard) {
 一个好的游戏控制器应该让玩家不管用什么设备都能玩。我们来写一个同时响应键盘和触摸的 PlayerController：
 
 1. **创建脚本：** 在 assets 下新建一个 TypeScript 脚本，命名为 `PlayerController`。挂到一个节点上（比如你的飞机节点）。
-2. **加入键盘检测：** 在 `update(dt)` 中用 `Input.getKeyDown()` 或监听 `systemEvent` 来检测方向键（上下左右），控制节点位置变化。注意 `update` 是每帧触发，所以适合处理持续按住的情况；`KEY_DOWN` 事件只触发一次，你可以用它来做"按下空格开火"这种离散操作。
+2. **加入键盘检测：** 在 `update(dt)` 中用 `input.isKeyDown(keyCode)` 或监听 `systemEvent` 来检测方向键（上下左右），控制节点位置变化。注意 `input.isKeyDown` 仅按下那一帧为 true，`input.isKeyPressed` 在按住期间持续为 true——下面的动手代码用的是 `isKeyPressed`，是正确写法；`update` 每帧触发，所以适合处理持续按住的情况；`KEY_DOWN` 事件只触发一次，你可以用它来做"按下空格开火"这种离散操作。
 
 <pre>import { _decorator, Component, Node, input, Input, KeyCode, EventTouch } from 'cc'
 const { ccclass, property } = _decorator

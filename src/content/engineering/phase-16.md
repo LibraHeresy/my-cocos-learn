@@ -93,7 +93,7 @@ export type BulletOwner = 'player' | 'enemy'</pre>
    然后用 VS Code 的"找到所有引用"功能（右键→Go to References），逐个替换项目中所有裸 string 为这些类型。
 2. **创建 discriminanted union 的 GameEvent：** 定义完整的 GameEvent 类型（见上文）。然后修改 EventBus 的 emit 和 on 方法签名——使用 `Extract` 做类型收窄。编译——如果 EventBus.on('enemy-killed', cb) 的 cb 里写了 `event.playerDied`（不存在的字段），TS 编译报错。修复所有报错——这些报错每一个都代表一个"如果运行时才发现会很痛的 Bug"。
 3. **替换 string 为类型：** 搜索项目中所有的 `=== 'small'`、`=== 'boss'` 等字符串判断——全部替换为对 EnemyType 的判断。你会发现在一些地方你写了拼写错误的字符串（比如 'samll'）——TS 编译立刻报错。把错误修掉。完成后——你的代码中没有未定义的字面量状态了。
-4. **享福：** 编译通过后的代码库——如果有人把 `Phase2.vue` 的 `wave` 拼成 `wav`、把 `'large'` 拼成 `'lagre'`、在 EventBus.on 回调里访问了不存在的事件字段——**TS 编译器全部拦截。你的项目从现在开始"如果编译通过，不会有低级错误"。**
+4. **享福：** 编译通过后的代码库——如果有人把配置里表示波次的字段 `wave` 拼成 `wav`、把 `'large'` 拼成 `'lagre'`、在 EventBus.on 回调里访问了不存在的事件字段——**TS 编译器全部拦截。你的项目从现在开始"如果编译通过，不会有低级错误"。**
 
 ## 🔗 课外延伸
 

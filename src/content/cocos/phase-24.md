@@ -88,6 +88,15 @@ Cocos 的渲染引擎在三种平台上用了三种不同的底层实现——�
 - **Flutter 拒绝了 JSBridge——在 Skia 上画一切：** Flutter 从第一天起就没有用 JSBridge——它在每个平台上内嵌了一个 Skia 渲染引擎（Google 的 2D 图形库），所有 UI 都由 Skia 直接画到 GPU 上。这和 Cocos Native 版的做法完全一致——Cocos 内嵌自己的 C++ 渲染引擎，不经过原生 UI 组件系统。Flutter 画的是 Widget，Cocos 画的是 Sprite——同一个技术路线，不同的应用领域。
 - **微信小游戏的 JSBridge——JS ↔ WeChat Native SDK 的通信层：** 微信小游戏运行在微信的定制 JS 引擎中。当你调用 `wx.login()` 或 `wx.shareAppMessage()` 时，背后是通过微信自己的 JSBridge 把 JS 调用传给微信 App 的原生层。这个桥是微信团队维护的——你不需要关心底层，只需要调 `wx.*` API。但这个桥也有限制——不是所有原生能力都开放给你。微信小游戏给游戏开发者的 API 集合是精心筛选过的，这就是为什么小游戏生态比原生 App 生态更"安全"——但也更受限。
 
+## 🔧 动手：走一遍原生构建
+
+不需要真的上架商店，先在本地把原生构建流程完整跑通一遍：
+
+1. **配置原生环境：** 在 Cocos Dashboard → 偏好设置 → Native Develop 中确认 Android SDK 和 NDK 路径已配置（iOS 需要 macOS + Xcode）。
+2. **选择平台并构建：** 打开 Cocos 编辑器 → 项目 → 构建发布 → 选择 Android 平台 → 构建。第一次构建会下载 Gradle 依赖并编译原生代码，耗时较长，属正常现象。
+3. **打开生成的工程：** 构建完成后，在 `build/android/` 下用 Android Studio 打开生成的 Gradle 工程。你会看到一套完整的原生壳：C++ 渲染引擎 + JS 引擎（V8）+ 平台适配代码，而你的 TypeScript 游戏逻辑被编译成一个 JSBundle 资源放在资源目录里。
+4. **理解 JSBundle 与原生壳的关系：** 原生壳是"空房间"，JSBundle 是"家具"——原生壳启动时加载 JSBundle 并运行你的游戏逻辑。这意味着同一个原生壳可以运行不同版本的游戏：以后改游戏只替换 JSBundle，原生壳不用重新编译。这一步想通了，你就理解了"为什么 Cocos 的 TypeScript 代码在 Web/Native/小游戏三种运行时上是通用的"。
+
 ## ✅ 自测清单
 
 学完这一节，你应该能回答这些问题：

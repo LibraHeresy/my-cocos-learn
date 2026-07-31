@@ -48,7 +48,7 @@ Playtest 的实操注意事项：不要指导——你站在旁边解释"这个�
 
 ## 🔧 动手：为飞机大战搭建测试体系
 
-1. **单元测试（脱离 Cocos）：** 创建一个纯 TypeScript 文件——`src/game-logic/calculator.ts`。把 calcScore(enemyType: 'small'|'medium'|'large'|'boss'): number 实现为纯函数——不 import 任何 Cocos 模块。用 Vitest 写 4 个测试用例：calcScore('small') → 10，medium → 25，large → 50，boss → 500。运行 `npx vitest run`——0.1 秒通过。这一刻你就知道"我的计分逻辑是稳定的"。再加一个 calcDamage(atk, armor) → Math.max(1, atk - armor) 函数和 2 个测试（有护甲、无护甲）。
+1. **单元测试（脱离 Cocos）：** 创建一个纯 TypeScript 文件——`src/game-logic/calculator.ts`。把 calcScore(enemyType: 'small'|'medium'|'large'|'boss'): number 实现为纯函数——不 import 任何 Cocos 模块。用 Vitest 写 4 个测试用例：calcScore('small') → 10，medium → 25，large → 50，boss → 500（若与数值课的 Boss 金币 200 不同，是因为计分与金币是两个系统；这里的 500 是击破得分）。运行 `npx vitest run`——0.1 秒通过。这一刻你就知道"我的计分逻辑是稳定的"。再加一个 calcDamage(atk, armor) → Math.max(1, atk - armor) 函数和 2 个测试（有护甲、无护甲）。
 2. **集成测试（Cocos 环境）：** 在 Cocos 项目中测试 GameManager 的状态机转换。编写一个测试场景——不包含任何玩家操作，纯粹用代码驱动：`gameManager.startGame()` → 断言当前状态是 PLAYING → `gameManager.pauseGame()` → 断言是 PAUSED → `gameManager.resumeGame()` → 断言是 PLAYING → `gameManager.gameOver(score: 3200)` → 断言是 GAMEOVER + finalScore 是 3200。确认每个状态转换前后 UI 元素（开始按钮/暂停按钮/分数文本）的可见性正确。
 3. **Playtest（找 2 个朋友）：** 找两个朋友——理想情况下你不需要"找游戏玩家"，就找普通朋友。把飞机大战给他们，说："帮我试玩一下。"然后——闭嘴，站到他们身后，拿手机录屏（拍屏幕）+ 录表情（拍脸）。观察：
    - 第一秒他们做了什么？有没有犹豫？有没有点错按钮？

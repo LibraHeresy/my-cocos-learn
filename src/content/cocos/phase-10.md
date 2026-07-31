@@ -44,7 +44,7 @@ const POWERUP = 8  // 1000
 // BULLET & PLAYER = false（自己的子弹不该打自己）</pre>
 
 <div class="tip-box">
-<strong>前端视角：位掩码和 Unix 权限是同一件事。</strong> Unix 文件权限 rwx 用三个 bit 表示（rwx = 111 = 7，rw- = 110 = 6）。碰撞分组也是用 bit——PLAYER = 1（0001），ENEMY = 2（0010），POWERUP = 4（0100）。引擎判断"玩家和敌人要不要碰撞"只需要 <code>PLAYER & ENEMY !== 0</code>——一次位运算，比遍历数组快几个数量级。如果你见过 Linux 的 <code>chmod 777</code>，你就已经理解了碰撞分组的底层原理。
+<strong>前端视角：位掩码和 Unix 权限是同一件事。</strong> Unix 文件权限 rwx 用三个 bit 表示（rwx = 111 = 7，rw- = 110 = 6）。碰撞分组也是用 bit——PLAYER = 4（0100），ENEMY = 2（0010），POWERUP = 8（1000）。引擎判断"玩家和敌人要不要碰撞"只需要 <code>PLAYER & ENEMY !== 0</code>——一次位运算，比遍历数组快几个数量级。如果你见过 Linux 的 <code>chmod 777</code>，你就已经理解了碰撞分组的底层原理。
 </div>
 
 ## 🔄 触发 vs 碰撞：穿透检测 vs 物理阻挡
@@ -73,9 +73,9 @@ function checkAABB(a: Rect, b: Rect): boolean {
 2. **搭建内置碰撞场景：** 在场景中创建 3 个 Sprite 节点，分别命名为"玩家""子弹""道具"。给每个节点添加 `BoxCollider2D` 组件，在属性检查器中设置它们的碰撞分组（Group）：
 
 <pre>// 在项目设置 → 物理 → 碰撞矩阵中配置分组
-PLAYER  = 1  (二进制 0001)
-BULLET  = 2  (二进制 0010)
-POWERUP = 4  (二进制 0100)
+BULLET  = 1  (二进制 0001)
+PLAYER  = 4  (二进制 0100)
+POWERUP = 8  (二进制 1000)
 
 // 在碰撞矩阵中勾选：
 // BULLET × PLAYER  = true（子弹打中玩家）

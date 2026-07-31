@@ -33,7 +33,7 @@ Chrome DevTools Memory 面板的 Heap Snapshot 有两个看似相似但本质不
 
 ## 🩺 三大泄漏模式——记住这三个就够了
 
-**1. 事件监听未移除——最常见的泄漏源。** 每个 addEventListener / systemEvent.on / this.node.on 必须有一个对应的 removeEventListener / off。如果组件被销毁了但监听还在——监听回调持有的 this 引用不会被 GC 回收。**铁律：onLoad 里不要 on，start 里再 on；onDestroy 里必须 off。**
+**1. 事件监听未移除——最常见的泄漏源。** 每个 addEventListener / systemEvent.on / this.node.on 必须有一个对应的 removeEventListener / off。如果组件被销毁了但监听还在——监听回调持有的 this 引用不会被 GC 回收。**正确做法：** Cocos 3.x 中节点自身的事件监听（this.node.on）会随节点销毁自动释放；惯例是 onLoad 注册 + onDestroy 移除。是否在 onLoad 还是 start 注册不影响泄漏——真正要防的是注册在全局对象（如 systemEvent/定时器）上的监听未移除。
 
 **2. 定时器未清理——"我以为它会自己停"。** scheduleOnce / setInterval / setTimeout 创建的定时器，如果在回调执行之前节点被销毁——回调里使用的 this 引用形成泄漏链。**铁律：onDestroy 中调用 this.unscheduleAllCallbacks() 和 clearInterval()。**
 

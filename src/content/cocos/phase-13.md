@@ -34,10 +34,10 @@ duration: 1-2 天
     { type: 'small', count: 8, interval: 1.2 },
     { type: 'medium', count: 2, interval: 2.0 }
   ], restTime: 4 },
-  { wave: 5, enemies: [  // Boss 关
+  { wave: 3, enemies: [  // Boss 关
     { type: 'boss', count: 1, interval: 0 }
   ], restTime: 8 }
-]</pre>
+]  // 说明：wave 字段当前用于展示/标识；实际调度以数组下标为准</pre>
 
 数据驱动的最大好处：**调难度不需要改代码**。策划改一个 JSON 文件就能调整波次参数，程序员不需要参与。
 

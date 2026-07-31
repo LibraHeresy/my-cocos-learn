@@ -45,8 +45,9 @@ duration: 2-3 天
 前端有 WebP/AVIF——在同样视觉质量下减少文件体积 30-50%。游戏有 ETC2/ASTC——在同样视觉质量下减少显存占用 75-87.5%：
 
 <pre>// 未压缩：1024×1024 RGBA = 4MB
-// ETC2：≈ 1MB（Android）
-// ASTC 6×6：≈ 0.5MB（iOS A8+）
+// ETC2：≈ 1MB（Android 常选；ETC2 是 OpenGL ES 3.0 强制格式，iOS A7+ 同样支持）
+// ASTC 6×6：≈ 0.5MB（iOS 较新机型；ASTC 自 2016 年起大量 Android GPU 也原生支持）
+// iOS 传统上常用 PVRTC，较新机型用 ASTC
 // 建议：Cocos 构建时同时勾选 ETC2 和 ASTC，运行时自动选择</pre>
 
 <div class="tip-box">
@@ -145,5 +146,5 @@ update(dt: number) {
 
 1. 为什么同样是 JS 代码，游戏里的 GC（垃圾回收）比 Web 前端致命得多？从帧时间预算（16ms vs 无硬约束）和人类对视觉流畅度的敏感性两个角度解释。
 2. DrawCall 为什么被类比为 HTTP 请求？它们有什么共同的性能特征？为什么"合并请求"（Batching / HTTP/2 Multiplexing）在两种场景下都是优化策略？
-3. 为什么移动端和桌面端使用不同的纹理压缩格式？ETC2 为什么只能在 Android 上用，ASTC 为什么只能在较新的 iOS 设备上用？这个格式兼容性问题和前端的什么场景类似？
+3. 为什么移动端和桌面端使用不同的纹理压缩格式？Android 和 iOS 通常会选择哪些格式（如 ETC2/ASTC/PVRTC）？为什么"某格式只能在某个平台用"这类排他性说法在今天已经站不住脚？这个格式兼容性问题和前端的什么场景类似？
 4. Naughty Dog 在 1996 年 PS1 上做《古惑狼》时用了什么"黑魔法"来突破硬件限制？这套技术在今天的 Cocos/Cocos Bundle 系统中以什么形式存在？性能优化的"永恒难题"是什么？

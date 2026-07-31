@@ -148,6 +148,7 @@ export class Enemy extends Component {
 @ccclass('BossEnemy')
 export class BossEnemy extends Enemy {
   @property maxHp: number = 50
+  @property hp: number = 50  // 覆盖基类默认 hp，血量以 Boss 自己的值为准
   private phase: number = 1
 
   takeDamage(dmg: number) {
@@ -200,7 +201,7 @@ export class EnemySpawner extends Component {
   }
 }</pre>
 
-**验证：** 把三个配置不同的 Enemy 预制体拖进场景，观察它们的移动轨迹是否和预期一致。Boss 的搜索你先把血量调成 10 测试阶段切换。
+**验证：** 把三个配置不同的 Enemy 预制体拖进场景，观察它们的移动轨迹是否和预期一致。Boss 的调试：你先把血量调成 10，测试阶段切换。
 
 ## 🧠 有限状态机：为什么敌机 AI 需要一个「大脑」
 

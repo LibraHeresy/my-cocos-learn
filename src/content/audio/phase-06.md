@@ -13,7 +13,7 @@ BFXR 输出的 WAV 是"生"的——爆音、空白头尾、音量不一致。�
 把 Phase 5 做的 6 个 WAV 全部拖到同一个文件夹里，双击播放。你可能会注意到：
 
 - 有的音效开头有一段**空白**（50ms 的静音）——玩家按键后等 50ms 才听到声音，这在游戏中是致命的。
-- 有的音效结尾**"啪"的一声**——波形被突然截断导致爆音（clipping）。
+- 有的音效结尾**"啪"的一声**——波形被突然截断产生 click/pop（直流跳变）——这是波形不连续，不是 clipping；clipping 特指振幅超过 0dBFS 的削波失真。
 - 有的音效**特别响**，有的**特别轻**——它们的峰值音量差了 6dB 以上。
 - 有的音效背景有**滋滋的底噪**——BFXR 的参数偏极端时会产生不需要的噪声。
 
@@ -47,7 +47,7 @@ Audacity 有上百个功能，但对于游戏音效后期，你只需要掌握�
 
 问题：6 个 BFXR 音效的峰值可能差 10dB。如果按照 Phase 5 的混音表设置相对音量，前提是它们的基准峰值要一致——否则 70% 的射击声可能比 40% 的引擎声还轻。
 
-操作：Ctrl+A（全选）→ Effect → Normalize → 勾选"Normalize peak amplitude to"并设为 **-3dB**。不要设为 0dB —— 留 3dB 的 headroom 给后续混音和多个音效叠加。
+操作：Ctrl+A（全选）→ Effect → Volume and Compression → Normalize → 勾选"Normalize peak amplitude to"并设为 **-3dB**。不要设为 0dB —— 留 3dB 的 headroom 给后续混音和多个音效叠加。
 
 前端类比：就像 CSS 的 `normalize.css`——让所有浏览器的默认样式一致，才能在此基础上做差异化设计。
 
@@ -72,7 +72,7 @@ Audacity 有上百个功能，但对于游戏音效后期，你只需要掌握�
 3. **Fade In/Out：** 选中开头 5ms → Effect → Fade In。选中结尾 10ms → Effect → Fade Out。
 4. **标准化：** Ctrl+A 全选 → Effect → Volume and Compression → Normalize → 勾选 Peak amplitude → 输入 -3dB → OK。
 5. **降噪（如果需要）：** 如果有明显底噪，找一段纯噪声 → Effect → Noise Reduction → Get Noise Profile → Ctrl+A → 再次 Noise Reduction → OK。
-6. **导出 OGG：** File → Export → Export as OGG → Quality 设为 5（0-10，5 是音质和体积的最佳平衡点）。保存为 `shoot.ogg`。
+6. **导出 OGG：** File → Export Audio…，在 Format 下拉框选 Ogg Vorbis（Audacity 3.4+ 已合并导出菜单） → Quality 设为 5（0-10，5 是音质和体积的最佳平衡点）。保存为 `shoot.ogg`。
 7. **重复以上步骤**对 `explosion.wav`、`pickup.wav`、`hit.wav`、`engine.wav`、`boss_alarm.wav` 做同样的处理。
 
 处理完之后，把 6 个 OGG 文件放在一个文件夹里，逐个播放。你应该能听到明显的品质提升：开头没有延迟、结尾没有爆音、音量统一、背景干净。这就是"产品级音效"的状态。

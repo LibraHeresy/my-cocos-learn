@@ -106,9 +106,18 @@ Web 游戏和原生游戏最大的不同：**玩家打开链接就开始等。3 
 
 不要求掌握，但如果你感兴趣，这些都是值得了解的故事：
 
-- **WebAssembly——C++ 游戏引擎怎么能在浏览器里跑？** Cocos Creator 在 Web 平台上渲染的核心引擎是用 C++ 写的（为了性能——TypeScript 做游戏逻辑，C++ 做底层渲染），然后通过 Emscripten 编译成 WebAssembly（.wasm），在浏览器里以接近原生的速度运行。这就是为什么 Cocos H5 游戏能做到 60fps——渲染核心不是跑在 JS 上的。Figma 也是用这套方案——它的 Canvas 引擎用 C++ 写成，编译成 wasm 跑在浏览器里，所以才那么流畅。
+- **WebAssembly——C++ 游戏引擎怎么能在浏览器里跑？** 先说一个常见误解：Cocos Creator 3.x 引擎本身是用 TypeScript 编写的，Web 构建输出的是 JavaScript——它没有独立的 wasm 渲染核心，不存在"C++ 渲染核心 + Emscripten 编译成 wasm"这一层。Cocos H5 游戏能做到 60fps 靠的是引擎在 JS 层面的优化，而不是"渲染核心跑在 wasm 上"。不过 wasm 这条技术路线确实存在：Figma 就是例子——它的 Canvas 引擎用 C++ 写成，编译成 wasm 跑在浏览器里，所以才那么流畅。
 - **WebGPU——浏览器游戏的下一代底层 API：** WebGL 2.0 是当前 Cocos 使用的浏览器图形 API，它是 OpenGL ES 3.0 的浏览器版。WebGPU 是下一代——直接映射到 Vulkan / DirectX 12 / Metal，真正释放 GPU 的现代特性（计算着色器、间接绘制、绑定组）。Chrome 113+ 已支持。Cocos 目前使用 WebGL，但一旦迁移到 WebGPU，浏览器游戏的性能上限将大幅提高。可能 2 年内，浏览器里的 3D 游戏能跑到主机平台 70% 的性能。
 - **微信小游戏 vs 浏览器游戏的 URL 生态差异：** 如果一个链接发到微信聊天里，点击后走的是微信内置浏览器（X5 内核），不是 Chrome。X5 内核对 WebGL 的支持比 Chrome 差很多——可能出现渲染 bug、性能掉一半。这就是为什么国内做 H5 游戏的人经常"一怒之下"直接做微信小游戏——绕过浏览器兼容问题。你的 Web 版可以在朋友圈传播，但真正的用户入口在微信小游戏。Web 版是一个"方便测试和展示"的中间步骤。
+
+## 🔧 动手：把游戏部署上线
+
+构建面板你已经熟了，现在把 `build/web-mobile/` 变成一条可以发到群里的链接：
+
+1. **本地预览构建产物：** 在 Cocos 编辑器里完成 Web Mobile 构建。然后本地起一个静态服务器预览 `build/web-mobile/` 目录——直接双击 index.html 用 file:// 打开往往无法正常运行（跨域和资源路径问题），用 `npx serve build/web-mobile` 或 VSCode 的 Live Server 更稳。确认产物和编辑器里表现一致。
+2. **部署到 Vercel（推荐）：** 用上文"方案一"的命令 `cd build/web-mobile && npx vercel --prod`，拿到形如 `https://xxx.vercel.app` 的链接，先自己在手机浏览器里打开验证。
+3. **部署到 GitHub Pages（可选）：** 按"方案二"用 `git subtree push --prefix build/web-mobile origin gh-pages`，得到 `https://你的用户名.github.io/仓库名`，作为一个免费的长驻地址。
+4. **验收并分享：** 用 Lighthouse 跑一下加载性能，用手机实测加载时间（3 秒原则）和触控手感。然后把这个链接发给朋友——这就是"可以发给朋友的链接"，你的游戏正式上线了。
 
 ## ✅ 自测清单
 

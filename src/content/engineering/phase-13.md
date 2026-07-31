@@ -18,13 +18,13 @@ CD（持续部署）是 CI 的下一步——CI 通过后，自动把构建产�
 
 ## 🔍 GitHub Actions——游戏 CI 的"普惠"工具
 
-GitHub Actions 免费提供每月 2000 分钟的运行时间（公开仓库）。对独立游戏开发者来说，这**完全够用**。一个完整的 workflow 只需要一个 YAML 文件：
+GitHub Actions 的免费额度：公开仓库免费无限分钟；2000 分钟/月 是 free 计划**私有**仓库的额度。对独立游戏开发者来说，这**完全够用**。一个完整的 workflow 只需要一个 YAML 文件：
 
 - **触发条件（on）——什么时候跑？** push 到 main 分支、创建 Pull Request、每天凌晨 2 点定时构建（Nightly Build）。和前端一样——main 分支的每次更新都应该自动构建。
-- **Jobs（任务）——跑什么？** 多个 job 可以并行：① test job（跑 lint + type check + unit test）② build job（Cocos 构建 + Vite 构建 + 产物品控）③ deploy job（上传到微信小游戏后台 / Vercel / Releases）③ 只在 test 和 build 都通过后才执行。
+- **Jobs（任务）——跑什么？** 多个 job 可以并行：① test job（跑 lint + type check + unit test）② build job（Cocos 构建 + Vite 构建 + 产物品控）③ deploy job（上传到微信小游戏后台 / Vercel / Releases，只在 test 和 build 都通过后才执行）。
 - **Steps（步骤）——怎么跑？** checkout 代码 → 设置 Node 版本 → npm install → npx vue-tsc --noEmit → npx vitest run → npm run build。每一步如果失败，后面的都跳过。
 
-游戏 CI 比 Web CI 更复杂的点是：游戏构建通常涉及大量二进制资产的转换——Cocos 的纹理压缩、音频转码、Bundle 打包——这些流程可能需要 10-30 分钟。但 GitHub Actions 的免费额度（2000 分钟/月）足够你每天构建 3-4 次。
+游戏 CI 比 Web CI 更复杂的点是：游戏构建通常涉及大量二进制资产的转换——Cocos 的纹理压缩、音频转码、Bundle 打包——这些流程可能需要 10-30 分钟。但 GitHub Actions 的免费额度（公开仓库无限分钟）足够你每天构建 3-4 次。
 
 ## 🚀 缓存——从 30 分钟构建到 3 分钟
 
@@ -68,14 +68,14 @@ GitHub Actions 的 cache action：
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- run: npm run build
    </div>
 2. **推送并观察：** git add → git commit → git push。打开 GitHub 仓库页面的 Actions 标签——你可以实时看到 workflow 的运行日志。如果有步骤报错（红色 ❌）——看日志，找到错误信息，修掉，重新 push。
-3. **加缓存优化：** 在 steps 的 npm ci 之前加上缓存步骤——缓存 node_modules。第二次 push 后观察 build job 的时间——应该从几分钟缩短到几十秒（如果 node_modules 命中缓存）。
+3. **加缓存优化：** 在 steps 的 npm ci 之前加上缓存步骤——缓存 npm 缓存目录（actions/cache 缓存 ~/.npm），不要缓存 node_modules——npm ci 会先删除再全新安装，node_modules 缓存基本不命中。第二次 push 后观察 build job 的时间——应该从几分钟缩短到几十秒（如果 node_modules 命中缓存）。
 4. **加 artifact 上传：** 最后一步加上 `actions/upload-artifact@v4`，把 build 产物（Vite 的 dist/ 目录）上传到 workflow 的 artifact 存档中。这样你每次 push 之后的构建产物都能在 GitHub Actions 页面下载——不需要本地构建。
 5. **（可选）自动部署 Vercel：** 这个项目是 Vite + Vue 3，可以直接部署到 Vercel。在 Vercel 控制台关联 GitHub 仓库后——每次 push main 自动部署。你的文档站 CI/CD 就完整闭环了：推代码 → 自动 type check + test + build → 自动发布 → 30 秒后站点更新。
 
 ## 🔗 课外延伸
 
 - **游戏 CI 比 Web CI 复杂的根源——资产管线：** Web 前端构建通常只涉及 JS 打包（Webpack/Vite，1-3 分钟）和少量静态资源压缩。但游戏构建要走一整套"资产管线"（Asset Pipeline）：纹理压缩（PNG→ETC2/ASTC，每种格式 5-10 分钟）→ 音频转码（WAV→MP3/AAC）→ 精灵图集打包（TexturePacker）→ Bundle 分包。一套完整管线轻轻松松 30 分钟。大型游戏的 CI 可能每天只在凌晨 2 点跑一次 Nightly Build——因为太慢了。对独立游戏来说，**只跑你需要的步骤**——如果你没有改纹理，缓存纹理编译产物，只重新编译改过的部分。
-- **微软收购 GitHub 之后 Actions 的免费额度不断扩——独立开发者的福音：** GitHub Actions 2019 年上线时只有 2000 分钟的免费额度，到 2025 年已经扩展到 3000 分钟（公开仓库无限免费）。这和 GitLab CI（免费 400 分钟/月）和 CircleCI（免费 6000 分钟/月）在竞争同一批用户。对于你的项目规模——任何平台的免费额度都绰绰有余。
+- **微软收购 GitHub 之后 Actions 的免费额度不断扩——独立开发者的福音：** GitHub Actions 2019 年上线时只有 2000 分钟的免费额度，如今公开仓库免费无限分钟；2000 分钟/月 是 free 计划私有仓库的额度。这和 GitLab CI（免费 400 分钟/月）和 CircleCI（免费 6000 分钟/月）在竞争同一批用户。对于你的项目规模——任何平台的免费额度都绰绰有余。
 - **CI 不是"做完就完了"——是"每一次 commit 都在保护你"：** 你的测试可能一个月前写的，现在代码重构了——测试挂了。如果你没有 CI，你可能 3 个月后才发现"这个测试原来早就挂了，我一直以为它过呢"。有 CI 的 commit 机制：**每次 push 必跑测试——挂了的测试不会默默烂掉，而是每次都提醒你"修我或删我"。**
 
 ## ✅ 自测清单

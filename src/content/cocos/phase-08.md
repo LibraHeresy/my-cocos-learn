@@ -23,7 +23,7 @@ Cocos 的 cc.tween 在设计上明显借鉴了 GSAP 的链式调用风格。如�
 <pre>// 线性：v = t          —— 匀速运动
 // easeIn：v = t²        —— 慢→快（加速）
 // easeOut：v = 1-(1-t)² —— 快→慢（减速）
-// backOut：v = 1+(v-1)²*(2.7v-1.7) —— 超调后回弹（弹窗效果）</pre>
+// backOut：v = c3*(v-1)³ + c1*(v-1)² + 1（c1 = 1.70158, c3 = 2.70158）—— 超调后回弹（弹窗效果）</pre>
 
 Robert Penner 在 2001 年发表了一篇名为《Robert Penner's Easing Functions》的文章，系统总结了这些缓动函数。**这篇文章可能是游戏和 Web 动画史上被引用最多的独立贡献之一。** GSAP、CSS animation、Cocos tween——它们全部基于 Penner 的缓动公式。
 

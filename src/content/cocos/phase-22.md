@@ -89,7 +89,7 @@ run_anim:   骨骼旋转 = 20°  骨骼位置 Y = -5  // 跑的时候身体前�
 
 1. **获取材质：** 去 spine-esoteric-software 的 GitHub 官方示例仓库下载一个免费的 Spine 角色，得到三个文件：`.json`（骨骼+动画数据）、`.atlas`（纹理区域映射，类似 CSS sprite 的坐标表）、`.png`（纹理图）。这三个文件的关系是：atlas 告诉引擎"纹理上的哪个矩形区域是哪个部件"，json 告诉引擎"骨骼怎么连、动画怎么动"。
 2. **导入 Cocos：** 在 assets 面板中创建一个 Spine 目录，将三个文件拖入。
-3. **创建骨骼节点：** 在场景中创建空节点 → 添加组件 → Spine → SkeletonAnimation → 拖入 SkeletonData 资源。
+3. **创建骨骼节点：** 在场景中创建空节点 → 添加组件 → Spine → Skeleton（代码里叫 sp.Skeleton）→ 拖入 SkeletonData 资源。
 4. **切换动画：** 在属性检查器的 Animation 下拉中选择 `idle`。运行——角色应该开始待机动画。
 5. **代码控制动画：** 写一段 TypeScript：获取 `sp.Skeleton` 组件引用，调用 `skeleton.setAnimation(0, 'attack', false)`（轨道 0，播放 attack 动画，不循环）。在键盘事件中切换动画——按空格播 attack，按方向键播 run，松手切回 idle。注意：`setAnimation` 是"直接切"，`addAnimation` 是"排队切"（当前动画播完再播下一个）。
 6. **尝试动画混合：** 用 `skeleton.setAnimation(0, 'run', true)` + `skeleton.setAnimation(1, 'aim', true)` 在不同的轨道上同时播放两个动画，实现"边跑边瞄准"的效果。

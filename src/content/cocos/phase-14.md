@@ -102,7 +102,7 @@ export enum PowerUpType {
 
 @ccclass('PowerUp')
 export class PowerUp extends Component {
-  @property type: PowerUpType = PowerUpType.BOMB
+  @property(PowerUpType) type: PowerUpType = PowerUpType.BOMB
   private duration: number = 0
 
   apply(player: Node) {
@@ -129,7 +129,7 @@ export class PowerUp extends Component {
       }
 
       case PowerUpType.EXTRA_LIFE: {
-        // 触发型：加一条命，不立即生效
+        // 即时生效：拾取立即加一条命
         GameManager.instance.lives += 1
         eventBus.emit('life-changed', GameManager.instance.lives)
         break
@@ -158,12 +158,12 @@ const DROP_TABLE: DropEntry[] = [
 
 // 根据权重随机选一个道具
 function rollDrop(enemyType: string): PowerUpType | 'none' {
-  // Boss 击杀可以给额外加权
+  // Boss 击杀给额外加权：modifier 对所有条目生效
   const modifier = enemyType === 'boss' ? 2.0 : 1.0
 
   const entries = DROP_TABLE.map(e => ({
     ...e,
-    weight: e.rarity === 'rare' ? e.weight * modifier : e.weight
+    weight: e.weight * modifier
   }))
 
   const total = entries.reduce((s, e) => s + e.weight, 0)

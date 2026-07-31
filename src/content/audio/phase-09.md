@@ -72,7 +72,7 @@ Cocos 没有内置的 AudioManager 类。这是**你需要自己写的**——�
 ## 🔗 课外延伸
 
 - **Web Audio API AudioNode 图 —— 音频的"Component Tree"：** Web Audio API 的设计哲学和 Vue 的组件树惊人地相似。AudioContext = 根组件，AudioNode = 子组件，connect() = props 传递。你可以把一个 OscillatorNode（振荡器）连接到 GainNode（增益），再连接到 DelayNode（延迟），最后到 destination。每一步都像在组件树中插入一个中间件——处理完传给下一个。这个模型的美在于：**任何 AudioNode 都可以连接到任何其他 AudioNode**，就像 Vue 的 slot 可以在任意层级插入内容。
-- **Cocos 的 AudioSource.playOneShot() vs play()：** `playOneShot()` 是一个静态便捷方法，自动创建临时 AudioSource、播放、销毁。但频繁调用会产生 GC 抖动（Phase 10 的音频池会解决）。`play()` 是实例方法，需要你已经有一个挂好的 AudioSource。SFX 场景下用 playOneShot 简单但不高效，生产环境用音频池。
+- **Cocos 的 AudioSource.playOneShot() vs play()：** `audioSource.playOneShot(clip, volumeScale)` 是 AudioSource 的**实例方法**：通过当前已挂的 AudioSource 的内部播放器一次性播放指定 clip，不会打断正在循环播放的 BGM，也不会自动创建/销毁 AudioSource。它适合短促、一次性触发类音效（射击、拾取）；`play()` 则正式播放/循环当前 clip，适合 BGM 这类需要持续循环并控制暂停、音量的场景。若并发 SFX 很多、需要精细控制，用 Phase 10 的音频池。
 
 ## ✅ 自测清单
 

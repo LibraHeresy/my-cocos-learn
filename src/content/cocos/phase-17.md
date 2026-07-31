@@ -134,12 +134,18 @@ export class GameOverController extends Component {
 
 **2. 淡入淡出转场效果**
 
-<pre>// TransitionManager.ts —— 挂在一个持久化节点上
+<pre>// TransitionManager.ts —— 挂在一个持久化节点上；该节点必须调用
+// director.addPersistRootNode(this.node) 才能在 loadScene 后保留（见 onLoad）
 @ccclass('TransitionManager')
 export class TransitionManager extends Component {
+  static instance: TransitionManager | null = null
+
   @property(Node) fadeOverlay: Node = null!  // 一个全屏黑色 Sprite
 
   onLoad() {
+    if (!TransitionManager.instance) TransitionManager.instance = this
+    // 转场节点要跨场景保留：注册为持久化根节点，否则 loadScene 会把旧场景销毁
+    director.addPersistRootNode(this.node)
     // 初始：完全不透明 → 淡入显示
     this.fadeIn(1.0, () => {
       console.log('场景准备就绪')
