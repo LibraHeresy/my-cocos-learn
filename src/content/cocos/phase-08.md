@@ -31,6 +31,8 @@ Robert Penner 在 2001 年发表了一篇名为《Robert Penner's Easing Functio
 <strong>前端视角：</strong> CSS 的 <code>animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1)</code> 和 Cocos 的 <code>easing: 'easeOut'</code> 做的是同一件事——用数学函数把线性时间映射为非线性进度。CSS 用三次贝塞尔曲线参数化，Cocos 用 Penner 缓动函数，换汤不换药。如果你在 Chrome DevTools 里调过 cubic-bezier 曲线，你就已经理解了 Cocos easing 的全部数学本质。
 </div>
 
+:::demo easing-curves
+
 ## 🔧 动手：UI 弹窗、分数滚动与道具飞行
 
 <pre>// 弹窗效果：0→超调→1

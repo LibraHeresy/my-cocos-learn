@@ -2,6 +2,7 @@
 import { RouterLink } from 'vue-router'
 import HomeSidebar from '@/components/HomeSidebar.vue'
 import FlowChart from '@/components/FlowChart.vue'
+import CourseProgressBar from '@/components/CourseProgressBar.vue'
 import { slug } from '@/utils/slug'
 import type { PhaseGroup } from '@/types/phase'
 
@@ -54,6 +55,7 @@ const phaseGroups: PhaseGroup[] = [
       <h1>从<span class="highlight">零基础</span>到完整游戏音频</h1>
       <p class="subtitle">使用免费工具纯合成方式生成全部游戏音效和背景音乐，无需录音设备或音乐基础。</p>
     </header>
+    <CourseProgressBar course="audio" />
     <section class="phases-section">
       <h2 class="section-title">学习路径</h2>
       <div v-for="(group, i) in phaseGroups" :key="group.label" :id="slug(group.label)" :data-group-index="i" class="phase-group" :style="{ '--s': i }">

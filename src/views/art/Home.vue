@@ -2,6 +2,7 @@
 import { RouterLink } from 'vue-router'
 import HomeSidebar from '@/components/HomeSidebar.vue'
 import FlowChart from '@/components/FlowChart.vue'
+import CourseProgressBar from '@/components/CourseProgressBar.vue'
 import { slug } from '@/utils/slug'
 import type { PhaseGroup } from '@/types/phase'
 
@@ -68,6 +69,8 @@ const phaseGroups: PhaseGroup[] = [
       <h1>画出你的<span class="highlight">飞机大战</span></h1>
       <p class="subtitle">零基础像素画入门到独立创作。从历史和美学讲起，理解每一笔背后的原理，最终独立完成游戏所需的全部像素素材和动画。</p>
     </header>
+
+    <CourseProgressBar course="art" />
 
     <section class="phases-section">
       <h2 class="section-title">学习路径</h2>

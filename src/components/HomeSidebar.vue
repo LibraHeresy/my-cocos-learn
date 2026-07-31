@@ -46,6 +46,7 @@ function scrollToExtra(id: string) {
               :href="`#phase-${p.id}`"
               class="sidebar-sub-link"
               :class="{ active: activePhaseId === p.id }"
+              :aria-current="activePhaseId === p.id ? 'location' : undefined"
               @click.prevent="scrollToPhase(p.id)"
             >
               {{ p.title }}
@@ -66,6 +67,38 @@ function scrollToExtra(id: string) {
       </li>
     </ul>
   </nav>
+  <details v-if="groups.length" class="sidebar-mobile">
+    <summary>课程目录</summary>
+    <ul class="sidebar-list">
+      <li v-for="g in groups" :key="g.label" class="sidebar-group">
+        <span class="sidebar-group-label">{{ g.label }}</span>
+        <ul class="sidebar-sub-list">
+          <li v-for="p in g.phases" :key="p.id" class="sidebar-sub-item">
+            <a
+              :href="`#phase-${p.id}`"
+              class="sidebar-sub-link"
+              :class="{ active: activePhaseId === p.id }"
+              :aria-current="activePhaseId === p.id ? 'location' : undefined"
+              @click.prevent="scrollToPhase(p.id)"
+            >
+              {{ p.title }}
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="sidebar-group">
+        <span class="sidebar-group-label">其他</span>
+        <ul class="sidebar-sub-list">
+          <li class="sidebar-sub-item">
+            <a href="#path-section" class="sidebar-sub-link" @click.prevent="scrollToExtra('path-section')">核心路径</a>
+          </li>
+          <li class="sidebar-sub-item">
+            <a href="#tools-section" class="sidebar-sub-link" @click.prevent="scrollToExtra('tools-section')">使用工具</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </details>
 </template>
 
 <style scoped>
@@ -89,6 +122,31 @@ function scrollToExtra(id: string) {
   .home-sidebar {
     display: none;
   }
+}
+
+@media (min-width: 1201px) {
+  .sidebar-mobile {
+    display: none;
+  }
+}
+
+.sidebar-mobile {
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.sidebar-mobile summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--color-text);
+}
+
+.sidebar-mobile .sidebar-list {
+  margin-top: 0.5rem;
 }
 
 .sidebar-title {

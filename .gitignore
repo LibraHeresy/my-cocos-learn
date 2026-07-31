@@ -41,3 +41,6 @@ coverage/
 # Misc
 *.tgz
 .cache/
+
+# 构建期生成的搜索索引（CI 每次重建）
+public/search-index.json

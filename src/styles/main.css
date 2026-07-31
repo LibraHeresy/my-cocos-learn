@@ -39,6 +39,133 @@
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
+
+  /* 渐变背景 */
+  --color-gradient-top: #fef9f2;
+  --color-gradient-mid: #fdf6ee;
+  --color-gradient-bottom: #faf3e8;
+
+  /* 行内代码 */
+  --color-code-bg: #fdf0e5;
+  --color-code-text: #c56a2d;
+
+  /* 代码块 */
+  --color-codeblock-bg: #2d2a26;
+  --color-codeblock-border: #3e3a35;
+  --color-codeblock-text: #faf3e8;
+  --color-codeblock-strong: #ffb347;
+
+  /* 复制按钮 */
+  --color-copy-btn-fg: #9b8c7c;
+  --color-copy-btn-fg-hover: #e8dcc8;
+  --color-copy-btn-success: #7ecb8a;
+
+  /* 星色 */
+  --color-star: #f0b428;
+
+  /* 前景 / 覆盖 */
+  --color-on-primary: #fff;
+  --color-on-accent: #fff;
+  --color-primary-dark: #c96a30;
+  --color-viewer-bg: #fff;
+  --overlay-bg: rgba(0, 0, 0, 0.75);
+  --shadow-pulse: rgba(224, 123, 60, 0.3);
+
+  color-scheme: light;
+}
+
+/* 深色模式：跟随系统偏好（未手动选择时生效） */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+
+    --color-bg: #1e1a16;
+    --color-bg-soft: #26211c;
+    --color-surface: #2a241e;
+    --color-border: #3d352d;
+    --color-border-light: #332c25;
+
+    --color-text: #e8dcc8;
+    --color-text-muted: #b3a088;
+    --color-text-soft: #8a7a68;
+
+    --color-primary: #e8975f;
+    --color-primary-soft: #3a2c1f;
+    --color-accent: #e06a6a;
+    --color-accent-soft: #3a2323;
+    --color-success: #7cc193;
+    --color-success-soft: #24392c;
+
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 3px 12px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 6px 24px rgba(0, 0, 0, 0.4);
+
+    --color-gradient-top: #26211c;
+    --color-gradient-mid: #201b17;
+    --color-gradient-bottom: #1a1714;
+
+    --color-code-bg: #3a2c1f;
+    --color-code-text: #e8975f;
+
+    --color-codeblock-bg: #1a1714;
+    --color-codeblock-border: #3d352d;
+    --color-codeblock-text: #e8dcc8;
+    --color-codeblock-strong: #ffb347;
+
+    --color-copy-btn-fg: #8a7a68;
+    --color-copy-btn-fg-hover: #e8dcc8;
+    --color-copy-btn-success: #7cc193;
+
+    --color-viewer-bg: #26211c;
+    --overlay-bg: rgba(0, 0, 0, 0.85);
+    --shadow-pulse: rgba(232, 151, 95, 0.35);
+  }
+}
+
+/* 深色模式：手动指定（两处同步） */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-bg: #1e1a16;
+  --color-bg-soft: #26211c;
+  --color-surface: #2a241e;
+  --color-border: #3d352d;
+  --color-border-light: #332c25;
+
+  --color-text: #e8dcc8;
+  --color-text-muted: #b3a088;
+  --color-text-soft: #8a7a68;
+
+  --color-primary: #e8975f;
+  --color-primary-soft: #3a2c1f;
+  --color-accent: #e06a6a;
+  --color-accent-soft: #3a2323;
+  --color-success: #7cc193;
+  --color-success-soft: #24392c;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 3px 12px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 6px 24px rgba(0, 0, 0, 0.4);
+
+  --color-gradient-top: #26211c;
+  --color-gradient-mid: #201b17;
+  --color-gradient-bottom: #1a1714;
+
+  --color-code-bg: #3a2c1f;
+  --color-code-text: #e8975f;
+
+  --color-codeblock-bg: #1a1714;
+  --color-codeblock-border: #3d352d;
+  --color-codeblock-text: #e8dcc8;
+  --color-codeblock-strong: #ffb347;
+
+  --color-copy-btn-fg: #8a7a68;
+  --color-copy-btn-fg-hover: #e8dcc8;
+  --color-copy-btn-success: #7cc193;
+
+  --color-viewer-bg: #26211c;
+  --overlay-bg: rgba(0, 0, 0, 0.85);
+  --shadow-pulse: rgba(232, 151, 95, 0.35);
 }
 
 html {
@@ -50,7 +177,12 @@ body {
   font-family:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans SC',
     sans-serif;
-  background: linear-gradient(180deg, #fef9f2 0%, #fdf6ee 30%, #faf3e8 100%);
+  background: linear-gradient(
+    180deg,
+    var(--color-gradient-top) 0%,
+    var(--color-gradient-mid) 30%,
+    var(--color-gradient-bottom) 100%
+  );
   background-attachment: fixed;
   color: var(--color-text);
   line-height: 1.85;
@@ -126,8 +258,8 @@ li:last-child {
 
 /* ---- 内联代码 ---- */
 code {
-  background: #fdf0e5;
-  color: #c56a2d;
+  background: var(--color-code-bg);
+  color: var(--color-code-text);
   padding: 0.15em 0.45em;
   border-radius: 4px;
   font-size: 0.88em;
@@ -138,8 +270,8 @@ code {
 /* ---- 代码块 ---- */
 pre {
   position: relative;
-  background: #2d2a26;
-  border: 1px solid #3e3a35;
+  background: var(--color-codeblock-bg);
+  border: 1px solid var(--color-codeblock-border);
   border-radius: var(--radius-md);
   padding: 1.25rem 1.35rem;
   overflow-x: auto;
@@ -147,13 +279,13 @@ pre {
   line-height: 1.75;
   margin-bottom: 1rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-  color: #faf3e8;
+  color: var(--color-codeblock-text);
   font-family: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', 'Consolas', monospace;
 }
 
 pre code {
   background: none;
-  color: #faf3e8;
+  color: var(--color-codeblock-text);
   padding: 0;
   font-size: inherit;
   white-space: pre;
@@ -162,7 +294,7 @@ pre code {
 
 /* 代码块内保留 strong 高亮 */
 pre code strong {
-  color: #ffb347;
+  color: var(--color-codeblock-strong);
 }
 
 /* ---- 复制按钮 ---- */
@@ -176,7 +308,7 @@ pre code strong {
   padding: 0.25em 0.55em;
   font-size: 0.9rem;
   font-family: inherit;
-  color: #9b8c7c;
+  color: var(--color-copy-btn-fg);
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 4px;
@@ -191,12 +323,12 @@ pre:hover .copy-btn {
 }
 
 .copy-btn:hover {
-  color: #e8dcc8;
+  color: var(--color-copy-btn-fg-hover);
   background: rgba(255, 255, 255, 0.12);
 }
 
 .copy-btn.copied {
-  color: #7ecb8a;
+  color: var(--color-copy-btn-success);
   border-color: rgba(126, 203, 138, 0.3);
 }
 
@@ -303,38 +435,86 @@ tr:last-child td {
   font-size: 0.9rem;
 }
 
-/* ---- PixelCanvas 图注 ---- */
-.px-desc {
-  font-size: 0.82rem;
-  color: var(--color-text-muted);
-  margin-top: 0.3rem;
-  margin-bottom: 0;
+/* ---- 打印 ---- */
+@media print {
+  .concept-block,
+  .phase-group {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  pre {
+    background: #f6f6f4 !important;
+    color: #333 !important;
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+  }
+
+  pre code {
+    color: #333 !important;
+  }
+
+  pre code strong {
+    color: #a05a00 !important;
+  }
+
+  .navbar,
+  .page-toc,
+  .home-sidebar,
+  .nav-btn,
+  .copy-btn,
+  .back-link,
+  .toc-mobile,
+  .home-footer,
+  .progress-dot::before {
+    display: none !important;
+  }
+
+  .page-toc,
+  .home-sidebar,
+  .toc-mobile {
+    position: static !important;
+  }
+
+  table {
+    display: table !important;
+    width: 100%;
+  }
+
+  @page {
+    margin: 14mm;
+  }
+
+  body {
+    background: #fff !important;
+    color: #000;
+  }
 }
 
-.px-hex {
-  font-size: 0.78rem;
-  color: var(--color-text-soft);
-  margin-top: 0.1rem;
-  margin-bottom: 0;
+/* ---- 键盘可达性 ---- */
+a:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
-/* ---- PixelCanvas 对比布局 ---- */
-.px-compare {
-  display: flex;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  margin-bottom: 0.85rem;
-}
+/* ---- 减少动态效果 ---- */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 
-.px-label {
-  font-size: 0.8rem;
-  color: var(--color-text-muted);
-  margin-bottom: 0.35rem;
-  font-weight: 500;
-}
-
-.px-compare-end {
-  align-items: flex-end;
+  .concept-block,
+  .phase-group {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
 

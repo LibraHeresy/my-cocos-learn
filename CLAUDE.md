@@ -1,6 +1,6 @@
 # my-cocos-learn
 
-Vue 3 + TypeScript + Vite 游戏开发学习文档站，4 门课程共 67 个阶段页面（Cocos 25、美术 14、音效 12、工程化 16）+ 30 天速通计划，纯静态无后端。
+Vue 3 + TypeScript + Vite 游戏开发学习文档站，4 门课程共 67 个阶段页面（Cocos 25、美术 14、音效 12、工程化 16）+ 像素画工坊 34 关挑战，纯静态无后端。
 
 ## 命令
 
@@ -21,14 +21,15 @@ Hash 模式。`src/router/index.ts` + `src/router/routes.ts`（`makePhaseRoutes(
 
 | 路径 | 名称 | 组件 |
 |------|------|------|
-| `/` | home | `views/speedrun/Landing.vue` |
+| `/` | home | `views/workshop/WorkshopHome.vue` |
 | `/cocos` | cocos | `views/cocos/Home.vue` |
 | `/cocos/phase/1~25` | cocos-phaseN | `components/PhasePage.vue`（通用，内容来自 `content/cocos/phase-NN.md`） |
 | `/art` + `/art/phase/1~14` | art / art-phaseN | 同上，内容来自 `content/art/` |
 | `/audio` + `/audio/phase/1~12` | audio / audio-phaseN | 同上，内容来自 `content/audio/` |
 | `/engineering` + `/engineering/phase/1~16` | engineering / engineering-phaseN | 同上，内容来自 `content/engineering/` |
-| `/speedrun` | speedrun | `views/speedrun/Landing.vue` |
-| `/speedrun/day/1~30` | speedrun-dayN | `views/speedrun/DayN.vue` |
+| `/workshop` | workshop | `views/workshop/WorkshopHome.vue` |
+| `/workshop/gallery` | workshop-gallery | `views/workshop/GalleryView.vue` |
+| `/workshop/phase/:phase` | workshop-phase | `views/workshop/WorkshopPhase.vue` |
 
 ## 组件架构
 

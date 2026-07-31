@@ -2,8 +2,13 @@
 import { computed } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
 import { COURSE_LIST, COURSES, detectCourseFromRoute } from '@/data/courses'
+import { useTheme } from '@/composables/useTheme'
+import { getLastPosition } from '@/stores/readingStore'
+import SearchBox from '@/components/SearchBox.vue'
 
 const route = useRoute()
+const { isDark, toggle } = useTheme()
+const lastPos = computed(() => getLastPosition())
 
 const courses = [
   { id: 'workshop', label: '工坊', icon: '🛠️', path: '/workshop' },
@@ -23,7 +28,7 @@ const activeCourse = computed(() => {
 </script>
 
 <template>
-  <nav class="navbar">
+  <nav class="navbar" aria-label="主导航">
     <div class="navbar-inner">
       <RouterLink to="/" class="nav-brand">✈️ 像素飞机大战</RouterLink>
       <div class="nav-tabs">
@@ -33,10 +38,29 @@ const activeCourse = computed(() => {
           :to="c.path"
           class="nav-tab"
           :class="{ active: activeCourse === c.id }"
+          :aria-current="activeCourse === c.id ? 'page' : undefined"
         >
           <span class="tab-icon">{{ c.icon }}</span>
           <span class="tab-label">{{ c.label }}</span>
         </RouterLink>
+        <RouterLink
+          v-if="lastPos"
+          :to="`/${lastPos.course}/phase/${lastPos.phase}`"
+          class="nav-continue"
+          :aria-label="`继续学习：${lastPos.course} 第 ${lastPos.phase} 阶段`"
+        >
+          ▶ 继续
+        </RouterLink>
+        <SearchBox />
+        <button
+          type="button"
+          class="nav-theme-toggle"
+          :aria-label="isDark ? '切换浅色模式' : '切换深色模式'"
+          :aria-pressed="isDark"
+          @click="toggle"
+        >
+          <span class="theme-icon">{{ isDark ? '☀️' : '🌙' }}</span>
+        </button>
       </div>
     </div>
   </nav>
@@ -50,6 +74,7 @@ const activeCourse = computed(() => {
   background: var(--color-surface);
   border-bottom: 1px solid var(--color-border-light);
   box-shadow: var(--shadow-sm);
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 }
 
@@ -115,6 +140,60 @@ const activeCourse = computed(() => {
 
 .tab-label {
   white-space: nowrap;
+}
+
+.nav-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-left: 0.3rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    color 0.2s,
+    transform 0.15s;
+}
+
+.nav-theme-toggle:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.nav-theme-toggle:active {
+  transform: scale(0.95);
+}
+
+.theme-icon {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.nav-continue {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  margin-left: 0.35rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+  white-space: nowrap;
+}
+
+.nav-continue:hover {
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+  opacity: 0.85;
 }
 
 @media (max-width: 640px) {

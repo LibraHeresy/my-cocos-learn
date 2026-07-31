@@ -128,7 +128,7 @@ function toggleExpand() {
 
 .card-rating {
   font-size: 0.72rem;
-  color: #f0b428;
+  color: var(--color-star);
 }
 
 .expand-btn {

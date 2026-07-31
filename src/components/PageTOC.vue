@@ -62,6 +62,7 @@ function scrollTo(id: string) {
           :href="`#${item.id}`"
           class="toc-link"
           :class="{ active: activeId === item.id }"
+          :aria-current="activeId === item.id ? 'location' : undefined"
           @click.prevent="scrollTo(item.id)"
         >
           {{ item.title }}
@@ -69,6 +70,22 @@ function scrollTo(id: string) {
       </li>
     </ul>
   </nav>
+  <details v-if="items.length" class="toc-mobile">
+    <summary>本页目录</summary>
+    <ul class="toc-list">
+      <li v-for="item in items" :key="item.id" class="toc-item">
+        <a
+          :href="`#${item.id}`"
+          class="toc-link"
+          :class="{ active: activeId === item.id }"
+          :aria-current="activeId === item.id ? 'location' : undefined"
+          @click.prevent="scrollTo(item.id)"
+        >
+          {{ item.title }}
+        </a>
+      </li>
+    </ul>
+  </details>
 </template>
 
 <style scoped>
@@ -92,6 +109,31 @@ function scrollTo(id: string) {
   .page-toc {
     display: none;
   }
+}
+
+@media (min-width: 1201px) {
+  .toc-mobile {
+    display: none;
+  }
+}
+
+.toc-mobile {
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.toc-mobile summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--color-text);
+}
+
+.toc-mobile .toc-list {
+  margin-top: 0.5rem;
 }
 
 .toc-title {

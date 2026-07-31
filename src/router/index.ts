@@ -1,11 +1,11 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import { makePhaseRoutes } from './routes'
 import { COURSE_LIST } from '@/data/courses'
 
 const homeModules = import.meta.glob('../views/*/Home.vue')
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     { path: '/', name: 'home', component: () => import('@/views/workshop/WorkshopHome.vue') },
     ...COURSE_LIST.flatMap((c) => [

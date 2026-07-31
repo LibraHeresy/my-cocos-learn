@@ -20,8 +20,13 @@ function getRouteInfo() {
 }
 
 function handleKeydown(e: KeyboardEvent) {
-  const tag = (e.target as HTMLElement).tagName
-  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
+  // 带修饰键的快捷键（Ctrl/Meta/Alt/Shift）不拦截
+  if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return
+  // 焦点在表单控件、弹层或标记了 data-no-arrow-nav 的容器时，不触发翻页
+  const target = e.target as HTMLElement
+  if (target.closest(
+    'input, textarea, select, [contenteditable="true"], [role="dialog"], dialog, [data-no-arrow-nav]',
+  )) return
 
   const { course, phase } = getRouteInfo()
   if (!course) return
@@ -59,8 +64,11 @@ onUnmounted(() => {
 </script>
 
 <template>
+  <a class="skip-link" href="#app-main">跳到正文</a>
   <NavBar />
-  <RouterView />
+  <div id="app-main" tabindex="-1">
+    <RouterView />
+  </div>
   <div v-if="saveError" class="save-error-toast" role="alert">{{ saveError }}</div>
 </template>
 
@@ -78,5 +86,16 @@ onUnmounted(() => {
   box-shadow: var(--shadow-md);
   z-index: 2000;
   max-width: 90vw;
+}
+
+.skip-link {
+  position: absolute;
+  transform: translateY(-300%);
+}
+
+.skip-link:focus {
+  transform: none;
+  background: var(--color-surface);
+  z-index: 1000;
 }
 </style>

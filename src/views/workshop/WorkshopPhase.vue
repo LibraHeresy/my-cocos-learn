@@ -273,7 +273,13 @@ const allPassed = computed(() =>
           class="selfcheck-item"
           :class="{ passed: selfCheckResults[i] === true, failed: selfCheckResults[i] === false }"
         >
-          <button class="check-btn" @click="toggleSelfCheck(i)">
+          <button
+            type="button"
+            class="check-btn"
+            :aria-pressed="selfCheckResults[i] === null ? 'mixed' : selfCheckResults[i] ? 'true' : 'false'"
+            :aria-label="sc.question"
+            @click="toggleSelfCheck(i)"
+          >
             <span v-if="selfCheckResults[i] === true">✓</span>
             <span v-else-if="selfCheckResults[i] === false">✗</span>
             <span v-else>—</span>
@@ -307,13 +313,13 @@ const allPassed = computed(() =>
       <!-- Upload -->
       <div class="upload-section">
         <h3>📤 上传作品</h3>
-        <div
+        <label
+          for="workshop-upload-input"
           class="upload-area"
           :class="{ 'drag-over': dragOver, 'has-image': !!displayUrl }"
           @dragover.prevent="dragOver = true"
           @dragleave="dragOver = false"
           @drop.prevent="handleDrop"
-          @click="($refs.fileInput as HTMLInputElement)?.click()"
         >
           <template v-if="displayUrl">
             <img :src="displayUrl" class="upload-preview" alt="作品预览" />
@@ -326,21 +332,31 @@ const allPassed = computed(() =>
               <span class="upload-limit">最大 500KB</span>
             </div>
           </template>
-        </div>
+        </label>
         <p v-if="uploadError" class="upload-error" role="alert">{{ uploadError }}</p>
-        <input ref="fileInput" type="file" accept="image/png" style="display: none" @change="handleFileSelect" />
+        <input
+          id="workshop-upload-input"
+          ref="fileInput"
+          type="file"
+          accept="image/png"
+          class="visually-hidden"
+          @change="handleFileSelect"
+        />
       </div>
 
       <!-- Self Rating -->
       <div class="rating-section">
         <h3>⭐ 自评</h3>
-        <div class="rating-row">
+        <div class="rating-row" data-no-arrow-nav>
           <button
             v-for="r in 5" :key="r"
+            type="button"
             class="rating-star" :class="{ active: r <= selfRating }"
+            :aria-label="`评 ${r} 星`"
+            :aria-pressed="r <= selfRating"
             @click="setRating(r)"
           >
-            {{ r <= selfRating ? '★' : '☆' }}
+            <span aria-hidden="true">{{ r <= selfRating ? '★' : '☆' }}</span>
           </button>
           <span class="rating-label">
             {{ selfRating === 0 ? '点击评分' : selfRating === 5 ? '完美！' : selfRating >= 3 ? '不错' : '还需努力' }}
@@ -464,8 +480,8 @@ const allPassed = computed(() =>
   color: var(--color-text-muted);
 }
 
-.passed .check-btn { border-color: var(--color-success); background: var(--color-success); color: #fff; }
-.failed .check-btn { border-color: var(--color-accent); background: var(--color-accent); color: #fff; }
+.passed .check-btn { border-color: var(--color-success); background: var(--color-success); color: var(--color-on-primary); }
+.failed .check-btn { border-color: var(--color-accent); background: var(--color-accent); color: var(--color-on-primary); }
 
 .check-content { flex: 1; min-width: 0; }
 .check-question { font-size: 0.85rem; color: var(--color-text); margin: 0; line-height: 1.5; }
@@ -539,7 +555,7 @@ const allPassed = computed(() =>
 
 .remove-img-btn {
   position: absolute; top: 0.4rem; right: 0.4rem;
-  background: var(--color-accent); color: #fff; border: none;
+  background: var(--color-accent); color: var(--color-on-primary); border: none;
   border-radius: 4px; padding: 0.2rem 0.5rem; font-size: 0.72rem; cursor: pointer;
 }
 
@@ -561,7 +577,7 @@ const allPassed = computed(() =>
   color: var(--color-border); padding: 0; line-height: 1;
   transition: color 0.15s, transform 0.15s;
 }
-.rating-star.active { color: #f0b428; }
+.rating-star.active { color: var(--color-star); }
 .rating-star:hover { transform: scale(1.15); }
 .rating-label { margin-left: 0.5rem; font-size: 0.82rem; color: var(--color-text-muted); }
 
@@ -572,11 +588,24 @@ const allPassed = computed(() =>
 
 .save-btn {
   padding: 0.6rem 1.75rem;
-  background: var(--color-primary); color: #fff;
+  background: var(--color-primary); color: var(--color-on-primary);
   border: none; border-radius: 8px;
   font-size: 0.9rem; font-weight: 700; cursor: pointer;
   transition: background 0.2s;
 }
-.save-btn:hover { background: #c96a30; }
+.save-btn:hover { background: var(--color-primary-dark); }
 .saved-toast { margin-left: 0.75rem; font-size: 0.85rem; color: var(--color-success); font-weight: 600; }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  overflow: hidden;
+  white-space: nowrap;
+}
 </style>

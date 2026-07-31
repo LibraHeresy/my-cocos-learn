@@ -1,0 +1,28 @@
+/* 交互演示的统一外壳：所有 demo 组件根节点使用 .demo-shell（或用 DemoShell 包裹）。 */
+.demo-shell {
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-soft);
+  box-shadow: var(--shadow-sm);
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.demo-caption {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  margin-top: 0.5rem;
+}
+
+.demo-shell canvas {
+  image-rendering: pixelated;
+  -webkit-image-rendering: pixelated;
+  /* Safari<16 兜底 */
+  image-rendering: crisp-edges;
+}
+
+.demo-missing {
+  font-size: 0.8rem;
+  color: var(--color-accent);
+  padding: 0.5rem;
+}

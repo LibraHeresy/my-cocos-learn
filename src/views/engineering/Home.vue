@@ -2,6 +2,7 @@
 import { RouterLink } from 'vue-router'
 import HomeSidebar from '@/components/HomeSidebar.vue'
 import FlowChart from '@/components/FlowChart.vue'
+import CourseProgressBar from '@/components/CourseProgressBar.vue'
 import { slug } from '@/utils/slug'
 import type { PhaseGroup } from '@/types/phase'
 
@@ -58,6 +59,7 @@ const phaseGroups: PhaseGroup[] = [
       <h1>从<span class="highlight">Demo</span>到<span class="highlight">产品</span></h1>
       <p class="subtitle">覆盖微信小游戏发布、数值设计、用户留存、商业化变现、测试体系、CI/CD、手感打磨与性能优化。</p>
     </header>
+    <CourseProgressBar course="engineering" />
     <section class="phases-section">
       <h2 class="section-title">学习路径</h2>
       <div v-for="(group, i) in phaseGroups" :key="group.label" :id="slug(group.label)" :data-group-index="i" class="phase-group" :style="{ '--s': i }">

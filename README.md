@@ -1,6 +1,6 @@
 # 像素飞机大战 — Cocos Creator 学习之路
 
-Vue 3 + TypeScript + Vite 游戏开发学习文档站，4 门课程共 67 个阶段页面 + 30 天速通计划，纯静态无后端。
+Vue 3 + TypeScript + Vite 游戏开发学习文档站，4 门课程共 67 个阶段页面，纯静态无后端。
 
 ## 技术栈
 
@@ -25,7 +25,7 @@ npm run format   # Prettier 格式化
 | 像素美术 | 14 | `/art` |
 | 游戏音效 | 12 | `/audio` |
 | 工程化与运营 | 16 | `/engineering` |
-| 30 天速通 | 30 天 | `/speedrun` |
+| 像素画工坊 | 34 关挑战 | `/workshop` |
 
 ## 项目结构
 
@@ -36,7 +36,7 @@ src/
   router/                  # Hash 路由（makePhaseRoutes 批量生成）
   data/courses.ts          # 课程元数据单一起源
   components/              # NavBar, PhaseLayout, ConceptBlock, PageTOC 等
-  views/                   # cocos/ art/ audio/ engineering/ speedrun/
+  views/                   # cocos/ art/ audio/ engineering/ workshop/
   composables/             # useScrollLock, useRevealOnScroll
   styles/                  # main.css, home-shared.css, phase-layout.css
   utils/                   # slug 工具

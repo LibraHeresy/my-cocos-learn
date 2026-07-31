@@ -2,6 +2,7 @@
 import { RouterLink } from 'vue-router'
 import HomeSidebar from '@/components/HomeSidebar.vue'
 import FlowChart from '@/components/FlowChart.vue'
+import CourseProgressBar from '@/components/CourseProgressBar.vue'
 import { slug } from '@/utils/slug'
 import type { PhaseGroup } from '@/types/phase'
 
@@ -94,6 +95,8 @@ const phaseGroups: PhaseGroup[] = [
         一份为前端工程师深度定制的游戏引擎学习指南。不讲 API 列表，讲清楚每个概念从哪来、为什么存在、解决了什么问题。
       </p>
     </header>
+
+    <CourseProgressBar course="cocos" />
 
     <section class="phases-section">
       <h2 class="section-title">学习路径</h2>

@@ -7,19 +7,7 @@ declare module '*.vue' {
 }
 
 declare module '*.md' {
-  interface BlockData {
-    icon: string
-    title: string
-    html: string
-  }
-
-  interface PhaseData {
-    phase: number
-    title: string
-    duration: string
-    blocks: BlockData[]
-  }
-
-  const data: PhaseData
+  import type { PhaseMdData } from '@/types/phase'
+  const data: PhaseMdData
   export default data
 }

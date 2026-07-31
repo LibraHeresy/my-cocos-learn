@@ -1,14 +1,19 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { usePracticeLog } from '@/composables/usePracticeLog'
 import { useBlobImage } from '@/composables/useBlobImage'
+import { useFocusTrap } from '@/composables/useFocusTrap'
 import GalleryCard from '@/components/workshop/GalleryCard.vue'
 
 const { groupedEntries, stats } = usePracticeLog()
 
 const imageViewer = ref<{ blobId: string; title: string } | null>(null)
+const overlayRef = ref<HTMLElement | null>(null)
+let lastFocused: HTMLElement | null = null
 const { url: viewerUrl } = useBlobImage(computed(() => imageViewer.value?.blobId))
+
+useFocusTrap(overlayRef)
 
 function formatDate(dateStr: string): string {
   const d = new Date(dateStr + 'T00:00:00')
@@ -31,11 +36,15 @@ function formatDate(dateStr: string): string {
 }
 
 function openImage(blobId: string, title: string) {
+  lastFocused = document.activeElement as HTMLElement | null
   imageViewer.value = { blobId, title }
+  void nextTick(() => overlayRef.value?.focus())
 }
 
 function closeImageViewer() {
   imageViewer.value = null
+  lastFocused?.focus()
+  lastFocused = null
 }
 </script>
 
@@ -70,10 +79,20 @@ function closeImageViewer() {
 
     <!-- Image Viewer Modal -->
     <Teleport to="body">
-      <div v-if="imageViewer" class="image-viewer-overlay" @click="closeImageViewer">
+      <div
+        v-if="imageViewer"
+        ref="overlayRef"
+        class="image-viewer-overlay"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="viewer-title"
+        tabindex="-1"
+        @click="closeImageViewer"
+        @keydown.esc="closeImageViewer"
+      >
         <div class="image-viewer-content" @click.stop>
           <img v-if="viewerUrl" :src="viewerUrl" :alt="imageViewer.title" />
-          <div class="viewer-title">{{ imageViewer.title }}</div>
+          <div id="viewer-title" class="viewer-title">{{ imageViewer.title }}</div>
           <button type="button" class="viewer-close" @click="closeImageViewer">✕</button>
         </div>
       </div>
@@ -147,7 +166,7 @@ function closeImageViewer() {
 .image-viewer-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
+  background: var(--overlay-bg);
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -156,7 +175,7 @@ function closeImageViewer() {
 
 .image-viewer-content {
   position: relative;
-  background: #fff;
+  background: var(--color-viewer-bg);
   border-radius: 12px;
   padding: 1.5rem;
   max-width: 90vw;

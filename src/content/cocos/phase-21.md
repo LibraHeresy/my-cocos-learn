@@ -76,6 +76,8 @@ CCProgram unlit-fs %{
 </tbody>
 </table>
 
+:::demo shader-compare
+
 ## 📺 全屏后处理：给整个画面加滤镜
 
 上面说的四种效果是**材质 Shader**——挂在单个 Sprite 上，只影响这一个元素。还有一种更强大的用法——**全屏后处理**（Post-processing）。整个场景渲染完成后，在输出到屏幕之前，对整个画面加一层 Shader。

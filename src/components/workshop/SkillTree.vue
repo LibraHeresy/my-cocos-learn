@@ -256,8 +256,8 @@ function isChallengeDone(id: number): boolean {
   white-space: nowrap;
 }
 
-.completed-badge { background: var(--color-success); color: #fff; }
-.current-badge { background: var(--color-primary); color: #fff; }
+.completed-badge { background: var(--color-success); color: var(--color-on-primary); }
+.current-badge { background: var(--color-primary); color: var(--color-on-primary); }
 
 .node-expand-hint {
   flex-shrink: 0;
@@ -322,7 +322,7 @@ function isChallengeDone(id: number): boolean {
   width: 18px; height: 18px;
   border-radius: 50%;
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-on-primary);
   font-size: 0.62rem;
   font-weight: 700;
   display: flex;
@@ -351,7 +351,7 @@ function isChallengeDone(id: number): boolean {
 }
 
 @keyframes skill-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(224, 123, 60, 0.3); }
+  0%, 100% { box-shadow: 0 0 0 0 var(--shadow-pulse); }
   50% { box-shadow: 0 0 0 6px rgba(224, 123, 60, 0); }
 }
 

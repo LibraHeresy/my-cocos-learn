@@ -52,6 +52,7 @@
   - **方案 A（推荐）**：把 30 天速通做回来——`docs/plan.md` 已有完整的 D1–D30 映射表（[plan.md:534-565](plan.md#L534-L565)），一个 `DayN.vue` + 一张映射数据即可，成本约 1 个 session，且对「30 天通关」场景价值很高。
   - **方案 B**：同步清理 README / CLAUDE.md / plan.md 中的 speedrun 相关内容，并把 CLAUDE.md 的 `/` 路由描述改正为 WorkshopHome。
 - **工作量**：A 中 / B 小。
+- **✅ 解决记录（2026-07-31）**：采纳方案 B，30 天速通已彻底删除。代码侧本已清理；本次清理了 README / CLAUDE.md / docs/plan.md 的全部引用，并把 D1–D30 映射表归档到 [docs/archive/30-day-speedrun-mapping.md](archive/30-day-speedrun-mapping.md)（已停用留档）。
 
 ### 1.3 `PracticeEntry.course` 从未写入，画廊课程筛选是死代码
 
@@ -311,6 +312,7 @@
 ### 6.5 30 天速通（与 1.2 关联）
 
 - 若采纳 1.2 方案 A，`docs/plan.md` 已有完整 D1–D30 映射表可直接落地。速通页是这类学习站的差异化功能。
+- **✅ 已决定（2026-07-31）**：不再推进。速通功能彻底删除，映射表已归档到 [docs/archive/30-day-speedrun-mapping.md](archive/30-day-speedrun-mapping.md)。若未来恢复，以该归档 + git 历史为准。
 
 ---
 

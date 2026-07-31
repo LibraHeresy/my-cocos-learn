@@ -46,6 +46,10 @@
   50% { top: -18px; }
 }
 
+.progress-dot.done {
+  background: var(--color-success);
+}
+
 /* ---- Header ---- */
 .phase-header {
   margin-bottom: 2.5rem;
@@ -76,10 +80,33 @@
   margin-bottom: 0.6rem;
 }
 
+.done-toggle {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  padding: 0.2em 0.8em;
+  font-size: 0.74rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.done-toggle:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.done-toggle.done {
+  background: var(--color-success-soft);
+  border-color: var(--color-success);
+  color: var(--color-success);
+  font-weight: 600;
+}
+
 .phase-badge {
   display: inline-block;
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-on-primary);
   font-weight: 600;
   padding: 0.2em 0.85em;
   border-radius: 20px;

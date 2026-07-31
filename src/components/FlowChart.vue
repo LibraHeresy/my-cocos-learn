@@ -68,7 +68,7 @@ const items = computed(() => props.steps.map((text, i) => ({ index: i, text, ...
   height: 28px;
   border-radius: 50%;
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-on-primary);
   font-size: 0.82rem;
   font-weight: 700;
   flex-shrink: 0;

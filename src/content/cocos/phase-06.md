@@ -51,6 +51,8 @@ CPU 和 GPU 之间的通信有**固定开销**——切换渲染状态（纹理�
 <strong>前端类比：渲染阻塞资源。</strong> 打断合批就像页面里夹了一个 render-blocking 的 CSS——它自己要多走一趟网络，还卡住了后面所有东西的渲染。DrawCall 也是这样：一个"不合群"的 Sprite 不仅自己多占一次 DrawCall，还会把本来可以合批的一组对象硬生生拆成两拨。
 </div>
 
+:::demo atlas-batching
+
 ## 🔧 动手：Auto Atlas 前后 DrawCall 对比
 
 这个动手实验会让你亲眼看到 DrawCall 是怎么被图集优化的——比任何文字解释都有说服力：

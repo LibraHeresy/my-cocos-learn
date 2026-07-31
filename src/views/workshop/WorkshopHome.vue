@@ -188,7 +188,7 @@ function challengeStatus(id: number): 'completed' | 'available' {
 .stage-label {
   font-size: 0.65rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--color-on-primary);
   background: var(--color-primary);
   padding: 0.12rem 0.45rem;
   border-radius: 4px;

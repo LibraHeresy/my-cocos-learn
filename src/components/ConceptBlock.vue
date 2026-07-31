@@ -23,6 +23,8 @@ onMounted(() => {
     if (pre.querySelector('.copy-btn')) return
 
     const btn = document.createElement('button')
+    btn.setAttribute('type', 'button')
+    btn.setAttribute('aria-label', '复制代码')
     btn.className = 'copy-btn'
     btn.innerHTML = '<span class="copy-icon">📋</span> 复制'
 
@@ -141,5 +143,12 @@ onMounted(() => {
   .block-title {
     font-size: 1.05rem;
   }
+}
+</style>
+
+<style>
+.copy-btn:focus-visible,
+pre:focus-within .copy-btn {
+  opacity: 1;
 }
 </style>
