@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import PhaseLayout from '@/components/PhaseLayout.vue'
 import ConceptBlock from '@/components/ConceptBlock.vue'
-import { detectCourseFromRoute } from '@/data/courses'
+import { detectCourseFromRoute, parsePhaseFromRoute } from '@/data/courses'
 import type { PhaseMdData } from '@/types/phase'
 
 const dataModules = import.meta.glob<{ default: PhaseMdData }>(
@@ -14,9 +14,11 @@ const dataModules = import.meta.glob<{ default: PhaseMdData }>(
 const route = useRoute()
 
 const data = computed(() => {
-  const course = detectCourseFromRoute(route.name as string)
+  const name = route.name
+  if (!name || typeof name !== 'string') return null
+  const course = detectCourseFromRoute(name)
   if (!course) return null
-  const n = parseInt((route.name as string).match(/-phase(\d+)$/)![1])
+  const n = parsePhaseFromRoute(name) ?? 1
   const key = `../content/${course}/phase-${String(n).padStart(2, '0')}.md`
   return dataModules[key]?.default ?? null
 })

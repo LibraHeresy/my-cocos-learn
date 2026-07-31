@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
-import { getChallenge, getStageForChallenge } from '@/data/challenges'
+import { getChallenge, getStageForChallenge, CHALLENGES } from '@/data/challenges'
 import { SKILL_LINES } from '@/data/skill-tree'
 import { usePracticeLog } from '@/composables/usePracticeLog'
+import { useBlobImage } from '@/composables/useBlobImage'
+import { putBlob, deleteBlob } from '@/stores/idb'
+import { dataUrlToBlob } from '@/utils/idb.migration'
+import { isBlobReferenced } from '@/stores/workshopStore'
 
 const MAX_IMAGE_SIZE = 500 * 1024
 const DRAFT_KEY = '__workshop_phase_form__'
@@ -18,45 +22,70 @@ const stage = computed(() => getStageForChallenge(challengeId.value))
 const existingPractice = computed(() => getPhasePractice(challengeId.value))
 
 // Form state
-const imageDataUrl = ref<string | undefined>(existingPractice.value?.imageDataUrl)
+const imageBlobId = ref<string | undefined>(existingPractice.value?.imageBlobId)
+const previewUrl = ref<string | null>(null)
 const selfRating = ref<number>(existingPractice.value?.selfRating ?? 0)
 const saved = ref(false)
 const dragOver = ref(false)
+const uploadError = ref<string | null>(null)
 const selfCheckResults = ref<Record<number, boolean | null>>({})
+let pendingBlobWrite: Promise<string> | null = null
 
-// Initialize selfCheckResults
-onMounted(() => {
-  if (!existingPractice.value && challenge.value) {
-    const defaults: Record<number, boolean | null> = {}
-    challenge.value.selfCheck.forEach((_, i) => { defaults[i] = null })
-    selfCheckResults.value = defaults
-    // restore draft
-    try {
-      const raw = localStorage.getItem(DRAFT_KEY)
-      if (raw) {
-        const drafts = JSON.parse(raw)
-        const key = String(challengeId.value)
-        if (drafts[key]) {
-          imageDataUrl.value = drafts[key].imageDataUrl
-          selfCheckResults.value = drafts[key].selfCheckResults ?? defaults
-          selfRating.value = drafts[key].selfRating ?? 0
-        }
-      }
-    } catch { /* ignore */ }
-  } else if (existingPractice.value && challenge.value) {
-    // Load existing selfCheck from practice reflections
-    const defaults: Record<number, boolean | null> = {}
-    challenge.value.selfCheck.forEach((_, i) => { defaults[i] = null })
-    selfCheckResults.value = defaults
-  }
-})
+const { url: blobPreviewUrl } = useBlobImage(imageBlobId)
+const displayUrl = computed(() => previewUrl.value ?? blobPreviewUrl.value)
+
+function defaultSelfChecks() {
+  const defaults: Record<number, boolean | null> = {}
+  challenge.value?.selfCheck.forEach((_, i) => { defaults[i] = null })
+  return defaults
+}
+
+function restoreDraft() {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY)
+    if (!raw) return
+    const drafts = JSON.parse(raw)
+    const key = String(challengeId.value)
+    const d = drafts[key]
+    if (!d) return
+    if (typeof d.imageBlobId === 'string') {
+      imageBlobId.value = d.imageBlobId
+    } else if (typeof d.imageDataUrl === 'string') {
+      // 旧草稿（base64）→ blob 迁移
+      try {
+        const blob = dataUrlToBlob(d.imageDataUrl)
+        const id = `img-draft-${challengeId.value}-${Date.now().toString(36)}`
+        const write = putBlob(id, blob).then(() => id)
+        pendingBlobWrite = write
+        void write.then((resolved) => {
+          imageBlobId.value = resolved
+          saveDraft()
+        })
+      } catch { /* ignore */ }
+    }
+    selfCheckResults.value = d.selfCheckResults ?? defaultSelfChecks()
+    selfRating.value = d.selfRating ?? 0
+  } catch { /* ignore */ }
+}
+
+function resetForm() {
+  if (previewUrl.value) { URL.revokeObjectURL(previewUrl.value); previewUrl.value = null }
+  imageBlobId.value = existingPractice.value?.imageBlobId
+  selfRating.value = existingPractice.value?.selfRating ?? 0
+  uploadError.value = null
+  selfCheckResults.value = defaultSelfChecks()
+  if (!existingPractice.value) restoreDraft()
+}
+
+onMounted(resetForm)
+watch(challengeId, () => resetForm())
 
 function saveDraft() {
   try {
     const raw = localStorage.getItem(DRAFT_KEY)
     const drafts = raw ? JSON.parse(raw) : {}
     drafts[String(challengeId.value)] = {
-      imageDataUrl: imageDataUrl.value,
+      imageBlobId: imageBlobId.value,
       selfCheckResults: selfCheckResults.value,
       selfRating: selfRating.value,
     }
@@ -64,12 +93,22 @@ function saveDraft() {
   } catch { /* ignore */ }
 }
 
-function clearDraft() {
+function clearDraft(savedBlobId?: string) {
   try {
     const raw = localStorage.getItem(DRAFT_KEY)
     if (raw) {
       const drafts = JSON.parse(raw)
-      delete drafts[String(challengeId.value)]
+      const key = String(challengeId.value)
+      const d = drafts[key]
+      // 清理不再被任何练习引用的草稿图片（孤儿 blob）
+      if (
+        d && typeof d.imageBlobId === 'string'
+        && d.imageBlobId !== savedBlobId
+        && !isBlobReferenced(d.imageBlobId)
+      ) {
+        void deleteBlob(d.imageBlobId).catch(() => {})
+      }
+      delete drafts[key]
       localStorage.setItem(DRAFT_KEY, JSON.stringify(drafts))
     }
   } catch { /* ignore */ }
@@ -90,31 +129,55 @@ function handleFileSelect(e: Event) {
   const input = e.target as HTMLInputElement
   const file = input.files?.[0]
   if (!file) return
-  if (!file.type.startsWith('image/')) { alert('仅支持 PNG 图片'); return }
   readFile(file)
+  input.value = ''
 }
 
 function handleDrop(e: DragEvent) {
   dragOver.value = false
   const file = e.dataTransfer?.files?.[0]
   if (!file) return
-  if (!file.type.startsWith('image/')) { alert('仅支持 PNG 图片'); return }
   readFile(file)
 }
 
 function readFile(file: File) {
-  if (file.size > MAX_IMAGE_SIZE) { alert('图片太大，请导出为更小的 PNG（最大 500KB）'); return }
-  const reader = new FileReader()
-  reader.onload = () => { imageDataUrl.value = reader.result as string; saveDraft() }
-  reader.readAsDataURL(file)
+  if (!file.type.startsWith('image/')) { uploadError.value = '仅支持 PNG 图片'; return }
+  if (file.size > MAX_IMAGE_SIZE) { uploadError.value = '图片太大，请导出为更小的 PNG（最大 500KB）'; return }
+  uploadError.value = null
+  // 预览
+  if (previewUrl.value) URL.revokeObjectURL(previewUrl.value)
+  previewUrl.value = URL.createObjectURL(file)
+  // eager 写入 IDB：图片一选中即落盘，state 只引用已持久化的 blobId
+  const id = `img-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
+  const write = putBlob(id, file).then(() => id)
+  pendingBlobWrite = write
+  void write.then((resolvedId) => {
+    if (previewUrl.value) {
+      imageBlobId.value = resolvedId
+      saveDraft()
+    } else {
+      // 用户在写入完成前移除了图片：清理孤儿 blob
+      void deleteBlob(resolvedId).catch(() => {})
+    }
+  })
 }
 
-function removeImage() { imageDataUrl.value = undefined; saveDraft() }
+function removeImage() {
+  if (previewUrl.value) { URL.revokeObjectURL(previewUrl.value); previewUrl.value = null }
+  imageBlobId.value = undefined
+  saveDraft()
+}
 function setRating(r: number) { selfRating.value = r; saveDraft() }
 
-function handleSave() {
+async function handleSave() {
   const c = challenge.value
   if (!c) return
+
+  // 保存前确认 blob 已落盘
+  let id = imageBlobId.value
+  const write = pendingBlobWrite
+  if (write) id = await write
+  if (id) imageBlobId.value = id
 
   const reflectionTexts: string[] = []
   c.selfCheck.forEach((sc, i) => {
@@ -127,7 +190,7 @@ function handleSave() {
     date: new Date().toISOString(),
     phase: challengeId.value,
     title: c.title,
-    imageDataUrl: imageDataUrl.value,
+    imageBlobId: id,
     reflections: reflectionTexts,
     selfRating: selfRating.value > 0 ? selfRating.value : undefined,
   }
@@ -138,7 +201,7 @@ function handleSave() {
     addPractice(entry)
   }
 
-  clearDraft()
+  clearDraft(id)
   saved.value = true
   setTimeout(() => { saved.value = false }, 3000)
 }
@@ -156,7 +219,7 @@ const allPassed = computed(() =>
     <div class="phase-nav">
       <RouterLink to="/workshop" class="back-link">← 返回工坊</RouterLink>
       <span v-if="challenge" class="phase-badge">
-        阶段 {{ stage }} · 关 {{ challengeId }}/34
+        阶段 {{ stage }} · 关 {{ challengeId }}/{{ CHALLENGES.length }}
       </span>
     </div>
 
@@ -191,9 +254,9 @@ const allPassed = computed(() =>
         <div v-if="challenge.helpRefs.length > 0" class="help-section">
           <h4>🆘 卡住了？</h4>
           <ul>
-            <li v-for="ref in challenge.helpRefs" :key="`${ref.course}-${ref.phase}`">
-              <RouterLink :to="`/${ref.course}/phase/${ref.phase}`">
-                课程 Phase {{ ref.phase }} · {{ ref.label }}
+            <li v-for="hr in challenge.helpRefs" :key="`${hr.course}-${hr.phase}`">
+              <RouterLink :to="`/${hr.course}/phase/${hr.phase}`">
+                课程 Phase {{ hr.phase }} · {{ hr.label }}
               </RouterLink>
             </li>
           </ul>
@@ -246,14 +309,14 @@ const allPassed = computed(() =>
         <h3>📤 上传作品</h3>
         <div
           class="upload-area"
-          :class="{ 'drag-over': dragOver, 'has-image': imageDataUrl }"
+          :class="{ 'drag-over': dragOver, 'has-image': !!displayUrl }"
           @dragover.prevent="dragOver = true"
           @dragleave="dragOver = false"
           @drop.prevent="handleDrop"
           @click="($refs.fileInput as HTMLInputElement)?.click()"
         >
-          <template v-if="imageDataUrl">
-            <img :src="imageDataUrl" class="upload-preview" />
+          <template v-if="displayUrl">
+            <img :src="displayUrl" class="upload-preview" alt="作品预览" />
             <button class="remove-img-btn" @click.stop="removeImage">移除</button>
           </template>
           <template v-else>
@@ -264,6 +327,7 @@ const allPassed = computed(() =>
             </div>
           </template>
         </div>
+        <p v-if="uploadError" class="upload-error" role="alert">{{ uploadError }}</p>
         <input ref="fileInput" type="file" accept="image/png" style="display: none" @change="handleFileSelect" />
       </div>
 
@@ -464,6 +528,12 @@ const allPassed = computed(() =>
 .upload-hint { display: flex; flex-direction: column; gap: 0.25rem; align-items: center; color: var(--color-text-muted); font-size: 0.85rem; }
 .upload-icon { font-size: 1.5rem; }
 .upload-limit { font-size: 0.7rem; color: var(--color-text-soft); }
+
+.upload-error {
+  margin: 0.5rem 0 0;
+  font-size: 0.82rem;
+  color: var(--color-accent);
+}
 
 .upload-preview { max-width: 100%; max-height: 200px; object-fit: contain; image-rendering: pixelated; border-radius: 4px; }
 

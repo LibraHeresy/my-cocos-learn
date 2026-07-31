@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
-import { COURSE_LIST } from '@/data/courses'
+import { COURSE_LIST, COURSES, detectCourseFromRoute } from '@/data/courses'
 
 const route = useRoute()
 
@@ -12,15 +12,13 @@ const courses = [
 
 const activeCourse = computed(() => {
   const name = route.name
-  if (!name) return 'workshop'
-  const nameStr = name as string
-  if (nameStr === 'home') return 'workshop'
-  if (nameStr.startsWith('workshop')) return 'workshop'
-  if (nameStr.startsWith('engineering')) return 'engineering'
-  if (nameStr.startsWith('cocos')) return 'cocos'
-  if (nameStr.startsWith('art')) return 'art'
-  if (nameStr.startsWith('audio')) return 'audio'
-  return 'workshop'
+  if (!name || typeof name !== 'string') return 'workshop'
+  if (name === 'home' || name.startsWith('workshop')) return 'workshop'
+  // 阶段路由：由 COURSES key 动态推导
+  const phaseCourse = detectCourseFromRoute(name)
+  if (phaseCourse) return phaseCourse
+  // 课程首页路由名即课程 id
+  return name in COURSES ? name : 'workshop'
 })
 </script>
 

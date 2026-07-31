@@ -15,7 +15,7 @@ const currentStage = computed(() => {
   const done = completedSet.value
   // find the first incomplete challenge's stage
   let firstIncomplete = 1
-  for (let i = 1; i <= 34; i++) {
+  for (let i = 1; i <= CHALLENGES.length; i++) {
     if (!done.has(i)) { firstIncomplete = i; break }
   }
   const ch = CHALLENGES.find((c) => c.id === firstIncomplete)

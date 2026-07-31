@@ -141,7 +141,7 @@ const phaseGroups: PhaseGroup[] = [
       </div>
     </footer>
 
-    <HomeSidebar :groups="phaseGroups" course="cocos" />
+    <HomeSidebar :groups="phaseGroups" />
   </div>
 </template>
 

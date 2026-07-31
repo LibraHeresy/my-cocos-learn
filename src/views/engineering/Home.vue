@@ -75,7 +75,7 @@ const phaseGroups: PhaseGroup[] = [
       <div class="footer-card" id="path-section"><span class="footer-icon">⚙️</span><div><p>总共约 <strong>6-10 周</strong>，每天投入 2-4 小时。</p><p class="footer-path">核心路径：</p><FlowChart :steps="pathSteps" /></div></div>
       <div class="tools-card" id="tools-section"><h3>🛠️ 本课程涉及的工具与平台</h3><div class="tool-grid"><div class="tool-item"><strong>微信开发者工具</strong><span>小游戏调试与预览</span></div><div class="tool-item"><strong>GitHub Actions</strong><span>CI/CD 自动化</span></div><div class="tool-item"><strong>Chrome DevTools</strong><span>性能与内存分析</span></div></div></div>
     </footer>
-    <HomeSidebar :groups="phaseGroups" course="engineering" />
+    <HomeSidebar :groups="phaseGroups" />
   </div>
 </template>
 <style scoped src="@/styles/home-shared.css"></style>

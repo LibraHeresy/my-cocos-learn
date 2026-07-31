@@ -3,6 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  pull_request:
 
 permissions:
   contents: read
@@ -29,6 +30,9 @@ jobs:
 
       - run: npm install
 
+      # 一致性测试：防止「删了阶段 md / 改了 phaseCount / frontmatter 损坏」仍发布
+      - run: npm test
+
       - run: npm run build -- --base ${{ steps.pages.outputs.base_path || '/' }}
 
       - uses: actions/upload-pages-artifact@v3
@@ -37,6 +41,7 @@ jobs:
 
   deploy:
     needs: build
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     environment:
       name: github-pages

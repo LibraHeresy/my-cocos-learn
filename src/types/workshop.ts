@@ -5,7 +5,8 @@ export interface PracticeEntry {
   course?: string
   phase: number
   title: string
-  imageDataUrl?: string
+  /** IndexedDB blobs store 中的图片引用（v2 起替代 imageDataUrl） */
+  imageBlobId?: string
   reflections?: string[]
   selfRating?: number
 }

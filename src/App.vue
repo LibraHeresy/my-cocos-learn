@@ -2,18 +2,20 @@
 import { onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute, RouterView } from 'vue-router'
 import NavBar from '@/components/NavBar.vue'
-import { detectCourseFromRoute, getPhaseCount, COURSES } from '@/data/courses'
+import { saveError } from '@/stores/workshopStore'
+import { detectCourseFromRoute, getPhaseCount, parsePhaseFromRoute, COURSES } from '@/data/courses'
 
 const router = useRouter()
 const route = useRoute()
 
 function getRouteInfo() {
-  const name = route.name as string
+  const name = route.name
+  if (!name || typeof name !== 'string') return { course: null, phase: null }
   if (name === 'home') return { course: 'cocos', phase: null }
   // 课程首页路由名即课程 id
   if (name in COURSES) return { course: name, phase: null }
   const m = detectCourseFromRoute(name)
-  if (m) return { course: m, phase: parseInt(name.match(/-phase(\d+)$/)![1]) }
+  if (m) return { course: m, phase: parsePhaseFromRoute(name) ?? 0 }
   return { course: null, phase: null }
 }
 
@@ -33,8 +35,7 @@ function handleKeydown(e: KeyboardEvent) {
     } else if (phase > 1) {
       router.push({ name: `${course}-phase${phase - 1}` })
     } else {
-      if (course === 'cocos') router.push({ name: 'home' })
-      else router.push({ name: course })
+      router.push(COURSES[course].courseHome)
     }
   } else if (e.key === 'ArrowRight') {
     e.preventDefault()
@@ -43,8 +44,7 @@ function handleKeydown(e: KeyboardEvent) {
     } else if (phase < maxPhase) {
       router.push({ name: `${course}-phase${phase + 1}` })
     } else {
-      if (course === 'cocos') router.push({ name: 'home' })
-      else router.push({ name: course })
+      router.push(COURSES[course].courseHome)
     }
   }
 }
@@ -61,4 +61,22 @@ onUnmounted(() => {
 <template>
   <NavBar />
   <RouterView />
+  <div v-if="saveError" class="save-error-toast" role="alert">{{ saveError }}</div>
 </template>
+
+<style scoped>
+.save-error-toast {
+  position: fixed;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-accent);
+  color: #fff;
+  padding: 0.6rem 1.1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  box-shadow: var(--shadow-md);
+  z-index: 2000;
+  max-width: 90vw;
+}
+</style>

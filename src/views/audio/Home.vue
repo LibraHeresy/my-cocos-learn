@@ -71,7 +71,7 @@ const phaseGroups: PhaseGroup[] = [
       <div class="footer-card" id="path-section"><span class="footer-icon">🎧</span><div><p>总共约 <strong>12-16 天</strong>，每天投入 1-2 小时。</p><p class="footer-path">核心路径：</p><FlowChart :steps="pathSteps" /></div></div>
       <div class="tools-card" id="tools-section"><h3>🛠️ 本课程使用的工具</h3><div class="tool-grid"><div class="tool-item"><strong>BFXR</strong><span>音效合成器</span><span>bfxr.net</span></div><div class="tool-item"><strong>Audacity</strong><span>音频编辑器</span><span>audacityteam.org</span></div><div class="tool-item"><strong>Bosca Ceoil</strong><span>极简 MIDI 音乐编辑器</span><span>boscaceoil.net</span></div></div></div>
     </footer>
-    <HomeSidebar :groups="phaseGroups" course="audio" />
+    <HomeSidebar :groups="phaseGroups" />
   </div>
 </template>
 <style scoped src="@/styles/home-shared.css"></style>

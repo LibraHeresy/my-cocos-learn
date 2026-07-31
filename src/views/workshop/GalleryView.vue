@@ -2,36 +2,13 @@
 import { computed, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { usePracticeLog } from '@/composables/usePracticeLog'
-import type { PracticeEntry } from '@/types/workshop'
+import { useBlobImage } from '@/composables/useBlobImage'
+import GalleryCard from '@/components/workshop/GalleryCard.vue'
 
 const { groupedEntries, stats } = usePracticeLog()
 
-const expandedId = ref<string | null>(null)
-const filterCourse = ref<string>('all')
-const imageViewer = ref<{ src: string; title: string } | null>(null)
-
-const uniqueCourses = computed(() => {
-  const set = new Set<string>()
-  for (const [, entries] of groupedEntries.value) {
-    for (const e of entries) {
-      if (e && e.course) set.add(e.course)
-    }
-  }
-  return Array.from(set).sort()
-})
-
-const filteredGroups = computed(() => {
-  const groups: [string, PracticeEntry[]][] = []
-  for (const [date, entries] of groupedEntries.value) {
-    const filtered = filterCourse.value === 'all'
-      ? entries
-      : entries.filter((e) => e.course === filterCourse.value)
-    if (filtered.length > 0) {
-      groups.push([date, filtered])
-    }
-  }
-  return groups
-})
+const imageViewer = ref<{ blobId: string; title: string } | null>(null)
+const { url: viewerUrl } = useBlobImage(computed(() => imageViewer.value?.blobId))
 
 function formatDate(dateStr: string): string {
   const d = new Date(dateStr + 'T00:00:00')
@@ -53,12 +30,8 @@ function formatDate(dateStr: string): string {
   return label
 }
 
-function toggleExpand(id: string) {
-  expandedId.value = expandedId.value === id ? null : id
-}
-
-function openImage(src: string, title: string) {
-  imageViewer.value = { src, title }
+function openImage(blobId: string, title: string) {
+  imageViewer.value = { blobId, title }
 }
 
 function closeImageViewer() {
@@ -77,65 +50,21 @@ function closeImageViewer() {
       </div>
     </div>
 
-    <div v-if="uniqueCourses.length > 1" class="filter-bar">
-      <button
-        v-for="c in ['all', ...uniqueCourses]"
-        :key="c"
-        class="filter-btn"
-        :class="{ active: filterCourse === c }"
-        @click="filterCourse = c"
-      >
-        {{ c === 'all' ? '全部' : c === 'art' ? '🎨 美术' : c === 'cocos' ? '🎮 Cocos' : c === 'audio' ? '🔊 音效' : '⚙️ 工程' }}
-      </button>
-    </div>
-
-    <div v-if="filteredGroups.length === 0" class="empty-state">
+    <div v-if="groupedEntries.size === 0" class="empty-state">
       <div class="empty-icon">🎨</div>
       <p>还没有作品。</p>
       <RouterLink to="/workshop/phase/1" class="empty-cta">去完成第一个练习 →</RouterLink>
     </div>
 
-    <div v-for="[date, entries] in filteredGroups" :key="date" class="day-group">
+    <div v-for="[date, entries] in groupedEntries" :key="date" class="day-group">
       <div class="day-divider">{{ formatDate(date) }}</div>
       <div class="day-entries">
-        <div v-for="entry in entries" :key="entry.id" class="gallery-card">
-          <div
-            v-if="entry.imageDataUrl"
-            class="card-image"
-            @click="openImage(entry.imageDataUrl!, entry.title)"
-          >
-            <img :src="entry.imageDataUrl" :alt="entry.title" loading="lazy" />
-          </div>
-          <div class="card-body">
-            <div class="card-meta">
-              <span class="card-course">
-                {{ entry.course === 'art' ? '🎨' : entry.course === 'cocos' ? '🎮' : entry.course === 'audio' ? '🔊' : '⚙️' }}
-              </span>
-              <span class="card-phase">Phase {{ entry.phase }}</span>
-              <span class="card-title">{{ entry.title }}</span>
-            </div>
-            <div v-if="entry.selfRating" class="card-rating">
-              {{ '★'.repeat(entry.selfRating) }}{{ '☆'.repeat(5 - entry.selfRating) }}
-            </div>
-            <button
-              v-if="entry.reflections && entry.reflections.length > 0"
-              class="expand-btn"
-              @click="toggleExpand(entry.id)"
-            >
-              {{ expandedId === entry.id ? '收起反思' : '查看反思' }}
-            </button>
-            <div v-if="expandedId === entry.id && entry.reflections" class="card-reflections">
-              <div v-for="(r, i) in entry.reflections" :key="i" class="reflection-text">
-                <span class="reflection-num">Q{{ i + 1 }}.</span> {{ r }}
-              </div>
-            </div>
-            <div class="card-actions">
-              <RouterLink :to="`/workshop/phase/${entry.phase}`" class="card-link">
-                查看练习 →
-              </RouterLink>
-            </div>
-          </div>
-        </div>
+        <GalleryCard
+          v-for="entry in entries"
+          :key="entry.id"
+          :entry="entry"
+          @open-image="openImage"
+        />
       </div>
     </div>
 
@@ -143,9 +72,9 @@ function closeImageViewer() {
     <Teleport to="body">
       <div v-if="imageViewer" class="image-viewer-overlay" @click="closeImageViewer">
         <div class="image-viewer-content" @click.stop>
-          <img :src="imageViewer.src" :alt="imageViewer.title" />
+          <img v-if="viewerUrl" :src="viewerUrl" :alt="imageViewer.title" />
           <div class="viewer-title">{{ imageViewer.title }}</div>
-          <button class="viewer-close" @click="closeImageViewer">✕</button>
+          <button type="button" class="viewer-close" @click="closeImageViewer">✕</button>
         </div>
       </div>
     </Teleport>
@@ -181,32 +110,6 @@ function closeImageViewer() {
   color: var(--color-text-muted);
 }
 
-.filter-bar {
-  display: flex;
-  gap: 0.4rem;
-  justify-content: center;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.filter-btn {
-  padding: 0.3rem 0.75rem;
-  border: 1px solid var(--color-border);
-  border-radius: 20px;
-  background: var(--color-surface);
-  color: var(--color-text-muted);
-  font-size: 0.78rem;
-  cursor: pointer;
-  transition: background 0.2s, border-color 0.2s, color 0.2s;
-}
-
-.filter-btn.active {
-  background: var(--color-primary-soft);
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-  font-weight: 600;
-}
-
 .empty-state {
   text-align: center;
   padding: 4rem 0;
@@ -238,107 +141,6 @@ function closeImageViewer() {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 0.75rem;
-}
-
-.gallery-card {
-  display: flex;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border-light);
-  border-radius: 10px;
-  overflow: hidden;
-  transition: border-color 0.2s;
-}
-
-.gallery-card:hover {
-  border-color: var(--color-primary);
-}
-
-.card-image {
-  width: 80px;
-  min-height: 80px;
-  flex-shrink: 0;
-  background: var(--color-bg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border-right: 1px solid var(--color-border-light);
-}
-
-.card-image img {
-  max-width: 72px;
-  max-height: 72px;
-  object-fit: contain;
-  image-rendering: pixelated;
-}
-
-.card-body {
-  flex: 1;
-  padding: 0.65rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  min-width: 0;
-}
-
-.card-meta {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.8rem;
-}
-
-.card-course { font-size: 0.85rem; }
-.card-phase {
-  color: var(--color-primary);
-  font-weight: 700;
-  font-size: 0.7rem;
-}
-
-.card-title {
-  color: var(--color-text);
-  font-weight: 600;
-  font-size: 0.82rem;
-}
-
-.card-rating {
-  font-size: 0.72rem;
-  color: #f0b428;
-}
-
-.expand-btn {
-  background: none;
-  border: none;
-  color: var(--color-primary);
-  font-size: 0.72rem;
-  cursor: pointer;
-  padding: 0;
-  text-align: left;
-}
-
-.card-reflections {
-  background: var(--color-bg);
-  padding: 0.5rem;
-  border-radius: 6px;
-}
-
-.reflection-text {
-  font-size: 0.75rem;
-  color: var(--color-text-muted);
-  line-height: 1.5;
-  margin-bottom: 0.3rem;
-}
-.reflection-text:last-child { margin-bottom: 0; }
-.reflection-num { font-weight: 600; color: var(--color-text); }
-
-.card-actions {
-  margin-top: auto;
-}
-
-.card-link {
-  font-size: 0.75rem;
-  color: var(--color-primary);
-  font-weight: 600;
 }
 
 /* Image Viewer */

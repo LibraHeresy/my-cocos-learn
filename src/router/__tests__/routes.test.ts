@@ -9,9 +9,10 @@ describe('makePhaseRoutes', () => {
     }
   })
 
-  it('total phase count across all courses matches courses.ts', () => {
+  it('total phase count across all courses matches courses.ts phaseCounts', () => {
     const total = Object.values(COURSES).reduce((sum, m) => sum + makePhaseRoutes(m.id, m.phaseCount).length, 0)
-    expect(total).toBe(67)
+    const expected = Object.values(COURSES).reduce((sum, m) => sum + m.phaseCount, 0)
+    expect(total).toBe(expected)
   })
 
   it('generates correct path and name format', () => {

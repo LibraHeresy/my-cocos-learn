@@ -1,17 +1,23 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, watch } from 'vue'
 import type { PhaseGroup } from '@/types/phase'
-import { useScrollLock } from '@/composables/useScrollLock'
+import { useScrollSpy } from '@/composables/useScrollSpy'
 
 defineProps<{
   groups: PhaseGroup[]
-  course: string
 }>()
 
 const activePhaseId = ref(-1)
-const { scrollSeq, lockScroll } = useScrollLock()
+const { activeId, lockScroll } = useScrollSpy('[id^="phase-"]')
 
-let observer: IntersectionObserver | null = null
+watch(activeId, (id) => {
+  if (id.startsWith('phase-')) {
+    const n = parseInt(id.slice('phase-'.length), 10)
+    activePhaseId.value = Number.isNaN(n) ? -1 : n
+  } else {
+    activePhaseId.value = -1
+  }
+})
 
 function scrollToPhase(phaseId: number) {
   activePhaseId.value = phaseId
@@ -26,32 +32,6 @@ function scrollToExtra(id: string) {
   const el = document.getElementById(id)
   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
-
-onMounted(() => {
-  observer = new IntersectionObserver(
-    (entries) => {
-      if (scrollSeq.value > 0) return
-      let best = -1
-      let bestY = Infinity
-      for (const entry of entries) {
-        if (entry.isIntersecting && entry.target.id.startsWith('phase-')) {
-          const id = parseInt(entry.target.id.replace('phase-', ''))
-          if (entry.boundingClientRect.top < bestY) {
-            bestY = entry.boundingClientRect.top
-            best = id
-          }
-        }
-      }
-      if (best >= 0) activePhaseId.value = best
-    },
-    { rootMargin: '-80px 0px -60% 0px' },
-  )
-  document.querySelectorAll('[id^="phase-"]').forEach((el) => observer!.observe(el))
-})
-
-onBeforeUnmount(() => {
-  observer?.disconnect()
-})
 </script>
 
 <template>

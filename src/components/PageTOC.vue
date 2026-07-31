@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { useScrollLock } from '@/composables/useScrollLock'
+import { useScrollSpy } from '@/composables/useScrollSpy'
 
 interface TocItem {
   id: string
@@ -9,8 +9,7 @@ interface TocItem {
 }
 
 const items = ref<TocItem[]>([])
-const activeId = ref('')
-const { scrollSeq, lockScroll } = useScrollLock()
+const { activeId, lockScroll, refresh } = useScrollSpy('section[id]')
 const route = useRoute()
 
 function extractTitle(el: Element): string {
@@ -28,33 +27,11 @@ function buildToc() {
   }))
 }
 
-let observer: IntersectionObserver | null = null
-
-function setupObserver() {
-  observer = new IntersectionObserver(
-    (entries) => {
-      if (scrollSeq.value > 0) return
-      for (const entry of entries) {
-        if (entry.isIntersecting) {
-          activeId.value = entry.target.id
-        }
-      }
-    },
-    { rootMargin: '-80px 0px -60% 0px' },
-  )
-  const sections = document.querySelectorAll('section[id]')
-  sections.forEach((s) => observer!.observe(s))
-}
-
 onMounted(() => {
   requestAnimationFrame(() => {
     buildToc()
-    setupObserver()
+    refresh()
   })
-})
-
-onBeforeUnmount(() => {
-  observer?.disconnect()
 })
 
 watch(
@@ -62,8 +39,7 @@ watch(
   () => {
     requestAnimationFrame(() => {
       buildToc()
-      observer?.disconnect()
-      setupObserver()
+      refresh()
     })
   },
 )

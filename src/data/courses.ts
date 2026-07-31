@@ -67,6 +67,12 @@ export function detectCourseFromRoute(name: string): string | null {
   return m ? m[1] : null
 }
 
+/** 从阶段路由名称中解析阶段号，非阶段路由返回 null */
+export function parsePhaseFromRoute(name: string): number | null {
+  const m = name.match(/-phase(\d+)$/)
+  return m ? parseInt(m[1], 10) : null
+}
+
 /** 获取课程阶段数，课程不存在时返回 fallback */
 export function getPhaseCount(course: string, fallback = 0): number {
   return COURSES[course]?.phaseCount ?? fallback

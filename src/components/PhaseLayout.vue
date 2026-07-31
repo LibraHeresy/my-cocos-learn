@@ -16,13 +16,17 @@ const props = withDefaults(defineProps<{
 
 const route = useRoute()
 
-const course = computed(() => detectCourseFromRoute(route.name as string) ?? 'cocos')
+const course = computed(() => {
+  const name = route.name
+  if (!name || typeof name !== 'string') return 'cocos'
+  return detectCourseFromRoute(name) ?? 'cocos'
+})
 
 const maxPhase = computed(() =>
   props.total > 0 ? props.total : getPhaseCount(course.value),
 )
 
-const courseHome = computed(() => course.value === 'cocos' ? '/' : `/${course.value}`)
+const courseHome = computed(() => COURSES[course.value].courseHome)
 
 const courseLabel = computed(() => COURSES[course.value]?.backLabel ?? '返回课程首页')
 
