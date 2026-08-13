@@ -1,17 +1,11 @@
 import type { RouteLocationNormalizedLoaded } from 'vue-router'
 import { COURSES, detectCourseFromRoute, parsePhaseFromRoute } from '@/data/courses'
 import { getChallenge } from '@/data/challenges'
-import type { PhaseMdData } from '@/types/phase'
+import { loadPhase, phaseKey } from '@/content/loader'
 
 const SITE_NAME = 'Cocos Creator 学习之路 — 像素飞机大战'
 
-// 非 eager glob：md 内容不进主包，命中某阶段时才动态加载其 frontmatter title
-const dataModules = import.meta.glob<{ default: PhaseMdData }>('../content/**/*.md')
 const titleCache = new Map<string, string>()
-
-function keyOf(course: string, n: number): string {
-  return `../content/${course}/phase-${String(n).padStart(2, '0')}.md`
-}
 
 let current: { name: string; course: string; n: number } | null = null
 
@@ -34,19 +28,17 @@ function applyPhaseTitle(course: string, n: number, cached: string | undefined) 
 }
 
 async function loadPhaseTitle(course: string, n: number) {
-  const key = keyOf(course, n)
+  const key = phaseKey(course, n)
   if (titleCache.has(key)) return
-  const loader = dataModules[key]
-  if (!loader) return
-  const mod = await loader()
-  titleCache.set(key, mod.default?.title ?? '')
-  // 若当前路由仍是该阶段，用真实标题刷新
+  const loaded = await loadPhase(course, n)
+  titleCache.set(key, loaded?.title ?? '')
+  // 若当前路由仍是该阶段，用真实标题刷新。
   if (current && current.course === course && current.n === n) {
     applyPhaseTitle(course, n, titleCache.get(key))
   }
 }
 
-/** 路由级 title/description 单一起源。afterEach 调用；阶段标题懒加载后自动刷新。 */
+/** 路由级 title/description 单一起源，afterEach 调用；阶段标题懒加载后自动刷新。 */
 export function applyRouteMeta(to: RouteLocationNormalizedLoaded) {
   const name = to.name as string | undefined
   current = null
@@ -70,7 +62,7 @@ export function applyRouteMeta(to: RouteLocationNormalizedLoaded) {
     const n = parsePhaseFromRoute(name)
     if (course && n) {
       current = { name, course, n }
-      applyPhaseTitle(course, n, titleCache.get(keyOf(course, n)))
+      applyPhaseTitle(course, n, titleCache.get(phaseKey(course, n)))
       void loadPhaseTitle(course, n)
     }
   }

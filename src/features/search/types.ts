@@ -1,4 +1,4 @@
-/** 单个可检索文档（阶段或工坊挑战） */
+/** 单个可检索文档（阶段或工坊挑战）。 */
 export interface SearchRecord {
   type: 'phase' | 'challenge'
   course: string
@@ -15,10 +15,8 @@ export interface SearchRecord {
   text: string
 }
 
-/** 静态倒排索引（构建期生成，见 vite.config.ts searchIndexPlugin） */
+/** 静态检索数据（构建期生成，见 vite.config.ts searchIndexPlugin）。 */
 export interface SearchIndex {
   version: number
-  docs: SearchRecord[]
-  /** bigram/词 → docId 列表 */
-  bigrams: Record<string, number[]>
+  records: SearchRecord[]
 }

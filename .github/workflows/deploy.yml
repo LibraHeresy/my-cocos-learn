@@ -30,22 +30,9 @@ jobs:
 
       - run: npm install
 
-      # 一致性测试：防止「删了阶段 md / 改了 phaseCount / frontmatter 损坏」仍发布
       - run: npm test
 
       - run: npm run build -- --base ${{ steps.pages.outputs.base_path || '/' }}
-
-      # history 模式的 SPA 回退：未知路径由 404.html 提供（独立步骤，必成功）
-      - name: SPA fallback
-        run: cp dist/index.html dist/404.html
-
-      # 浏览器快照预渲染：每阶段独立静态 HTML + sitemap.xml。
-      # 初始 best-effort（continue-on-error）：即使预渲染异常也不阻断部署（404.html 已由上一独立步骤保证）。
-      - name: Prerender SEO pages
-        continue-on-error: true
-        env:
-          SITE_URL: https://libraheresy.github.io/my-cocos-learn
-        run: node scripts/prerender.mjs --base ${{ steps.pages.outputs.base_path || '/' }}
 
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { tokenize } from '@/utils/tokenize'
+import { tokenize } from '../tokenize'
 
 describe('tokenize', () => {
   it('splits latin words and identifiers', () => {

@@ -13,6 +13,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "minisearch": "^7.2.0",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0"
   },
@@ -26,7 +27,6 @@
     "gray-matter": "^4.0.3",
     "markdown-it": "^14.2.0",
     "prettier": "^3.8.3",
-    "puppeteer": "^23.0.0",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.62.1",
     "vite": "^6.2.0",

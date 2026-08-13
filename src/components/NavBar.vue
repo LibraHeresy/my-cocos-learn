@@ -4,7 +4,7 @@ import { useRoute, RouterLink } from 'vue-router'
 import { COURSE_LIST, COURSES, detectCourseFromRoute } from '@/data/courses'
 import { useTheme } from '@/composables/useTheme'
 import { getLastPosition } from '@/stores/readingStore'
-import SearchBox from '@/components/SearchBox.vue'
+import SearchBox from '@/features/search/SearchBox.vue'
 
 const route = useRoute()
 const { isDark, toggle } = useTheme()

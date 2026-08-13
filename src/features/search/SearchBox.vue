@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, nextTick, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { search, type SearchResult } from '@/composables/useSearch'
+import { search, type SearchResult } from './useSearch'
 
 const router = useRouter()
 

@@ -1,18 +1,16 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import PhaseLayout from '@/components/PhaseLayout.vue'
 import ConceptBlock from '@/components/ConceptBlock.vue'
 import DemoHost from '@/demos/DemoHost.vue'
 import { detectCourseFromRoute, parsePhaseFromRoute } from '@/data/courses'
+import { loadPhase } from '@/content/loader'
 import type { PhaseMdData } from '@/types/phase'
 
-const dataModules = import.meta.glob<{ default: PhaseMdData }>(
-  '../content/**/*.md',
-  { eager: true },
-)
-
 const route = useRoute()
+const data = ref<PhaseMdData | null>(null)
+let loadSeq = 0
 
 const course = computed(() => {
   const name = route.name
@@ -26,11 +24,20 @@ const phase = computed(() => {
   return parsePhaseFromRoute(name) ?? 0
 })
 
-const data = computed(() => {
-  if (!course.value) return null
-  const key = `../content/${course.value}/phase-${String(phase.value).padStart(2, '0')}.md`
-  return dataModules[key]?.default ?? null
-})
+watch(
+  [course, phase],
+  async ([courseValue, phaseValue]) => {
+    const seq = ++loadSeq
+    if (!courseValue || !phaseValue) {
+      data.value = null
+      return
+    }
+    data.value = null
+    const loaded = await loadPhase(courseValue, phaseValue)
+    if (seq === loadSeq) data.value = loaded
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
