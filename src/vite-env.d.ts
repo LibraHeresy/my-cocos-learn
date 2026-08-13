@@ -7,7 +7,7 @@ declare module '*.vue' {
 }
 
 declare module '*.md' {
-  import type { PhaseMdData } from '@/types/phase'
+  import type { PhaseMdData } from '@/features/courses/types/phase'
   const data: PhaseMdData
   export default data
 }

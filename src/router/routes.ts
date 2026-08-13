@@ -6,7 +6,7 @@ export function makePhaseRoutes(course: string, count: number): RouteRecordRaw[]
     return {
       path: `/${course}/phase/${n}`,
       name: `${course}-phase${n}`,
-      component: () => import('@/components/PhasePage.vue'),
+      component: () => import('@/features/courses/components/PhasePage.vue'),
     }
   })
 }

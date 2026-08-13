@@ -1,7 +1,7 @@
 import { reactive } from 'vue'
 import type { ReadingState, CourseReading } from '@/types/reading'
 import { loadVersioned, saveJSON } from '@/stores/storage'
-import { getPhaseCount } from '@/data/courses'
+import { getPhaseCount } from '@/features/courses/data/courses'
 
 const STORAGE_KEY = '__reading_state__'
 const CURRENT_VERSION = 1

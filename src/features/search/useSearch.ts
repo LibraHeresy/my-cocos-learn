@@ -4,6 +4,7 @@ import { tokenize } from './tokenize'
 
 let indexPromise: Promise<SearchIndex> | null = null
 let searcherPromise: Promise<MiniSearch> | null = null
+let recordMap: Map<string, SearchRecord> | null = null
 
 function loadIndex(): Promise<SearchIndex> {
   if (!indexPromise) {
@@ -17,6 +18,7 @@ function loadIndex(): Promise<SearchIndex> {
 function getSearcher(): Promise<MiniSearch> {
   if (!searcherPromise) {
     searcherPromise = loadIndex().then((index) => {
+      recordMap = new Map(index.records.map((r) => [r.url, r]))
       const searcher = new MiniSearch({
         fields: ['title', 'text'],
         idField: 'id',
@@ -56,8 +58,7 @@ export async function search(query: string): Promise<SearchResult[]> {
   const q = query.trim()
   if (!q) return []
 
-  const [index, searcher] = await Promise.all([loadIndex(), getSearcher()])
-  const recordMap = new Map(index.records.map((r) => [r.url, r]))
+  const searcher = await getSearcher()
   const hits = searcher.search(q, {
     boost: { title: 3 },
     prefix: true,
@@ -65,7 +66,7 @@ export async function search(query: string): Promise<SearchResult[]> {
 
   const results: SearchResult[] = []
   for (const hit of hits.slice(0, 12)) {
-    const record = recordMap.get(hit.id as string)
+    const record = recordMap?.get(hit.id as string)
     if (!record) continue
     results.push({ record, snippet: makeSnippet(record, q, hit.terms ?? []) })
   }
@@ -75,4 +76,5 @@ export async function search(query: string): Promise<SearchResult[]> {
 export function resetSearchCache() {
   indexPromise = null
   searcherPromise = null
+  recordMap = null
 }

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { COURSES } from '@/data/courses'
+import { COURSES } from '@/features/courses/data/courses'
 
 const contentModules = import.meta.glob('../../content/*/phase-*.md')
 

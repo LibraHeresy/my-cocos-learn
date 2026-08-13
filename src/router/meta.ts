@@ -1,6 +1,6 @@
 import type { RouteLocationNormalizedLoaded } from 'vue-router'
-import { COURSES, detectCourseFromRoute, parsePhaseFromRoute } from '@/data/courses'
-import { getChallenge } from '@/data/challenges'
+import { COURSES, detectCourseFromRoute, parsePhaseFromRoute } from '@/features/courses/data/courses'
+import { getChallenge } from '@/features/workshop/data/challenges'
 import { loadPhase, phaseKey } from '@/content/loader'
 
 const SITE_NAME = 'Cocos Creator 学习之路 — 像素飞机大战'

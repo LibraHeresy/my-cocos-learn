@@ -3,12 +3,28 @@ import vue from '@vitejs/plugin-vue'
 import fs from 'node:fs'
 import path from 'node:path'
 import os from 'node:os'
-import { pathToFileURL } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { buildSync } from 'esbuild'
 import { createMarkdown, parsePhaseMd, phaseToSearchText } from './src/content/pipeline'
-import type { Challenge } from './src/data/challenges'
+import type { Challenge } from './src/features/workshop/data/challenges'
 
 const md = createMarkdown()
+
+/** 在 Node 侧动态读取纯数据 TS 模块（esbuild 打包后 import）。 */
+async function loadTsData<T>(entryPoint: string, aliasRoot: string): Promise<T> {
+  const outfile = path.join(
+    os.tmpdir(),
+    `load-ts-data-${Date.now()}-${Math.random().toString(36).slice(2)}.mjs`,
+  )
+  buildSync({
+    entryPoints: [entryPoint],
+    bundle: true,
+    format: 'esm',
+    outfile,
+    alias: { '@': aliasRoot },
+  })
+  return (await import(pathToFileURL(outfile).href)) as T
+}
 
 function phaseMdPlugin() {
   return {
@@ -55,17 +71,10 @@ function searchIndexPlugin(): Plugin {
         }
 
         // Workshop challenges.
-        const tmpOut = path.join(os.tmpdir(), `challenges-${process.pid}.mjs`)
-        buildSync({
-          entryPoints: ['src/data/challenges.ts'],
-          bundle: true,
-          format: 'esm',
-          outfile: tmpOut,
-          alias: { '@': path.resolve('src') },
-        })
-        const { CHALLENGES } = (await import(
-          `${pathToFileURL(tmpOut).href}?t=${process.pid}`
-        )) as { CHALLENGES: Challenge[] }
+        const { CHALLENGES } = await loadTsData<{ CHALLENGES: Challenge[] }>(
+          'src/features/workshop/data/challenges.ts',
+          path.resolve('src'),
+        )
         for (const ch of CHALLENGES) {
           const text = [
             ch.title,
@@ -74,7 +83,7 @@ function searchIndexPlugin(): Plugin {
             ...ch.selfCheck.map((s) => s.question),
             ch.skillReward ? ch.skillReward.capability : '',
             ...ch.helpRefs.map((r) => r.label),
-          ].join(' ').slice(0, 2000)
+          ].join(' ').slice(0, 1200)
           docs.push({
             type: 'challenge',
             course: 'workshop',
@@ -104,7 +113,7 @@ export default defineConfig({
   plugins: [vue(), phaseMdPlugin(), searchIndexPlugin()],
   resolve: {
     alias: {
-      '@': '/src',
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
   server: {

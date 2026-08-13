@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute, RouterView } from 'vue-router'
-import NavBar from '@/components/NavBar.vue'
-import { saveError } from '@/stores/workshopStore'
-import { detectCourseFromRoute, getPhaseCount, parsePhaseFromRoute, COURSES } from '@/data/courses'
+import NavBar from '@/features/navigation/components/NavBar.vue'
+import { saveError } from '@/features/workshop/stores/workshopStore'
+import { detectCourseFromRoute, getPhaseCount, parsePhaseFromRoute, COURSES } from '@/features/courses/data/courses'
 
 const router = useRouter()
 const route = useRoute()

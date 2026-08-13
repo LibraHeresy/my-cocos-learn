@@ -1,35 +1,35 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { makePhaseRoutes } from './routes'
-import { COURSE_LIST } from '@/data/courses'
+import { COURSE_LIST } from '@/features/courses/data/courses'
 
-const homeModules = import.meta.glob('../views/*/Home.vue')
+const homeModules = import.meta.glob('../features/courses/views/*/Home.vue')
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
-    { path: '/', name: 'home', component: () => import('@/views/workshop/WorkshopHome.vue') },
+    { path: '/', name: 'home', component: () => import('@/features/workshop/views/WorkshopHome.vue') },
     ...COURSE_LIST.flatMap((c) => [
       {
         path: c.path,
         name: c.id,
-        component: homeModules[`../views/${c.id}/Home.vue`],
+        component: homeModules[`../features/courses/views/${c.id}/Home.vue`],
       },
       ...makePhaseRoutes(c.id, c.phaseCount),
     ]),
     {
       path: '/workshop',
       name: 'workshop',
-      component: () => import('@/views/workshop/WorkshopHome.vue'),
+      component: () => import('@/features/workshop/views/WorkshopHome.vue'),
     },
     {
       path: '/workshop/gallery',
       name: 'workshop-gallery',
-      component: () => import('@/views/workshop/GalleryView.vue'),
+      component: () => import('@/features/workshop/views/GalleryView.vue'),
     },
     {
       path: '/workshop/phase/:phase',
       name: 'workshop-phase',
-      component: () => import('@/views/workshop/WorkshopPhase.vue'),
+      component: () => import('@/features/workshop/views/WorkshopPhase.vue'),
     },
   ],
   scrollBehavior() {

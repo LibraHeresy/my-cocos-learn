@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { COURSES } from '@/data/courses'
-import { CHALLENGES } from '@/data/challenges'
+import { COURSES } from '@/features/courses/data/courses'
+import { CHALLENGES } from '@/features/workshop/data/challenges'
 
 const rawModules = import.meta.glob('../../content/*/phase-*.md', {
   query: '?raw',
@@ -8,7 +8,7 @@ const rawModules = import.meta.glob('../../content/*/phase-*.md', {
   eager: true,
 }) as Record<string, string>
 
-const homeModules = import.meta.glob('../../views/*/Home.vue', {
+const homeModules = import.meta.glob('../../features/courses/views/*/Home.vue', {
   query: '?raw',
   import: 'default',
   eager: true,

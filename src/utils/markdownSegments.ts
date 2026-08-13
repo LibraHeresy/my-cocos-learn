@@ -1,6 +1,6 @@
 import type MarkdownIt from 'markdown-it'
-import type { ContentSegment } from '../types/phase'
-import type { DemoId } from '../demos/ids'
+import type { ContentSegment } from '../features/courses/types/phase'
+import type { DemoId } from '../features/courses/demos/ids'
 
 const DEMO_RE = /^:::demo\s+([a-z0-9-]+)(.*)$/
 

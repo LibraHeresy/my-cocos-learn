@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { makePhaseRoutes } from '@/router/routes'
-import { COURSES } from '@/data/courses'
+import { COURSES } from '@/features/courses/data/courses'
 
 describe('makePhaseRoutes', () => {
   it('generates correct number of routes for all courses matching courses.ts', () => {

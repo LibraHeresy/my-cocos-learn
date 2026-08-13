@@ -1,4 +1,4 @@
-import type { PhaseMdData } from '../types/phase'
+import type { PhaseMdData } from '../features/courses/types/phase'
 
 /**
  * 阶段内容的单一懒加载入口。
