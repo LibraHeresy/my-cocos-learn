@@ -10,13 +10,37 @@ permissions:
   pages: write
   id-token: write
 
+# 按 ref 分组：各 PR 检查互相独立、与 main 的部署互不取消；同分支重复推送仍取消旧任务
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build:
+  # 检查（PR 与 push 都跑）：test（含内容完整性/持久化测试）+ lint
+  check:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # 依赖（sanitize-html@2.17）要求 Node >= 22.12
+          node-version: 22
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+
+      - run: yarn test
+
+      - run: yarn lint
+
+  # 构建 + 上传 artifact（仅 push；check 通过后执行）
+  build:
+    needs: check
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -25,14 +49,10 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: yarn
 
       - run: yarn install --frozen-lockfile
-
-      - run: yarn test
-
-      - run: yarn lint
 
       - run: yarn build --base ${{ steps.pages.outputs.base_path || '/' }}
         env:
@@ -42,11 +62,12 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
+          retention-days: 1
 
   deploy:
     needs: build
-    if: github.event_name == 'push'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

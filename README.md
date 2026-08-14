@@ -8,7 +8,7 @@ Vue 3.5 / TypeScript 5.7 / Vue Router 4.5 / Vite 6 / Vitest 4 / MiniSearch
 
 ## 快速开始
 
-包管理器统一使用 **Yarn（classic 1.x，见 `package.json` 的 `packageManager` 字段）**；仓库只有 `yarn.lock`，请勿用 npm 安装（会与锁文件脱节）。
+包管理器统一使用 **Yarn（classic 1.x，见 `package.json` 的 `packageManager` 字段）**；仓库只有 `yarn.lock`，请勿用 npm 安装（会与锁文件脱节）。**要求 Node ≥ 22.12**（依赖 `sanitize-html` 的最低版本要求，见 `package.json` 的 `engines`）。
 
 ```bash
 yarn                # 安装依赖
