@@ -11,8 +11,7 @@ const route = useRoute()
 function getRouteInfo() {
   const name = route.name
   if (!name || typeof name !== 'string') return { course: null, phase: null }
-  if (name === 'home') return { course: 'cocos', phase: null }
-  // 课程首页路由名即课程 id
+  // 工坊首页（/ 与 /workshop）不属于任何阶段课程，不启用键盘翻页
   if (name in COURSES) return { course: name, phase: null }
   const m = detectCourseFromRoute(name)
   if (m) return { course: m, phase: parsePhaseFromRoute(name) ?? 0 }

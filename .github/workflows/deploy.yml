@@ -32,7 +32,12 @@ jobs:
 
       - run: yarn test
 
+      - run: yarn lint
+
       - run: yarn build --base ${{ steps.pages.outputs.base_path || '/' }}
+        env:
+          # 供 sitemap.xml 生成使用（GitHub Pages 站点绝对地址）
+          SITE_URL: ${{ steps.pages.outputs.base_url }}
 
       - uses: actions/upload-pages-artifact@v3
         with:

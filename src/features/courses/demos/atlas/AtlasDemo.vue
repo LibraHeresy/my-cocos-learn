@@ -1,8 +1,12 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted, onUnmounted } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, watch } from 'vue'
 import '@/features/courses/demos/demo-shell.css'
+import { useDemoVisibility } from '../useDemoVisibility'
 
 defineProps<{ course?: string; phase?: number }>()
+
+const rootEl = ref<HTMLElement | null>(null)
+const { visible: demoVisible } = useDemoVisibility(rootEl)
 
 /* ---------- 常量 ---------- */
 const SPRITE = 64 // 精灵显示尺寸 (px)
@@ -131,12 +135,31 @@ function onSpriteUp() {
   dragging.value = null
 }
 
-/* ---------- 每帧累加 draw call 计数 ---------- */
-function tick() {
-  rafId = requestAnimationFrame(tick)
-  if (batchOn.value) atlasCount.value += 1
-  else independentCount.value += 4
+/* ---------- 每帧累加 draw call 计数（不可见时暂停，省 CPU） ---------- */
+function startTick() {
+  if (rafId) return
+  const loop = () => {
+    rafId = 0
+    if (!demoVisible.value) return // 不可见：不再调度，等 watcher 恢复
+    if (batchOn.value) atlasCount.value += 1
+    else independentCount.value += 4
+    rafId = requestAnimationFrame(loop)
+  }
+  rafId = requestAnimationFrame(loop)
 }
+
+function stopTick() {
+  if (rafId) {
+    cancelAnimationFrame(rafId)
+    rafId = 0
+  }
+}
+
+// 离开视口/切后台：计数暂停；回到视口自动恢复
+watch(demoVisible, (v) => {
+  if (v) startTick()
+  else stopTick()
+})
 
 function toggleBatch() {
   batchOn.value = !batchOn.value
@@ -162,14 +185,14 @@ onMounted(() => {
 
   if (atlasCanvas.value) drawAtlas(atlasCanvas.value.getContext('2d')!)
 
-  rafId = requestAnimationFrame(tick)
+  startTick()
 })
 
-onUnmounted(() => cancelAnimationFrame(rafId))
+onUnmounted(() => stopTick())
 </script>
 
 <template>
-  <div class="demo-shell atlas-demo">
+  <div ref="rootEl" class="demo-shell atlas-demo">
     <div class="demo-head">
       <h4 class="demo-title">🗂️ 图集 vs 独立贴图 · 一次 draw call 画完 4 张图</h4>
       <div class="controls">

@@ -13,10 +13,6 @@ import type { PracticeEntry } from '@/features/workshop/types/workshop'
 export function usePracticeLog() {
   const state = useWorkshopState()
 
-  const entries = computed<PracticeEntry[]>(() => {
-    return [...state.practiceLog].sort((a, b) => b.date.localeCompare(a.date))
-  })
-
   const groupedEntries = computed(() => {
     return getGroupedPractices()
   })
@@ -57,7 +53,6 @@ export function usePracticeLog() {
   }
 
   return {
-    entries,
     groupedEntries,
     recentEntries,
     stats,

@@ -2,16 +2,19 @@ import { migrateV1ToV2 } from '@/features/workshop/utils/idb.migration'
 import type { StorageBackend } from '@/features/workshop/stores/idb'
 import { SKILL_LINES } from '@/features/workshop/data/skill-tree'
 import type { WorkshopState } from '@/features/workshop/types/workshop'
+import { WORKSHOP_STATE_VERSION } from '@/features/workshop/types/workshop'
+import { loadJSON, saveJSON } from '@/stores/storage'
 import { toRaw } from 'vue'
 
 const STORAGE_KEY = '__workshop_state__'
-const CURRENT_VERSION = 2
+const CURRENT_VERSION = WORKSHOP_STATE_VERSION
 const PERSIST_DEBOUNCE_MS = 400
+const LOCAL_MIRROR_DEBOUNCE_MS = 200
 
 export function makeDefaultState(): WorkshopState {
   const progress: WorkshopState['skillProgress'] = {}
   for (const line of SKILL_LINES) {
-    progress[line.id] = { currentLevel: 0, completedAt: [] }
+    progress[line.id] = { currentLevel: 0 }
   }
   return {
     skillProgress: progress,
@@ -22,24 +25,23 @@ export function makeDefaultState(): WorkshopState {
   }
 }
 
+/** 读 localStorage 镜像：复用共享适配器；版本语义为「≤ 当前版本可接受」（旧版数据交给迁移）。 */
 function loadLocalState(): WorkshopState {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return makeDefaultState()
-    const parsed = JSON.parse(raw) as WorkshopState
-    if (!parsed || typeof parsed.version !== 'number' || parsed.version > CURRENT_VERSION) {
-      return makeDefaultState()
-    }
-    return parsed
-  } catch {
+  const parsed = loadJSON<WorkshopState | null>(STORAGE_KEY, null)
+  if (!parsed || typeof parsed.version !== 'number' || parsed.version > CURRENT_VERSION) {
     return makeDefaultState()
   }
+  return parsed
 }
 
 function saveLocalState(state: WorkshopState): boolean {
+  return saveJSON(STORAGE_KEY, state)
+}
+
+/** 是否存在 localStorage 镜像（区分「无镜像」与「默认空态」，避免默认态误判为最新 v2）。 */
+function hasLocalState(): boolean {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
-    return true
+    return localStorage.getItem(STORAGE_KEY) !== null
   } catch {
     return false
   }
@@ -68,17 +70,28 @@ export function createWorkshopPersistence(
 ): WorkshopPersistence {
   let dirty = false
   let persistTimer: ReturnType<typeof setTimeout> | null = null
+  let localMirrorTimer: ReturnType<typeof setTimeout> | null = null
   let persistChain: Promise<void> = Promise.resolve()
 
   function snapshot(): WorkshopState {
     return stripLegacyImageUrls(getState())
   }
 
+  /** 写 localStorage 镜像（防抖调用；失败可见）。 */
+  function writeLocalMirror(): boolean {
+    return saveLocalState(snapshot())
+  }
+
   function markDirty() {
     dirty = true
-    if (!saveLocalState(snapshot())) {
-      onError('本地缓存写入失败')
-    }
+    // localStorage 镜像同样防抖，避免连续编辑时每次同步 clone + stringify + 写盘。
+    if (localMirrorTimer) clearTimeout(localMirrorTimer)
+    localMirrorTimer = setTimeout(() => {
+      localMirrorTimer = null
+      if (!writeLocalMirror()) {
+        onError('本地缓存写入失败')
+      }
+    }, LOCAL_MIRROR_DEBOUNCE_MS)
     if (persistTimer) clearTimeout(persistTimer)
     persistTimer = setTimeout(() => {
       void flush()
@@ -89,6 +102,14 @@ export function createWorkshopPersistence(
     if (persistTimer) {
       clearTimeout(persistTimer)
       persistTimer = null
+    }
+    // 兜底：把尚未落盘的镜像写掉（pagehide/visibilitychange 时调用）
+    if (localMirrorTimer) {
+      clearTimeout(localMirrorTimer)
+      localMirrorTimer = null
+      if (!writeLocalMirror()) {
+        onError('本地缓存写入失败')
+      }
     }
     if (!dirty) return Promise.resolve()
     dirty = false
@@ -112,16 +133,29 @@ export function createWorkshopPersistence(
       const hasLegacyImages = state.practiceLog.some(
         (entry) => typeof (entry as unknown as { imageDataUrl?: string }).imageDataUrl === 'string',
       )
+      const mirror = loadLocalState()
+      const mirrorExists = hasLocalState()
 
-      // IDB 已有权威 v2 且用户未改动 -> 直接使用。
-      if (!dirty && idbState && idbState.version === CURRENT_VERSION) {
-        Object.assign(state, idbState)
+      // 权威源判定：会话内改动 > 镜像（每次变更先写镜像、时间上最新）> IDB > 默认态。
+      // 镜像缺失时退回 IDB，避免默认空态覆盖 IDB v1 数据；镜像比 IDB 新时优先镜像，
+      // 修复「IDB 旧版本覆盖 localStorage 新数据」的问题。
+      let source: WorkshopState
+      if (dirty || hasLegacyImages) {
+        source = state as WorkshopState
+      } else if (mirrorExists && mirror.version >= (idbState?.version ?? -1)) {
+        source = mirror
+      } else {
+        source = idbState ?? mirror
+      }
+
+      // 已是当前版本：直接采用，无需迁移。
+      if (source.version === CURRENT_VERSION && source !== state) {
+        Object.assign(state, source)
         saveLocalState(snapshot())
         return
       }
 
-      // 需要迁移：源取“当前镜像（可能已含用户改动）”优先，否则 IDB，否则缓存。
-      const source = dirty || hasLegacyImages ? (state as WorkshopState) : (idbState ?? loadLocalState())
+      // 需要迁移（v1 → v2）。
       const { state: migrated, blobs } = migrateV1ToV2(source)
       await backend.writeMigrated(migrated, blobs)
 

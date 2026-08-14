@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useBlobImage } from '@/features/workshop/composables/useBlobImage'
 import type { PracticeEntry } from '@/features/workshop/types/workshop'
+import { MAX_SELF_RATING } from '@/features/workshop/types/workshop'
 
 const props = defineProps<{
   entry: PracticeEntry
@@ -33,12 +34,11 @@ function toggleExpand() {
     </button>
     <div class="card-body">
       <div class="card-meta">
-        <span class="card-course">🎨</span>
         <span class="card-phase">Phase {{ entry.phase }}</span>
         <span class="card-title">{{ entry.title }}</span>
       </div>
       <div v-if="entry.selfRating" class="card-rating">
-        {{ '★'.repeat(entry.selfRating) }}{{ '☆'.repeat(5 - entry.selfRating) }}
+        {{ '★'.repeat(entry.selfRating) }}{{ '☆'.repeat(MAX_SELF_RATING - entry.selfRating) }}
       </div>
       <button
         v-if="entry.reflections && entry.reflections.length > 0"
@@ -113,7 +113,6 @@ function toggleExpand() {
   font-size: 0.8rem;
 }
 
-.card-course { font-size: 0.85rem; }
 .card-phase {
   color: var(--color-primary);
   font-weight: 700;

@@ -2,6 +2,7 @@
 import { ref, nextTick, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { search, type SearchResult } from './useSearch'
+import { COURSES } from '@/features/courses/data/courses'
 
 const router = useRouter()
 
@@ -14,11 +15,9 @@ const inputEl = ref<HTMLInputElement | null>(null)
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
+// 课程标签由 COURSES 派生（单一起源），工坊不在 COURSES 中单独特例
 const COURSE_LABEL: Record<string, string> = {
-  cocos: '🎮 Cocos',
-  art: '🎨 美术',
-  audio: '🔊 音效',
-  engineering: '⚙️ 工程',
+  ...Object.fromEntries(Object.values(COURSES).map((meta) => [meta.id, `${meta.icon} ${meta.label}`])),
   workshop: '🛠️ 工坊',
 }
 

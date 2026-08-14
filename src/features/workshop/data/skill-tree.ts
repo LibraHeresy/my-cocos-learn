@@ -162,10 +162,18 @@ export function computeSkillLevels(completedChallenges: number[]): Record<string
   return result
 }
 
-export function getTotalSkillLevels(): number {
-  return SKILL_LINES.reduce((sum, line) => sum + line.levels.length, 0)
-}
-
-export function getCompletedSkillLevels(progress: Record<string, number>): number {
-  return Object.values(progress).reduce((sum, lv) => sum + lv, 0)
+/** 反查某技能线中「包含指定挑战」的最低等级：奖励等级以 requiredChallenges 归属为唯一来源，
+ *  避免 challenges.skillReward 里手写 level 与技能树漂移。 */
+export function getSkillLevelForChallenge(
+  skillId: string,
+  challengeId: number,
+): { level: number; name: string } | null {
+  const line = SKILL_LINES.find((l) => l.id === skillId)
+  if (!line) return null
+  for (const lv of line.levels) {
+    if (lv.requiredChallenges.includes(challengeId)) {
+      return { level: lv.level, name: lv.name }
+    }
+  }
+  return null
 }

@@ -15,8 +15,10 @@ const route = useRoute()
 function extractTitle(el: Element): string {
   const h2 = el.querySelector('h2')
   if (!h2) return ''
-  const icon = h2.querySelector('.block-icon')
-  return icon ? h2.textContent!.replace(icon.textContent!, '').trim() : (h2.textContent || '').trim()
+  // 克隆后移除 .block-icon 再取文本：避免 replace 误删标题内重复出现的 emoji
+  const clone = h2.cloneNode(true) as HTMLElement
+  clone.querySelector('.block-icon')?.remove()
+  return (clone.textContent || '').trim()
 }
 
 function buildToc() {

@@ -1,7 +1,6 @@
 /**
  * 共享的版本化持久化适配器（localStorage）。
- * 长期：workshopStore 后续可切换同一 adapter；readingStore 现在就用它。
- * 读写都 try/catch，localStorage 不可用时静默降级（失败可见性由上层 saveError 负责）。
+ * readingStore 与 workshopPersistence 共用：读写都 try/catch，失败通过返回值/上层 saveError 暴露。
  */
 export function loadJSON<T>(key: string, fallback: T): T {
   try {
@@ -13,11 +12,13 @@ export function loadJSON<T>(key: string, fallback: T): T {
   }
 }
 
-export function saveJSON<T>(key: string, value: T): void {
+/** 返回是否写入成功（localStorage 满/不可用时为 false，由调用方决定是否提示）。 */
+export function saveJSON<T>(key: string, value: T): boolean {
   try {
     localStorage.setItem(key, JSON.stringify(value))
+    return true
   } catch {
-    /* localStorage 满/不可用：忽略（阅读进度丢失可接受） */
+    return false
   }
 }
 

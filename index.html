@@ -18,6 +18,17 @@
     <meta name="twitter:card" content="summary" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>Cocos Creator 学习之路 — 像素飞机大战</title>
+    <script>
+      // GitHub Pages SPA 重定向恢复：深层路径 404 时 404.html 把路径存入 sessionStorage 并跳回根，
+      // 这里在应用挂载前把地址栏还原，交给 Web History 路由匹配。
+      ;(function () {
+        var redirect = sessionStorage.getItem('gh-pages-redirect')
+        if (redirect) {
+          sessionStorage.removeItem('gh-pages-redirect')
+          history.replaceState(null, '', redirect)
+        }
+      })()
+    </script>
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",

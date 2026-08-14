@@ -21,6 +21,8 @@ export interface StorageBackend {
 }
 
 const DB_NAME = 'pixel-workshop-db'
+// IDB schema 版本：与工坊状态版本（WORKSHOP_STATE_VERSION）解耦，
+// 仅当 objectStore 结构变化时才递增。
 const DB_VERSION = 2
 const STATE_KEY = 'workshop'
 const STATE_STORE = 'state'

@@ -8,9 +8,14 @@ let recordMap: Map<string, SearchRecord> | null = null
 
 function loadIndex(): Promise<SearchIndex> {
   if (!indexPromise) {
-    indexPromise = fetch(`${import.meta.env.BASE_URL}search-index.json`)
+    // ?v= 用构建时间戳做缓存失效：每次部署后老用户强制拉到新索引
+    indexPromise = fetch(`${import.meta.env.BASE_URL}search-index.json?v=${__SEARCH_INDEX_VERSION__}`)
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
-      .catch(() => ({ version: 0, records: [] as SearchRecord[] }))
+      .catch(() => {
+        // 失败不缓存结果，下次搜索自动重试
+        indexPromise = null
+        return { version: 0, records: [] as SearchRecord[] }
+      })
   }
   return indexPromise
 }
@@ -23,10 +28,6 @@ function getSearcher(): Promise<MiniSearch> {
         fields: ['title', 'text'],
         idField: 'id',
         tokenize: (text: string) => tokenize(text),
-        searchOptions: {
-          boost: { title: 3 },
-          prefix: true,
-        },
       })
       searcher.addAll(index.records.map((r) => ({ id: r.url, title: r.title, text: r.text })))
       return searcher
@@ -71,10 +72,4 @@ export async function search(query: string): Promise<SearchResult[]> {
     results.push({ record, snippet: makeSnippet(record, q, hit.terms ?? []) })
   }
   return results
-}
-
-export function resetSearchCache() {
-  indexPromise = null
-  searcherPromise = null
-  recordMap = null
 }

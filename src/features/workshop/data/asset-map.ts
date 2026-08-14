@@ -131,7 +131,3 @@ export const ASSET_CATEGORIES = [
   { key: 'ui', label: '界面', icon: '📊' },
   { key: 'title', label: '标题', icon: '🏆' },
 ] as const
-
-export function getAssetByPhase(phase: number): GameAsset | undefined {
-  return GAME_ASSETS.find((a) => a.phase === phase)
-}

@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { computed, ref, onMounted, watch } from 'vue'
+import { computed, ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
 import { getChallenge, getStageForChallenge, CHALLENGES } from '@/features/workshop/data/challenges'
-import { SKILL_LINES } from '@/features/workshop/data/skill-tree'
+import { SKILL_LINES, getSkillLevelForChallenge } from '@/features/workshop/data/skill-tree'
 import { usePracticeLog } from '@/features/workshop/composables/usePracticeLog'
 import { useBlobImage } from '@/features/workshop/composables/useBlobImage'
 import { putBlob, deleteBlob } from '@/features/workshop/stores/idb'
 import { dataUrlToBlob } from '@/features/workshop/utils/idb.migration'
 import { isBlobReferenced } from '@/features/workshop/stores/workshopStore'
+import { MAX_SELF_RATING } from '@/features/workshop/types/workshop'
 
 const MAX_IMAGE_SIZE = 500 * 1024
 const DRAFT_KEY = '__workshop_phase_form__'
@@ -17,7 +18,15 @@ const { addPractice, updatePractice, getPhasePractice } = usePracticeLog()
 
 const challengeId = computed(() => parseInt(route.params.phase as string) || 1)
 const challenge = computed(() => getChallenge(challengeId.value))
-const skillReward = computed(() => challenge.value?.skillReward ?? null)
+const skillReward = computed(() => {
+  const reward = challenge.value?.skillReward
+  if (!reward) return null
+  const line = SKILL_LINES.find((l) => l.id === reward.skillId)
+  // 等级以 skill-tree 的 requiredChallenges 归属反查为唯一来源（不信任手写 level）
+  const levelInfo = line ? getSkillLevelForChallenge(reward.skillId, challengeId.value) : null
+  if (!line || !levelInfo) return null
+  return { ...reward, line, level: levelInfo.level, levelName: levelInfo.name }
+})
 const stage = computed(() => getStageForChallenge(challengeId.value))
 const existingPractice = computed(() => getPhasePractice(challengeId.value))
 
@@ -69,8 +78,14 @@ function restoreDraft() {
 }
 
 function resetForm() {
+  pendingBlobWrite = null // 丢弃未完成的旧上传，避免串关
+  const oldBlobId = imageBlobId.value
   if (previewUrl.value) { URL.revokeObjectURL(previewUrl.value); previewUrl.value = null }
   imageBlobId.value = existingPractice.value?.imageBlobId
+  // 丢弃未保存的草稿图（未被任何已保存练习引用）
+  if (oldBlobId && oldBlobId !== imageBlobId.value && !isBlobReferenced(oldBlobId)) {
+    void deleteBlob(oldBlobId).catch(() => {})
+  }
   selfRating.value = existingPractice.value?.selfRating ?? 0
   uploadError.value = null
   selfCheckResults.value = defaultSelfChecks()
@@ -79,6 +94,10 @@ function resetForm() {
 
 onMounted(resetForm)
 watch(challengeId, () => resetForm())
+onBeforeUnmount(() => {
+  // 回收预览 object URL，避免离开页面时泄漏
+  if (previewUrl.value) URL.revokeObjectURL(previewUrl.value)
+})
 
 function saveDraft() {
   try {
@@ -141,30 +160,44 @@ function handleDrop(e: DragEvent) {
 }
 
 function readFile(file: File) {
-  if (!file.type.startsWith('image/')) { uploadError.value = '仅支持 PNG 图片'; return }
-  if (file.size > MAX_IMAGE_SIZE) { uploadError.value = '图片太大，请导出为更小的 PNG（最大 500KB）'; return }
+  if (!file.type.startsWith('image/')) { uploadError.value = '仅支持图片文件'; return }
+  if (file.size > MAX_IMAGE_SIZE) {
+    uploadError.value = `图片太大，请导出为更小的 PNG（最大 ${Math.round(MAX_IMAGE_SIZE / 1024)}KB）`
+    return
+  }
   uploadError.value = null
   // 预览
   if (previewUrl.value) URL.revokeObjectURL(previewUrl.value)
   previewUrl.value = URL.createObjectURL(file)
+  const replacedBlobId = imageBlobId.value
   // eager 写入 IDB：图片一选中即落盘，state 只引用已持久化的 blobId
   const id = `img-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
   const write = putBlob(id, file).then(() => id)
   pendingBlobWrite = write
   void write.then((resolvedId) => {
-    if (previewUrl.value) {
-      imageBlobId.value = resolvedId
-      saveDraft()
-    } else {
-      // 用户在写入完成前移除了图片：清理孤儿 blob
+    // 写入期间用户已移除/换图/重置：本 blob 作废，清理孤儿
+    if (pendingBlobWrite !== write) {
       void deleteBlob(resolvedId).catch(() => {})
+      return
     }
+    // 换图：旧的未保存草稿 blob 变为孤儿，回收（已保存练习的图由 store 在替换时清理）
+    if (replacedBlobId && replacedBlobId !== resolvedId && !isBlobReferenced(replacedBlobId)) {
+      void deleteBlob(replacedBlobId).catch(() => {})
+    }
+    imageBlobId.value = resolvedId
+    saveDraft()
   })
 }
 
 function removeImage() {
+  pendingBlobWrite = null // 未落盘的写入作废（其回调会清理孤儿 blob）
   if (previewUrl.value) { URL.revokeObjectURL(previewUrl.value); previewUrl.value = null }
+  const removedBlobId = imageBlobId.value
   imageBlobId.value = undefined
+  // 仅回收未被已保存练习引用的图（草稿/新上传）
+  if (removedBlobId && !isBlobReferenced(removedBlobId)) {
+    void deleteBlob(removedBlobId).catch(() => {})
+  }
   saveDraft()
 }
 function setRating(r: number) { selfRating.value = r; saveDraft() }
@@ -172,38 +205,45 @@ function setRating(r: number) { selfRating.value = r; saveDraft() }
 async function handleSave() {
   const c = challenge.value
   if (!c) return
+  try {
+    // 保存前确认 blob 已落盘
+    let id = imageBlobId.value
+    const write = pendingBlobWrite
+    if (write) {
+      id = await write
+      // 等待期间表单被重置/移除：丢弃陈旧结果（对应 blob 由写入回调清理）
+      if (pendingBlobWrite !== write) id = undefined
+    }
+    if (id) imageBlobId.value = id
 
-  // 保存前确认 blob 已落盘
-  let id = imageBlobId.value
-  const write = pendingBlobWrite
-  if (write) id = await write
-  if (id) imageBlobId.value = id
+    const reflectionTexts: string[] = []
+    c.selfCheck.forEach((sc, i) => {
+      const result = selfCheckResults.value[i]
+      const status = result === true ? '✓' : result === false ? '✗' : '—'
+      reflectionTexts.push(`[${status}] ${sc.question}`)
+    })
 
-  const reflectionTexts: string[] = []
-  c.selfCheck.forEach((sc, i) => {
-    const result = selfCheckResults.value[i]
-    const status = result === true ? '✓' : result === false ? '✗' : '—'
-    reflectionTexts.push(`[${status}] ${sc.question}`)
-  })
+    const entry = {
+      date: new Date().toISOString(),
+      phase: challengeId.value,
+      title: c.title,
+      imageBlobId: id,
+      reflections: reflectionTexts,
+      selfRating: selfRating.value > 0 ? selfRating.value : undefined,
+    }
 
-  const entry = {
-    date: new Date().toISOString(),
-    phase: challengeId.value,
-    title: c.title,
-    imageBlobId: id,
-    reflections: reflectionTexts,
-    selfRating: selfRating.value > 0 ? selfRating.value : undefined,
+    if (existingPractice.value) {
+      updatePractice(existingPractice.value.id, entry)
+    } else {
+      addPractice(entry)
+    }
+
+    clearDraft(id)
+    saved.value = true
+    setTimeout(() => { saved.value = false }, 3000)
+  } catch {
+    uploadError.value = '保存失败，请稍后重试'
   }
-
-  if (existingPractice.value) {
-    updatePractice(existingPractice.value.id, entry)
-  } else {
-    addPractice(entry)
-  }
-
-  clearDraft(id)
-  saved.value = true
-  setTimeout(() => { saved.value = false }, 3000)
 }
 
 const passedCount = computed(() =>
@@ -300,14 +340,12 @@ const allPassed = computed(() =>
       <div v-if="skillReward" class="skill-section">
         <h3>🏆 通过后</h3>
         <p>
-          <span v-for="line in SKILL_LINES.filter(l => l.id === skillReward!.skillId)" :key="line.id">
-            {{ line.icon }} {{ line.name }}
-          </span>
-          <span v-if="skillReward!.level > 0">
-            → Lv.{{ skillReward!.level }}
+          <span>{{ skillReward.line.icon }} {{ skillReward.line.name }}</span>
+          <span v-if="skillReward.level > 0">
+            → Lv.{{ skillReward.level }} {{ skillReward.levelName }}
           </span>
         </p>
-        <p class="skill-capability">你能：{{ skillReward!.capability }}</p>
+        <p class="skill-capability">你能：{{ skillReward.capability }}</p>
       </div>
 
       <!-- Upload -->
@@ -336,7 +374,6 @@ const allPassed = computed(() =>
         <p v-if="uploadError" class="upload-error" role="alert">{{ uploadError }}</p>
         <input
           id="workshop-upload-input"
-          ref="fileInput"
           type="file"
           accept="image/png"
           class="visually-hidden"
@@ -349,7 +386,7 @@ const allPassed = computed(() =>
         <h3>⭐ 自评</h3>
         <div class="rating-row" data-no-arrow-nav>
           <button
-            v-for="r in 5" :key="r"
+            v-for="r in MAX_SELF_RATING" :key="r"
             type="button"
             class="rating-star" :class="{ active: r <= selfRating }"
             :aria-label="`评 ${r} 星`"

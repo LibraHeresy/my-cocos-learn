@@ -5,6 +5,7 @@ import { getPhaseCount } from '@/features/courses/data/courses'
 
 const STORAGE_KEY = '__reading_state__'
 const CURRENT_VERSION = 1
+const PERSIST_DEBOUNCE_MS = 300
 
 function makeDefault(): ReadingState {
   return { courses: {}, version: CURRENT_VERSION }
@@ -21,8 +22,31 @@ function ensureCourse(course: string): CourseReading {
   return state.courses[course]
 }
 
+/* 写入防抖：阶段页挂载/滚动判定会高频调用，避免每次同步 JSON.stringify + 写盘。
+ * 离开页面时 flush 兜底，保证最后一次进度不丢。 */
+let persistTimer: ReturnType<typeof setTimeout> | null = null
+
+function flushPersist() {
+  if (persistTimer) {
+    clearTimeout(persistTimer)
+    persistTimer = null
+    saveJSON(STORAGE_KEY, state)
+  }
+}
+
 function persist() {
-  saveJSON(STORAGE_KEY, state)
+  if (persistTimer) clearTimeout(persistTimer)
+  persistTimer = setTimeout(() => {
+    persistTimer = null
+    saveJSON(STORAGE_KEY, state)
+  }, PERSIST_DEBOUNCE_MS)
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('pagehide', flushPersist)
+  window.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') flushPersist()
+  })
 }
 
 /** 记录一次访问（阶段页挂载时调用），驱动「继续学习」 */
@@ -85,8 +109,4 @@ export function getLastPosition(): { course: string; phase: number } | null {
     }
   }
   return best ? { course: best.course, phase: best.phase } : null
-}
-
-export function useReadingState() {
-  return state
 }

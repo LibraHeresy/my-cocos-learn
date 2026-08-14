@@ -1,13 +1,9 @@
 import type { RouteLocationNormalizedLoaded } from 'vue-router'
 import { COURSES, detectCourseFromRoute, parsePhaseFromRoute } from '@/features/courses/data/courses'
 import { getChallenge } from '@/features/workshop/data/challenges'
-import { loadPhase, phaseKey } from '@/content/loader'
+import phaseMeta from 'virtual:phase-meta'
 
 const SITE_NAME = 'Cocos Creator 学习之路 — 像素飞机大战'
-
-const titleCache = new Map<string, string>()
-
-let current: { name: string; course: string; n: number } | null = null
 
 function setMeta(name: string, content: string) {
   let meta = document.head.querySelector(`meta[name="${name}"]`)
@@ -19,29 +15,32 @@ function setMeta(name: string, content: string) {
   meta.setAttribute('content', content)
 }
 
-function applyPhaseTitle(course: string, n: number, cached: string | undefined) {
-  if (cached) {
-    document.title = `第 ${n} 阶段 ${cached} · ${COURSES[course].label} — ${SITE_NAME}`
-  } else {
-    document.title = `${COURSES[course].label} · 第 ${n} 阶段 — ${SITE_NAME}`
+/** 设置 Open Graph 属性（og:title 等），供社交平台分享卡片使用。 */
+function setPropertyMeta(property: string, content: string) {
+  let meta = document.head.querySelector(`meta[property="${property}"]`)
+  if (!meta) {
+    meta = document.createElement('meta')
+    meta.setAttribute('property', property)
+    document.head.appendChild(meta)
   }
+  meta.setAttribute('content', content)
 }
 
-async function loadPhaseTitle(course: string, n: number) {
-  const key = phaseKey(course, n)
-  if (titleCache.has(key)) return
-  const loaded = await loadPhase(course, n)
-  titleCache.set(key, loaded?.title ?? '')
-  // 若当前路由仍是该阶段，用真实标题刷新。
-  if (current && current.course === course && current.n === n) {
-    applyPhaseTitle(course, n, titleCache.get(key))
+/** canonical 指向当前完整 URL（Web History 模式下无 hash，可被搜索引擎收录）。 */
+function setCanonical(url: string) {
+  let link = document.head.querySelector('link[rel="canonical"]')
+  if (!link) {
+    link = document.createElement('link')
+    link.setAttribute('rel', 'canonical')
+    document.head.appendChild(link)
   }
+  link.setAttribute('href', url)
 }
 
-/** 路由级 title/description 单一起源，afterEach 调用；阶段标题懒加载后自动刷新。 */
+/** 路由级 title/description/OG 单一起源，afterEach 调用。
+ *  阶段标题直接查构建期生成的 virtual:phase-meta（不再为取标题动态 import 整份 md chunk）。 */
 export function applyRouteMeta(to: RouteLocationNormalizedLoaded) {
   const name = to.name as string | undefined
-  current = null
 
   if (name === 'home') {
     document.title = `像素画工坊 — ${SITE_NAME}`
@@ -61,11 +60,16 @@ export function applyRouteMeta(to: RouteLocationNormalizedLoaded) {
     const course = detectCourseFromRoute(name)
     const n = parsePhaseFromRoute(name)
     if (course && n) {
-      current = { name, course, n }
-      applyPhaseTitle(course, n, titleCache.get(phaseKey(course, n)))
-      void loadPhaseTitle(course, n)
+      const title = phaseMeta[course]?.[n]?.title
+      document.title = title
+        ? `第 ${n} 阶段 ${title} · ${COURSES[course].label} — ${SITE_NAME}`
+        : `${COURSES[course].label} · 第 ${n} 阶段 — ${SITE_NAME}`
     }
   }
 
   setMeta('description', document.title)
+  setPropertyMeta('og:title', document.title)
+  setPropertyMeta('og:description', document.title)
+  setPropertyMeta('og:url', window.location.href)
+  setCanonical(window.location.href)
 }

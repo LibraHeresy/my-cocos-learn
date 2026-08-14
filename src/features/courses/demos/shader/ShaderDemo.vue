@@ -16,12 +16,16 @@
  *
  * 颜色全部取自设计系统 CSS 变量（画布内容在 onMounted 里读取）。
  */
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { useDemoVisibility } from '../useDemoVisibility'
 
 defineProps<{
   course?: string
   phase?: number
 }>()
+
+const rootEl = ref<HTMLElement | null>(null)
+const { visible: demoVisible } = useDemoVisibility(rootEl)
 
 const SPRITE_SIZE = 160
 
@@ -511,6 +515,9 @@ function drawFrame(ts: number) {
 function startLoop() {
   if (rafId) return
   const tick = (ts: number) => {
+    rafId = 0
+    // 挂载时就在视口外：初始回调不会触发 watcher，这里自停，等回到视口再恢复
+    if (!demoVisible.value) return
     drawFrame(ts)
     rafId = requestAnimationFrame(tick)
   }
@@ -523,6 +530,12 @@ function stopLoop() {
     rafId = 0
   }
 }
+
+// 离开视口/切后台时停掉循环，回到视口自动恢复
+watch(demoVisible, (v) => {
+  if (v) startLoop()
+  else stopLoop()
+})
 
 function onLost(e: Event) {
   e.preventDefault() // 不 preventDefault 会永久丢失上下文
@@ -572,7 +585,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="demo-shell shader-demo">
+  <div ref="rootEl" class="demo-shell shader-demo">
     <p class="demo-lead">
       同一张像素飞船图：左边原图、右边交给 <strong>fragment shader</strong> 逐像素处理。Shader 里的
       <code>uniform sampler2D u_tex</code> 就像 CSS 自定义属性——同一份纹理被 GPU 上千个并行的片元着色器同时采样。

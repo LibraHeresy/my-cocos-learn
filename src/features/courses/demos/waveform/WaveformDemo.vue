@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue'
+import { useDemoVisibility } from '../useDemoVisibility'
 
 defineProps<{ course?: string; phase?: number }>()
+
+const rootEl = ref<HTMLElement | null>(null)
+const { visible: demoVisible } = useDemoVisibility(rootEl)
 
 const WAVEFORMS = ['sine', 'square', 'sawtooth', 'triangle'] as const
 type WaveType = (typeof WAVEFORMS)[number]
@@ -245,6 +249,8 @@ function draw() {
 
 function startDraw() {
   stopDraw()
+  // 不可见时先不启动，回到视口后由 demoVisible watcher 恢复
+  if (!demoVisible.value) return
   const loop = () => {
     draw()
     rafId = requestAnimationFrame(loop)
@@ -258,6 +264,12 @@ function stopDraw() {
     rafId = null
   }
 }
+
+// 离开视口/切后台：停掉绘制循环（音频继续播，仅省绘制）；回到视口且仍在播放时恢复
+watch(demoVisible, (v) => {
+  if (v && playing.value) startDraw()
+  else stopDraw()
+})
 
 /* ---------------- 监听 ---------------- */
 watch(freq, (v) => {
@@ -312,7 +324,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="demo-shell waveform-demo">
+  <div ref="rootEl" class="demo-shell waveform-demo">
     <div class="demo-controls">
       <button class="demo-btn" :class="playing ? 'danger' : 'primary'" @click="toggle">
         {{ playing ? '停止' : '播放' }}

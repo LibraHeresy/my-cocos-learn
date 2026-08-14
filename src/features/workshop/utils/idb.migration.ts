@@ -1,4 +1,5 @@
 import type { WorkshopState, PracticeEntry } from '@/features/workshop/types/workshop'
+import { WORKSHOP_STATE_VERSION } from '@/features/workshop/types/workshop'
 
 /** base64 dataURL → Blob（用于 v1 → v2 迁移与旧草稿图片迁移） */
 export function dataUrlToBlob(dataUrl: string): Blob {
@@ -40,7 +41,7 @@ export function migrateV1ToV2(old: unknown): MigrationResult {
 
   const state: WorkshopState = {
     ...(base as WorkshopState),
-    version: 2,
+    version: WORKSHOP_STATE_VERSION,
     practiceLog: practiceLog.map((e) => ({ ...e })),
   }
 

@@ -1,11 +1,12 @@
 import { reactive, ref, type Ref } from 'vue'
 import type { WorkshopState, PracticeEntry } from '@/features/workshop/types/workshop'
+import { WORKSHOP_STATE_VERSION } from '@/features/workshop/types/workshop'
 import { computeSkillLevels, SKILL_LINES } from '@/features/workshop/data/skill-tree'
 import { CHALLENGES } from '@/features/workshop/data/challenges'
 import { idbBackend, type StorageBackend } from '@/features/workshop/stores/idb'
 import { createWorkshopPersistence, loadWorkshopLocalState } from '@/features/workshop/stores/workshopPersistence'
 
-const CURRENT_VERSION = 2
+const CURRENT_VERSION = WORKSHOP_STATE_VERSION
 
 function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8)
@@ -14,12 +15,8 @@ function generateId(): string {
 export interface WorkshopStore {
   readonly state: WorkshopState
   readonly saveError: Ref<string | null>
-  hydrate(): Promise<void>
-  flushPersist(): Promise<void>
   isBlobReferenced(id: string): boolean
   getAllCompletedChallenges(): number[]
-  recomputeSkillProgress(): void
-  updateStreak(): void
   addPractice(entry: Omit<PracticeEntry, 'id'>): PracticeEntry
   updatePractice(id: string, patch: Partial<PracticeEntry>): void
   removePractice(id: string): void
@@ -104,12 +101,8 @@ function createStore(backend: StorageBackend): WorkshopStore {
     const newLevels = computeSkillLevels(completedChallenges)
     for (const lineId of Object.keys(newLevels)) {
       const newLevel = newLevels[lineId]
-      const progress = state.skillProgress[lineId] ?? { currentLevel: 0, completedAt: [] }
+      const progress = state.skillProgress[lineId] ?? { currentLevel: 0 }
       progress.currentLevel = newLevel
-      while (progress.completedAt.length < newLevel) {
-        progress.completedAt.push(new Date().toISOString())
-      }
-      progress.completedAt.length = newLevel
       state.skillProgress[lineId] = progress
     }
   }
@@ -204,12 +197,8 @@ function createStore(backend: StorageBackend): WorkshopStore {
   return {
     state,
     saveError,
-    hydrate: () => persistence.hydrate(state),
-    flushPersist: () => persistence.flush(),
     isBlobReferenced,
     getAllCompletedChallenges,
-    recomputeSkillProgress,
-    updateStreak,
     addPractice,
     updatePractice,
     removePractice,
@@ -226,12 +215,8 @@ const store = createStore(idbBackend)
 
 export const state = store.state
 export const saveError = store.saveError
-export const hydrate = store.hydrate
-export const flushPersist = store.flushPersist
 export const isBlobReferenced = store.isBlobReferenced
 export const getAllCompletedChallenges = store.getAllCompletedChallenges
-export const recomputeSkillProgress = store.recomputeSkillProgress
-export const updateStreak = store.updateStreak
 export const addPractice = store.addPractice
 export const updatePractice = store.updatePractice
 export const removePractice = store.removePractice

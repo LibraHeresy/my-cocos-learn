@@ -1,8 +1,16 @@
+/**
+ * 工坊状态 schema 版本——唯一来源。
+ * workshopStore / workshopPersistence / idb.migration 全部引用此处，升级只改这一处。
+ */
+export const WORKSHOP_STATE_VERSION = 2
+
+/** 自评星级上限（唯一来源，UI 各处引用） */
+export const MAX_SELF_RATING = 5
+
 /** 单条练习记录 */
 export interface PracticeEntry {
   id: string
   date: string
-  course?: string
   phase: number
   title: string
   /** IndexedDB blobs store 中的图片引用（v2 起替代 imageDataUrl） */
@@ -14,7 +22,6 @@ export interface PracticeEntry {
 /** 技能线进度 */
 export interface SkillProgress {
   currentLevel: number
-  completedAt: string[]
 }
 
 /** 完整 workshop 状态 */

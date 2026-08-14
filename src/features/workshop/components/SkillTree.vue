@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useSkillTree } from '@/features/workshop/composables/useSkillTree'
 import { getAllCompletedChallenges } from '@/features/workshop/stores/workshopStore'
@@ -8,7 +8,8 @@ import { CHALLENGES } from '@/features/workshop/data/challenges'
 import type { SkillTreeNode } from '@/features/workshop/types/workshop'
 
 const { nodes, skillLines } = useSkillTree()
-const completedSet = ref(new Set(getAllCompletedChallenges()))
+// 响应式：练习记录变化时解锁状态实时更新（不再依赖路由切换强制重挂载）
+const completedSet = computed(() => new Set(getAllCompletedChallenges()))
 
 // track which node is expanded: "lineId-level"
 const expandedKey = ref<string | null>(null)

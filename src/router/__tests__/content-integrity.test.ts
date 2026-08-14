@@ -1,14 +1,10 @@
 import { describe, it, expect } from 'vitest'
 import { COURSES } from '@/features/courses/data/courses'
+import { COURSE_HOME_CONFIG } from '@/features/courses/data/course-home'
 import { CHALLENGES } from '@/features/workshop/data/challenges'
+import { getSkillLevelForChallenge } from '@/features/workshop/data/skill-tree'
 
 const rawModules = import.meta.glob('../../content/*/phase-*.md', {
-  query: '?raw',
-  import: 'default',
-  eager: true,
-}) as Record<string, string>
-
-const homeModules = import.meta.glob('../../features/courses/views/*/Home.vue', {
   query: '?raw',
   import: 'default',
   eager: true,
@@ -57,14 +53,27 @@ describe('content integrity', () => {
     }
   })
 
-  it('every course home phaseGroups max phase id matches COURSES.phaseCount', () => {
-    expect(Object.keys(homeModules).length).toBeGreaterThan(0)
-    for (const [path, src] of Object.entries(homeModules)) {
-      const course = path.match(/views\/(\w+)\/Home\.vue$/)?.[1]
-      if (!course || course === 'workshop' || !COURSES[course]) continue
-      const ids = [...src.matchAll(/\bid:\s*(\d+),/g)].map((m) => Number(m[1]))
-      const maxId = Math.max(...ids)
-      expect(maxId, `${course}: phaseGroups max id vs phaseCount`).toBe(COURSES[course].phaseCount)
+  it('every course home config covers exactly phases 1..phaseCount', () => {
+    for (const [course, cfg] of Object.entries(COURSE_HOME_CONFIG)) {
+      const meta = COURSES[course]
+      expect(meta, `course "${course}" not in COURSES`).toBeTruthy()
+      if (!meta) continue
+      const ids = cfg.phaseGroups.flatMap((g) => g.phases.map((p) => p.id))
+      expect(ids.length, `${course}: config phase count vs COURSES.phaseCount`).toBe(meta.phaseCount)
+      for (let i = 1; i <= meta.phaseCount; i++) {
+        expect(ids, `${course}: missing phase ${i}`).toContain(i)
+      }
+    }
+  })
+
+  it('every challenge skillReward belongs to a real skill-line level', () => {
+    for (const ch of CHALLENGES) {
+      if (!ch.skillReward) continue
+      const levelInfo = getSkillLevelForChallenge(ch.skillReward.skillId, ch.id)
+      expect(
+        levelInfo,
+        `challenge ${ch.id} skillReward skillId "${ch.skillReward.skillId}" not in any requiredChallenges of that skill line`,
+      ).toBeTruthy()
     }
   })
 })

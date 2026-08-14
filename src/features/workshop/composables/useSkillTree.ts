@@ -45,10 +45,5 @@ export function useSkillTree() {
     return { completed, total, percent: total > 0 ? Math.round((completed / total) * 100) : 0 }
   })
 
-  /** Get the first current (unlocked but incomplete) node to recommend next */
-  const nextRecommendation = computed<SkillTreeNode | null>(() => {
-    return nodes.value.find((n) => n.isCurrent) ?? null
-  })
-
-  return { nodes, progress, nextRecommendation, skillLines: SKILL_LINES }
+  return { nodes, progress, skillLines: SKILL_LINES }
 }

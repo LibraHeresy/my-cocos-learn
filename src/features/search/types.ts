@@ -1,4 +1,4 @@
-/** 单个可检索文档（阶段或工坊挑战）。 */
+/** 单个可检索文档（阶段或工坊挑战）。运行时只消费 course/url/title/icon/text。 */
 export interface SearchRecord {
   type: 'phase' | 'challenge'
   course: string
@@ -9,8 +9,6 @@ export interface SearchRecord {
   url: string
   title: string
   icon?: string
-  duration?: string
-  blocks: { title: string; icon?: string }[]
   /** 检索正文（构建期拼接，截断到合理长度） */
   text: string
 }

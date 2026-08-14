@@ -5,7 +5,7 @@ export interface CourseMeta {
   readonly path: string
   readonly phaseCount: number
   readonly backLabel: string
-  /** 返回课程首页的路径，cocos 首页即根路径所以是 '/' */
+  /** 返回课程首页的路径（首页语义：/ 是工坊首页，各课程首页独立于各自 path） */
   readonly courseHome: string
 }
 
@@ -17,7 +17,7 @@ export const COURSES: Record<string, CourseMeta> = {
     path: '/cocos',
     phaseCount: 25,
     backLabel: '返回 cocos 课程',
-    courseHome: '/',
+    courseHome: '/cocos',
   },
   art: {
     id: 'art',
@@ -53,7 +53,7 @@ export const COURSE_LIST: CourseMeta[] = Object.values(COURSES)
 let _phasePattern: RegExp | null = null
 
 /** 匹配路由名称的正则，由 COURSES 的 key 动态生成 */
-export function getPhasePattern(): RegExp {
+function getPhasePattern(): RegExp {
   if (!_phasePattern) {
     const keys = Object.keys(COURSES).join('|')
     _phasePattern = new RegExp(`^(${keys})-phase(\\d+)$`)

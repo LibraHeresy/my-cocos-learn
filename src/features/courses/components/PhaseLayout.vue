@@ -3,17 +3,13 @@ import { computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import PageTOC from '@/features/navigation/components/PageTOC.vue'
 import { COURSES, detectCourseFromRoute, getPhaseCount } from '@/features/courses/data/courses'
-import { useRevealOnScroll } from '@/features/courses/composables/useRevealOnScroll'
 import { recordVisit, markCompleted, isCompleted, toggleCompleted } from '@/stores/readingStore'
 
-const props = withDefaults(defineProps<{
+const props = defineProps<{
   phase: number
   title: string
   duration: string
-  total?: number
-}>(), {
-  total: 0,
-})
+}>()
 
 const route = useRoute()
 
@@ -23,9 +19,7 @@ const course = computed(() => {
   return detectCourseFromRoute(name) ?? 'cocos'
 })
 
-const maxPhase = computed(() =>
-  props.total > 0 ? props.total : getPhaseCount(course.value),
-)
+const maxPhase = computed(() => getPhaseCount(course.value))
 
 const courseHome = computed(() => COURSES[course.value].courseHome)
 
@@ -57,10 +51,8 @@ function recordVisitAndObserve() {
   completionObserver.observe(last)
 }
 
-const { observe } = useRevealOnScroll()
-
+// 滚动渐入由每个 ConceptBlock 自行管理（useRevealOnScroll），这里不再重复观察
 onMounted(() => {
-  observe('.concept-block')
   recordVisitAndObserve()
 })
 watch(() => route.path, recordVisitAndObserve)

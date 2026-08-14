@@ -9,9 +9,13 @@
  * 颜色全部取自设计系统 CSS 变量（getComputedStyle 解析，canvas 不支持 var()）。
  * onUnmounted 中 cancelAnimationFrame 并断开 ResizeObserver。
  */
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
+import { useDemoVisibility } from '../useDemoVisibility'
 
 const props = defineProps<{ course?: string; phase?: number }>()
+
+const rootEl = ref<HTMLElement | null>(null)
+const { visible: demoVisible } = useDemoVisibility(rootEl)
 
 /* ---------------- 缓动函数（Penner 公式） ---------------- */
 type Easing = (t: number) => number
@@ -217,11 +221,17 @@ function tick(now: number): void {
   rafId = requestAnimationFrame(tick)
 }
 
+function resume(): void {
+  // 播放中且可见才启动；不可见时由 demoVisible watcher 在回到视口后恢复
+  if (!playing.value || !demoVisible.value || rafId) return
+  lastTs = 0 // 恢复后从零计时，避免 dt 跳变
+  rafId = requestAnimationFrame(tick)
+}
+
 function play(): void {
   if (playing.value) return
   playing.value = true
-  lastTs = 0
-  rafId = requestAnimationFrame(tick)
+  resume()
 }
 
 function pause(): void {
@@ -231,6 +241,15 @@ function pause(): void {
     rafId = 0
   }
 }
+
+// 离开视口/切后台：暂停循环但保持 playing 状态；回到视口自动续播
+watch(demoVisible, (v) => {
+  if (v) resume()
+  else if (rafId) {
+    cancelAnimationFrame(rafId)
+    rafId = 0
+  }
+})
 
 function togglePlay(): void {
   playing.value ? pause() : play()
@@ -265,7 +284,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="demo-shell easing-demo">
+  <div ref="rootEl" class="demo-shell easing-demo">
     <div class="demo-head">
       <span class="demo-title">缓动曲线 Easing</span>
       <span v-if="props.phase" class="demo-ctx">{{ props.course }} · Phase {{ props.phase }} · cc.tween</span>

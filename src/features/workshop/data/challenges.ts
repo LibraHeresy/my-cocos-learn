@@ -8,17 +8,18 @@ export interface Challenge {
   output: { name: string; size: string }
   helpRefs: { course: string; phase: number; label: string }[]
   selfCheck: { question: string; yes: string; no: string }[]
-  skillReward: { skillId: string; level: number; capability: string } | null
+  /** 完成本关解锁的技能奖励标注。等级不在此维护，展示时由 skill-tree 的 requiredChallenges 归属反查。 */
+  skillReward: { skillId: string; capability: string } | null
 }
 
 export const STAGES = [
-  { id: 1, name: '工具与像素感', range: [1, 4] },
-  { id: 2, name: '从平面到立体', range: [5, 9] },
-  { id: 3, name: '纹理与材质', range: [10, 13] },
-  { id: 4, name: '角色剪影', range: [14, 18] },
-  { id: 5, name: '角色上色', range: [19, 23] },
-  { id: 6, name: '让画动起来', range: [24, 28] },
-  { id: 7, name: '场景与 UI', range: [29, 34] },
+  { id: 1, name: '工具与像素感' },
+  { id: 2, name: '从平面到立体' },
+  { id: 3, name: '纹理与材质' },
+  { id: 4, name: '角色剪影' },
+  { id: 5, name: '角色上色' },
+  { id: 6, name: '让画动起来' },
+  { id: 7, name: '场景与 UI' },
 ]
 
 export const CHALLENGES: Challenge[] = [
@@ -60,7 +61,7 @@ export const CHALLENGES: Challenge[] = [
       { question: '玩家飞机和敌机——只用颜色能区分吗？', yes: '选色有足够的对比度', no: '去课程 Phase 3 看"阵营配色"' },
       { question: '如果只能保留 3 个颜色，删掉哪个？', yes: '你知道每个颜色的优先级', no: '你的色板可能有多余颜色' },
     ],
-    skillReward: { skillId: 'color', level: 1, capability: '为游戏定义主色调' },
+    skillReward: { skillId: 'color', capability: '为游戏定义主色调' },
   },
   {
     id: 4, stage: 1, icon: '📐', title: '几何即是万物',
@@ -73,7 +74,7 @@ export const CHALLENGES: Challenge[] = [
       { question: '缩到 8×8 还能看出是什么吗？', yes: '你的几何概括力很强', no: '试试去掉最弱的那个形状，只用两种' },
       { question: '换个道具类型——金币改成护盾需要改几个像素？', yes: '你理解像素级修改的精度', no: '动手试试，感受 1px 的变化' },
     ],
-    skillReward: { skillId: 'form', level: 1, capability: '用基本几何形构建可辨认的物体' },
+    skillReward: { skillId: 'form', capability: '用基本几何形构建可辨认的物体' },
   },
 
   // ===== Stage 2: 从平面到立体 (5-9) =====
@@ -88,7 +89,7 @@ export const CHALLENGES: Challenge[] = [
       { question: '球的右下 1/4 有明显的暗面吗？', yes: '光影对立理解正确', no: '暗面应该在高光的对角位置' },
       { question: '远看（眯眼或缩小到 8×8），还像一个球吗？', yes: '你的明暗过渡是自然的', no: '高光、主色、暗面之间可能需要过渡行' },
     ],
-    skillReward: { skillId: 'color', level: 2, capability: '准备进入明暗体系（还需关 6-9）' },
+    skillReward: { skillId: 'color', capability: '准备进入明暗体系（还需关 6-9）' },
   },
   {
     id: 6, stage: 2, icon: '🌑', title: '暗面——影子的重量',
@@ -127,7 +128,7 @@ export const CHALLENGES: Challenge[] = [
       { question: '整个飞机的"光感"统一吗？', yes: '明暗公式掌握', no: '找到不对的地方，调整它' },
       { question: '把亮面和暗面颜色互换，飞机还成立吗？', yes: '你的明暗结构是对的', no: '方向反了但结构对，试试看' },
     ],
-    skillReward: { skillId: 'color', level: 2, capability: '为任何像素物体添加立体感' },
+    skillReward: { skillId: 'color', capability: '为任何像素物体添加立体感' },
   },
   {
     id: 9, stage: 2, icon: '💎', title: '应用——道具立体化',
@@ -180,7 +181,7 @@ export const CHALLENGES: Challenge[] = [
       { question: '从远处看，烟的边缘是"虚"的吗？', yes: '抖动让边缘有了半透明感', no: '边缘需要更多抖动混合' },
       { question: '如果只用纯色不用抖动画同样的烟——差别多大？', yes: '试试对比——你会理解抖动的不可替代性', no: '' },
     ],
-    skillReward: { skillId: 'texture', level: 1, capability: '用抖动模拟半透明和不规则纹理' },
+    skillReward: { skillId: 'texture', capability: '用抖动模拟半透明和不规则纹理' },
   },
   {
     id: 13, stage: 3, icon: '⚔️', title: '材质对决——金属 vs 布料',
@@ -193,7 +194,7 @@ export const CHALLENGES: Challenge[] = [
       { question: '只看右边 3 秒——觉得它像布料吗？', yes: '低对比度+稀疏抖动成功', no: '减少高光，增加不规则抖动' },
       { question: '缩小到 50%——材质的区别还在吗？', yes: '你的材质表达是结构性的', no: '扩大金属高光面积和布料抖动稀疏度' },
     ],
-    skillReward: { skillId: 'texture', level: 2, capability: '用抖动区分不同材质' },
+    skillReward: { skillId: 'texture', capability: '用抖动区分不同材质' },
   },
 
   // ===== Stage 4: 角色剪影 (14-18) =====
@@ -260,7 +261,7 @@ export const CHALLENGES: Challenge[] = [
       { question: '朋友"分不清"的理由是什么？', yes: '能复述→那就是改进方向', no: '' },
       { question: '"让别人看自己的画就是检验设计最直接的方法"——你领悟了吗？', yes: '你刚刚领悟了设计评审的本质', no: '' },
     ],
-    skillReward: { skillId: 'form', level: 2, capability: '设计有辨识度的角色剪影' },
+    skillReward: { skillId: 'form', capability: '设计有辨识度的角色剪影' },
   },
 
   // ===== Stage 5: 角色上色 (19-23) =====
@@ -275,7 +276,7 @@ export const CHALLENGES: Challenge[] = [
       { question: '飞机看起来是"友方"吗？（是"感觉"不是"知道"）', yes: '蓝白配色成功', no: '增加白的比例，减少深蓝' },
       { question: '和关 3 你定义的色板一致吗？', yes: '你在使用自己定义的色彩系统', no: '回到关 3 色板调整' },
     ],
-    skillReward: { skillId: 'color', level: 3, capability: '通过配色传达阵营和情绪' },
+    skillReward: { skillId: 'color', capability: '通过配色传达阵营和情绪' },
   },
   {
     id: 20, stage: 5, icon: '🔴', title: '战斗机觉醒——红黑之敌',
@@ -314,7 +315,7 @@ export const CHALLENGES: Challenge[] = [
       { question: 'Boss 的立体感比侦察机更强吗？', yes: '合理——画布更大有更多像素做过渡', no: '大型角色某些区域需扩大暗面面积' },
       { question: '三机合影——你现在拥有完整的敌人阵容。感觉如何？', yes: '🎉', no: '' },
     ],
-    skillReward: { skillId: 'color', level: 3, capability: '通过配色传达阵营和情绪' },
+    skillReward: { skillId: 'color', capability: '通过配色传达阵营和情绪' },
   },
   {
     id: 23, stage: 5, icon: '👁️', title: '阵营识别——0.1 秒测试',
@@ -367,7 +368,7 @@ export const CHALLENGES: Challenge[] = [
       { question: '2 帧交替——看起来是"子弹在飞"还是"灯泡在闪"？', yes: '拖尾给了运动方向感', no: '加一个 2px 的拖尾试试' },
       { question: 'Spritesheet 能在 Cocos 里直接用吗？', yes: '格式正确', no: '检查导出尺寸和帧间距' },
     ],
-    skillReward: { skillId: 'animation', level: 2, capability: '制作简单循环动画（还需关 27-28）' },
+    skillReward: { skillId: 'animation', capability: '制作简单循环动画（还需关 27-28）' },
   },
   {
     id: 27, stage: 6, icon: '💥', title: '击毁——碎裂的瞬间',
@@ -393,7 +394,7 @@ export const CHALLENGES: Challenge[] = [
       { question: '爆炸的高潮帧（最亮、最大）在第几帧？', yes: '第 4-7 帧→节奏正确', no: '第 1-2 帧→太急了，需要铺垫' },
       { question: '从关 24 到关 28——能独立制作像素动画了吗？', yes: '动画能力 Lv.2 达成！', no: '动画是最难的部分，多练正常' },
     ],
-    skillReward: { skillId: 'animation', level: 2, capability: '制作多帧像素动画序列' },
+    skillReward: { skillId: 'animation', capability: '制作多帧像素动画序列' },
   },
 
   // ===== Stage 7: 场景与 UI (29-34) =====
@@ -447,7 +448,7 @@ export const CHALLENGES: Challenge[] = [
       { question: '10 个数字缩到 4×4——7/10 还能辨认吗？', yes: '你的数字结构很强', no: '减少笔画复杂度' },
       { question: '这套字体看起来像"自己画的"还是"像模像样的游戏 UI"？', yes: '', no: '' },
     ],
-    skillReward: { skillId: 'ui', level: 2, capability: '设计游戏 HUD 组件（还需关 33）' },
+    skillReward: { skillId: 'ui', capability: '设计游戏 HUD 组件（还需关 33）' },
   },
   {
     id: 33, stage: 7, icon: '📊', title: '血条——Boss 的最后一口气',
@@ -460,7 +461,7 @@ export const CHALLENGES: Challenge[] = [
       { question: '如果血条只剩 10% 宽（3px）——还能看出是血条吗？', yes: '外框让它在任何宽度保持形状', no: '外框厚度不够' },
       { question: '8px 高在你的游戏画面里合适吗？', yes: '', no: '' },
     ],
-    skillReward: { skillId: 'ui', level: 2, capability: '设计完整的游戏 HUD' },
+    skillReward: { skillId: 'ui', capability: '设计完整的游戏 HUD' },
   },
   {
     id: 34, stage: 7, icon: '🏆', title: '标题画面——一切汇聚',
@@ -473,7 +474,7 @@ export const CHALLENGES: Challenge[] = [
       { question: '标题文字能一眼看清吗？', yes: '标题和背景有足够的明暗对比', no: '加深标题颜色或加暗色底块' },
       { question: '从关 1 到关 34——你拥有了多少件自己画的美术资产？', yes: '在 Cocos 里导进去，你的飞机大战就"活"了', no: '' },
     ],
-    skillReward: { skillId: 'ui', level: 3, capability: '全部 5 条技能线完整掌握' },
+    skillReward: { skillId: 'ui', capability: '全部 5 条技能线完整掌握' },
   },
 ]
 

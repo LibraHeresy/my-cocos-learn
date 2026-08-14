@@ -11,8 +11,20 @@ const stats = computed(() => getStats())
 const { recentEntries } = usePracticeLog()
 const completedSet = computed(() => new Set(getAllCompletedChallenges()))
 
+// 每阶段关卡号范围由 CHALLENGES 派生（id 最小/最大值），避免与数据重复维护
+const stageRanges = computed(() => {
+  const ranges: Record<number, { min: number; max: number }> = {}
+  for (const c of CHALLENGES) {
+    const cur = ranges[c.stage] ?? { min: c.id, max: c.id }
+    ranges[c.stage] = { min: Math.min(cur.min, c.id), max: Math.max(cur.max, c.id) }
+  }
+  return ranges
+})
+
 const currentStage = computed(() => {
   const done = completedSet.value
+  // 全部完成时没有「当前阶段」，隐藏该区块
+  if (CHALLENGES.every((c) => done.has(c.id))) return null
   // find the first incomplete challenge's stage
   let firstIncomplete = 1
   for (let i = 1; i <= CHALLENGES.length; i++) {
@@ -25,8 +37,7 @@ const currentStage = computed(() => {
   const stageChallenges = CHALLENGES.filter((c) => c.stage === stage.id)
   const stageDone = stageChallenges.filter((c) => done.has(c.id)).length
   const stageTotal = stageChallenges.length
-  const nextChallenge = CHALLENGES.find((c) => c.id === firstIncomplete)
-  return { stage, stageDone, stageTotal, nextChallenge }
+  return { stage, stageDone, stageTotal, nextChallenge: ch }
 })
 
 function challengeStatus(id: number): 'completed' | 'available' {
@@ -101,7 +112,7 @@ function challengeStatus(id: number): 'completed' | 'available' {
     <div v-for="stage in STAGES" :key="stage.id" class="stage-section">
       <div class="stage-header">
         <h2 class="stage-title">阶段 {{ stage.id }} · {{ stage.name }}</h2>
-        <span class="stage-range">关 {{ stage.range[0] }}—{{ stage.range[1] }}</span>
+        <span class="stage-range">关 {{ stageRanges[stage.id].min }}—{{ stageRanges[stage.id].max }}</span>
       </div>
       <div class="challenge-grid">
         <RouterLink

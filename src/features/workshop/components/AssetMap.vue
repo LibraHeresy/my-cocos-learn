@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useAssetGallery } from '@/features/workshop/composables/useAssetGallery'
 import AssetCard from '@/features/workshop/components/AssetCard.vue'
 
 const { progress, categories, getAssetsByCategory } = useAssetGallery()
-const assetsByCategory = getAssetsByCategory()
+// 响应式：练习记录变化时解锁状态实时更新
+const assetsByCategory = computed(() => getAssetsByCategory())
 </script>
 
 <template>
